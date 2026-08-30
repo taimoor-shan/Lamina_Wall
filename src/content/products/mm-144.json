@@ -1,0 +1,11 @@
+{
+  "code": "MM-144",
+  "name": "Impara Black",
+  "collection": "stone-marble",
+  "swatchImage": "../../assets/products/mm-144.jpg",
+  "alt": "Black marble panel swatch with dramatic white veining across a dark polished surface.",
+  "description": "A deep black marble with bold white veining — the counterpoint material for feature walls.",
+  "tags": ["marble", "black", "feature"],
+  "featured": true,
+  "order": 1
+}
