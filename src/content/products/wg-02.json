@@ -1,0 +1,11 @@
+{
+  "code": "WG-02",
+  "name": "Sliced White Oak",
+  "collection": "wood-grain",
+  "swatchImage": "../../assets/products/wg-02.jpg",
+  "alt": "White oak wood-grain panel swatch, pale blonde tone with fine straight grain.",
+  "description": "A calm, closed-grain oak for light, contemporary interiors.",
+  "tags": ["oak", "light tone"],
+  "featured": false,
+  "order": 2
+}

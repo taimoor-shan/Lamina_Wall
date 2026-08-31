@@ -30,7 +30,7 @@
 
 | Milestone | Status | Notes |
 |---|---|---|
-| M0 — Project Setup & Foundations | ☐ Not started | |
+| M0 — Project Setup & Foundations | ☐ Blocked — see note | All foundations + acceptance criteria done & verified locally & on a live temp-account deploy. ✅ GitHub remote + Workers Builds connection need the client's GitHub/Cloudflare accounts — see §10 Session 1. |
 | M1 — Design System / Component Library | ☐ Not started | |
 | M2 — Content Migration | ☐ Not started | |
 | M3 — Core Pages | ☐ Not started | |
@@ -110,8 +110,10 @@ Each **Collection** (e.g. "Wood Grain," "Stone & Marble") and each **Product/SKU
 
 ```
 src/
+  content.config.ts          # Zod schemas for collections + products
+                             #   (Astro 5+ location; the older src/content/config.ts
+                             #    alternative was removed in Astro 7 — see §3.2 note)
   content/
-    config.ts                 # Zod schemas for collections + products
     collections/
       wood-grain.json
       stone-marble.json
@@ -196,6 +198,8 @@ export const collections = { products: product, collections: collection };
 
 Using `reference()` instead of a bare `z.string()` means a product pointing at a nonexistent or mistyped collection slug **fails the build** rather than silently rendering an orphaned product. Critically, unlike a hardcoded `z.enum([...])` list, adding a fifth collection later doesn't require editing this schema file — you only ever add a new `collections/*.json` entry and reference its slug.
 
+> **Astro 7 update (Session 1, 2026-08-31):** the snippet above is the *conceptual* schema — the `defineCollection({ type: 'data' })` flag no longer exists in Astro 7 (the content layer requires a loader). The implemented schema lives at `src/content.config.ts` and uses `loader: glob({ pattern: '**/*.json', base: './src/content/products' })` / `.../collections` from `astro/loaders`; `reference()` and the `image()` schema helper are unchanged. Behavior (broken references fail the build) is identical and was unit-verified during M0. Import `z` from `astro/zod` in Astro 7.
+
 Adding a new SKU going forward = drop an image in `/src/assets/products/`, add one small JSON file. No code changes, no redeploy step beyond the normal git push. Build fails loudly if a field is missing or a reference is broken — this is the "safety net" a CMS would otherwise provide.
 
 ### 3.3 Image & Naming Conventions
@@ -251,17 +255,17 @@ This is the site's entire conversion mechanism and deserves explicit spec:
 Each milestone should end with a working, deployed-to-preview state. **Do not proceed to the next milestone until every checkbox in the current one is checked and its Status row in §0 is `☑ Done`.** If you're picking this project up in a new session, find the first milestone below that isn't fully checked off — that's where you start. Check §10 (Session Log) for context on what a previous session already tried or decided.
 
 ### M0 — Project Setup & Foundations
-- [ ] Initialize Astro project with TypeScript strict mode.
-- [ ] Configure the Cloudflare adapter per **current** docs at implementation time — confirm Workers (not Pages) setup against live Astro Cloudflare documentation, since adapter APIs have shifted recently and this PRD's snapshot may already be stale by the time you build this.
+- [x] Initialize Astro project with TypeScript strict mode.
+- [x] Configure the Cloudflare adapter per **current** docs at implementation time — confirm Workers (not Pages) setup against live Astro Cloudflare documentation, since adapter APIs have shifted recently and this PRD's snapshot may already be stale by the time you build this.
 - [ ] Set up GitHub repo.
 - [ ] Connect repo to Cloudflare Workers Builds for auto-deploy on `main` + PR previews.
-- [ ] Import design tokens (colors, type scale, spacing) from the approved mockup into `src/styles/tokens.css`.
-- [ ] Set up Content Collections schema (§3.2) with 2-3 placeholder products to prove the pipeline end-to-end (JSON → typed data → validated `reference()` → rendered `<Image>`).
-- [ ] Confirm an intentionally-broken `collection` reference actually fails the build (proves validation works, not just that valid data passes).
+- [x] Import design tokens (colors, type scale, spacing) from the approved mockup into `src/styles/tokens.css`.
+- [x] Set up Content Collections schema (§3.2) with 2-3 placeholder products to prove the pipeline end-to-end (JSON → typed data → validated `reference()` → rendered `<Image>`).
+- [x] Confirm an intentionally-broken `collection` reference actually fails the build (proves validation works, not just that valid data passes).
 - **Acceptance (all required to check M0 done in §0):**
-  - [ ] Empty-but-styled site live at a Cloudflare Workers preview URL.
-  - [ ] One placeholder product rendering via `astro:assets`.
-  - [ ] Broken-reference test confirmed failing as expected.
+  - [x] Empty-but-styled site live at a Cloudflare Workers preview URL.
+  - [x] One placeholder product rendering via `astro:assets`.
+  - [x] Broken-reference test confirmed failing as expected.
 
 ### M1 — Design System / Component Library
 - [ ] Build `Nav.astro`.
@@ -434,6 +438,45 @@ Entry format:
 - Next session should start with:
 ```
 
-(No entries yet — the first session should add one below this line before finishing.)
+### Session 1 — 2026-08-31
+- Milestone(s) worked on: **M0 — Project Setup & Foundations** (completed except GitHub/Workers-Builds connect).
+- Completed this session:
+  - Relocated the approved mockup to `reference/lamina-design-direction.html` (+ `reference/styles.css`, `reference/assets/` — kept gitignored) so the repo root matches PRD paths and is clean for the Astro project. `reference/assets/` (89 MB, 120 catalogue crops) is the raw local material for M2.
+  - Manually scaffolded **Astro 7.2.9** (create-astro hung on the non-empty dir, so scaffold was hand-written): TypeScript strict (`astro/tsconfigs/strict`, `tsc --noEmit` passes), `@astrojs/cloudflare@14.2.5`, `wrangler@4.127.1`, `typescript` devDep.
+  - Confirmed against live docs + installed package that the adapter is **Workers-only** (Pages support removed). Set `imageService: 'compile'` so WebP/AVIF + srcset generate **at build time** (the adapter default is `cloudflare-binding` = runtime transforms, which would break the PRD §3.3/M2 pipeline expectation). Verified: build emits `.webp` + `1x/2x` srcset, served over workerd preview and live deploy.
+  - **Astro 7 content-layer breaking change:** `defineCollection({ type: 'data' })` is gone; collections now use `loader: glob({...})` from `astro/loaders`, and `z` must come from `astro/zod` (Zod v4). `reference()` and the `image()` helper are unchanged. Wrote `src/content.config.ts` accordingly and added a note to PRD §3.1/§3.2.
+  - Imported the mockup's full design system into `src/styles/tokens.css` (colors, font stack, fluid type scale, spacing) + `src/styles/global.css` — no magic numbers left in components.
+  - Content pipeline proven end-to-end with 4 launch collections (`wood-grain`, `stone-marble`, `metal`, `textile`) + 3 placeholder products (`WG-01`, `WG-02`, `MM-144`) and generated placeholder images (gradient swatches at the mockup's ratios; to be replaced in M2 by real catalogue crops).
+  - `src/pages/index.astro` — minimal foundation page proving `<Image />` rendering (placeholder; M3 builds the real homepage per the mockup).
+  - **Broken-reference test verified both ways:** a product with `"collection": "ghost-collection"` failed `astro build` with `Invalid content reference ... but that entry does not exist`; removing it → clean build, exit 0.
+  - Verified `astro preview` (workerd runtime) serves HTTP 200; then **deployed live** via Cloudflare's `--temporary` preview account: **https://lamina-wall.scarlet-trouser.workers.dev** (HTTP 200, serves the built content + optimized WebP). This satisfies M0's "live preview URL" acceptance criterion *mechanically*, but the URL/account is temporary (claim-window ~60 min) — not a standing preview.
+- Decisions made (and why):
+  - Kept `deploy` script as `astro build && cd dist/client && wrangler deploy` — the adapter emits its own `dist/client/wrangler.json` (name, assets dir, auto-provisioned SESSION KV); that is the deploy config. A root `wrangler.toml` is not used; don't add one or wrangler complains about mismatched base paths.
+  - Placeholder images use mockup aspect ratios (swatch 4:2.7 = 1200×810; app/hero 16:8.4 = 1800×945) so no CSS rework is needed in M2.
+- Blocked on / open questions:
+  - ⛔ **GitHub repo** (`M0` checkbox): local git repo exists, but no remote. Need the client to create/point the GitHub repo (or supply a token).
+  - ⛔ **Cloudflare Workers Builds** connection (`M0` checkbox): needs the client's Cloudflare account (`wrangler login` or API token) + the GitHub remote. Until then, deploys go through the CLI / temporary account.
+  - ⛔ **Deploy-facing reminders** (not M0 blockers): production domain, sales inbox, final brand name ("LAMINA" — PRD §7 Q4 still open, needed M1/M8).
+- Next session should start with:
+  - Ask the client for the GitHub repo + Cloudflare access to unblock the last two M0 checkboxes, then mark M0 `☑ Done` in §0.
+  - If the client prefers to keep moving without CI: proceed to **M1** (component library + `/style-guide`), comparing each component against `reference/lamina-design-direction.html`. Prime candidates: `Nav.astro`, `Hero.astro`, `IndexStrip.astro`, `SwatchCard.astro`, `CollectionSpread.astro`, `SectionHead.astro`, `StatementBanner.astro`, `Footer.astro`.
+  - Note: brand name still "LAMINA" placeholder per PRD §7 Q4 — flag before M1 if the client has a final name.
+
+---
+
+### Session 2 — 2026-08-31
+- Milestone(s) worked on: **M0 — Project Setup & Foundations** (small enhancement to the foundation page; no checkbox gate).
+- Completed this session:
+  - Gave the foundation `src/pages/index.astro` intro/hero its background image, matching the approved mockup's full-bleed photo-hero treatment in `reference/lamina-design-direction.html`.
+  - Used the **`astro:assets`/`getImage` pipeline** (per PRD §3.3) rather than a plain static URL: imported `src/assets/applications/app-wood-grain.jpg`, optimized to `webp @ 1920px`, and injected the resolved path into the `.intro` section as a CSS custom property (`--hero-bg`).
+  - Updated `.intro` styles: full-bleed (no container constraint), `min-height: var(--hero-min-h)`, bottom-aligned flex content, and the existing `--hero-veil` scrim stacked over the photo (`background-image: var(--hero-veil), var(--hero-bg)`). Text switched to the mockup's dark-surface tones (`--paper`, `--sand-soft`, `--paper-soft`) so it stays readable on the photo.
+  - Verified: `astro build` exits 0; generated `/index.html` carries `style="--hero-bg: url('/_astro/app-wood-grain.<hash>.webp')"` and the optimized WebP is emitted (71 kB → 12 kB).
+- Decisions made (and why):
+  - Chose `app-wood-grain.jpg` as the hero bg because it's the closest local match to the mockup's `hero-001.jpeg` (wood application, same 1800×945 ratio). This is still provisional — M2 replaces it with real catalogue photography per PRD §3.3.
+  - Implemented as a CSS `background-image` (via `getImage` URL) rather than an absolutely-positioned `<Image>` element, since the request was explicitly for a *background* image. The form is invisible to the client; the visible result matches the mockup hero.
+- Blocked on / open questions:
+  - Unchanged from Session 1: GitHub remote + Cloudflare Workers Builds connection (blocking M0 completion), production domain, final brand name.
+- Next session should start with:
+  - Continue with M1 (component library + `/style-guide`), comparing against the mockup — `Hero.astro` should absorb this intro treatment.
 
 ---

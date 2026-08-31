@@ -1,0 +1,83 @@
+/* LAMINA — design tokens
+   Extracted verbatim from the approved design-direction mockup
+   (reference/lamina-design-direction.html + reference/styles.css).
+   No magic numbers: every color/type/spacing decision lives here. */
+
+:root {
+  /* ---------- COLOR ---------- */
+  --stone: #e7e2d6;      /* page background */
+  --stone-card: #efebe1; /* hover / card tint */
+  --paper: #fbf9f4;      /* light surfaces, drawer */
+  --ink: #1b1914;        /* primary text */
+  --ash: #726c5e;        /* secondary text */
+  --line: #c9c1ae;       /* hairline borders */
+  --ember: #9c3f20;      /* accent — active/add states */
+  --basalt: #19170f;     /* dark surfaces: statement, footer */
+
+  /* Tones used on dark surfaces (from the mockup, named for reuse) */
+  --paper-soft: #e9e3d6; /* hero sub-copy */
+  --sand-soft: #d8cdbb;  /* hero eyebrow */
+  --sand: #cfc7b4;       /* statement body / footer links */
+  --sand-deep: #b7a98d;  /* statement eyebrow */
+  --ash-dark: #8a8271;   /* footer base */
+  --peach: #e3b08f;      /* callout accent on dark */
+
+  /* Scrim / overlays */
+  --scrim: rgba(20, 18, 12, 0.35);
+  --hero-veil: linear-gradient(
+    to right,
+    rgba(15, 13, 9, 0.72) 0%,
+    rgba(15, 13, 9, 0.18) 42%,
+    rgba(15, 13, 9, 0) 65%
+  );
+  --tray-shadow: -24px 0 60px rgba(0, 0, 0, 0.25);
+
+  /* ---------- TYPOGRAPHY ---------- */
+  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* Display scale (fluid, matching the mockup's clamps) */
+  --fs-display-xl: clamp(48px, 7vw, 108px);  /* hero h1 */
+  --fs-display-lg: clamp(36px, 4.2vw, 64px); /* section h2 */
+  --fs-display-md: clamp(34px, 5.4vw, 72px); /* statement h2 */
+  --fs-logo: 24px;
+  --fs-tray-title: 26px;
+
+  /* Mono label scale */
+  --fs-label: 11px;   /* eyebrow */
+  --fs-label-sm: 10.5px;
+  --fs-label-btn: 12px;
+  --fs-label-lg: 13.5px;
+
+  /* Body copy */
+  --fs-body: 14px;
+  --fs-body-lg: 15px;
+  --fs-body-lgrem: 1.55; /* line-height */
+
+  /* Line heights / letter-spacing */
+  --lh-display: 0.98;
+  --lh-body: 1.6;
+  --ls-display: -0.01em;
+  --ls-eyebrow: 0.14em;
+  --ls-mono: 0.04em;
+  --ls-mono-wide: 0.08em;
+
+  /* ---------- SPACING & LAYOUT ---------- */
+  --gutter: 40px;          /* page edge padding (desktop) */
+  --container-max: 1400px;
+  --section-v: 120px;      /* section top padding */
+  --sec-head-gap: 52px;
+  --status-bar-h: 0px;
+  --nav-h: 73px;
+  --hero-min-h: 640px;
+
+  /* ---------- SHAPE & FX ---------- */
+  --radius: 2px;
+  --border: 1px solid var(--line);
+
+  /* ---------- MOTION ---------- */
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --dur-drawer: 0.35s;
+  --dur-fade: 0.3s;
+}

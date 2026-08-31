@@ -1,0 +1,85 @@
+/* LAMINA — global base styles.
+   Mirrors the approved mockup's reset + typographic helpers. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--stone);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* Focus visibility (a11y — visible for keyboard, none for pointer) */
+:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 2px;
+}
+
+/* ---------- Typographic helpers (from the mockup) ---------- */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  font-weight: 400;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ash);
+}
+
+.display {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+}
+
+.display.i {
+  font-style: italic;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Buttons */
+.btn-outline{
+  padding: 14px 24px;
+  border :1px solid #dddddd;
+  display: inline-flex;
+  margin-top:2em;
+  transition: all .3s;
+}
+.btn-outline:hover{
+background:#ffffff;
+color: #000000;
+}

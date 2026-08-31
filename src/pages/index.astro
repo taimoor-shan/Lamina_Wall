@@ -1,0 +1,136 @@
+---
+import { getCollection } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import '../styles/styles.css';
+
+// Hero background — provisional application photo. M2 swaps in the real
+// catalogue photography (PRD §3.3). Optimised through the astro:assets
+// pipeline like every other image on the page.
+import heroImage from '../assets/applications/hero-001.jpeg';
+const heroBg = await getImage({
+  src: heroImage,
+  width: 1920,
+  format: 'webp',
+});
+
+// M0 pipeline proof: schema-validated content files -> typed data ->
+// validated reference() links -> build-time image optimisation.
+// M3 replaces this page with the full approved homepage layout.
+const collections = (await getCollection('collections')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const products = await getCollection('products');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LAMINA — Wall Panels &amp; Architectural Surfaces</title>
+    <meta
+      name="description"
+      content="Wood grain, stone, metal and textile wall panels for architects, designers and trade buyers."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="logo">LAMINA</div>
+      <nav class="links" aria-label="Primary">
+        {
+          collections.map((c) => <a href={`#${c.data.slug}`}>{c.data.title}</a>)
+        }
+      </nav>
+    </header>
+
+    <main>
+      <section
+        class="intro"
+        style={`--hero-bg: url("${heroBg.src}")`}
+      >
+        <div class="eyebrow">Architectural Surfaces — 2026 Collection</div>
+        <h1 class="display">
+          Surfaces with<span class="i"> provenance.</span>
+        </h1>
+        <p class="intro-copy">
+          Wood, stone, metal and textile, reproduced with the grain, depth and hand-feel of the original material. Specified by the panel, not the pallet.
+        </p>
+        <a class="btn-outline" href="#wood-grain">View the collections</a>
+      </section>
+
+      {
+        collections.map((c) => {
+          const items = products
+            .filter((p) => p.data.collection.id === c.id)
+            .sort((a, b) => a.data.order - b.data.order);
+          return (
+            <section class="collection" id={c.data.slug}>
+              <div class="sec-head">
+                <div>
+                  <div class="num">
+                    0{c.data.order} / {c.data.title}
+                  </div>
+                  <h2 class="display">{c.data.tagline}</h2>
+                </div>
+               <p>{c.data.description}</p>
+               </div>
+               <div class="app-photo">
+                 <Image
+                   src={c.data.heroApplicationImage}
+                   alt={c.data.heroAlt}
+                   widths={[640, 1024, 1920]}
+                   sizes="(max-width: 900px) 100vw, 1400px"
+                   loading="lazy"
+                 />
+               </div>
+               <div class="swatch-row">
+                {items.map((p) => (
+                  <article class="swatch">
+                    <div class="swatch-img">
+                      <Image
+                        src={p.data.swatchImage}
+                        alt={p.data.alt}
+                        width={720}
+                        height={486}
+                        densities={[1, 2]}
+                      />
+                    </div>
+                    <div class="swatch-meta">
+                      <div class="txt">
+                        <div class="code">{p.data.code}</div>
+                        <div class="name">{p.data.name}</div>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          );
+        })
+      }
+
+      <section class="pipeline-note">
+        <p class="eyebrow">M0 — content pipeline verified</p>
+        <p>
+          {collections.length} collections, {products.length} products, all
+          types generated from <code>src/content.config.ts</code>.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="logo">LAMINA</div>
+      <p>Wall panels &amp; architectural surfaces. Wood, stone, metal and
+        textile finishes for commercial and residential interiors.</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "slug": "textile",
+  "title": "Textile",
+  "tagline": "Softness you can specify.",
+  "description": "Acoustic fabric-wrapped panels and textile-effect finishes that control sound without compromising the feel of a room.",
+  "heroApplicationImage": "../../assets/applications/app-textile.jpeg",
+  "heroAlt": "Woven fabric-wrapped acoustic panels on a meeting-room wall, soft to the touch.",
+  "order": 4
+}
