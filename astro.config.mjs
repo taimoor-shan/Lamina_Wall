@@ -14,4 +14,7 @@ export default defineConfig({
     // 'compile' keeps generation at build time (verified locally in `astro build`).
     imageService: 'compile',
   }),
+  // All CSS is tiny (a few KiB per page); inlining removes every
+  // render-blocking stylesheet request — one HTML request to first paint.
+  build: { inlineStylesheets: 'always' },
 });

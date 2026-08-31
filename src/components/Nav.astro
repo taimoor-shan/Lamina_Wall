@@ -3,6 +3,8 @@
 // (reference/lamina-design-direction.html). All values come from tokens.css.
 // The Request button is rendered for visual parity only — M4 wires the
 // Svelte request tray. Do not make it functional before M4.
+// Nav items target the collection pages (M3); the homepage's own in-page
+// index strip keeps the mockup's anchor behaviour.
 import type { CollectionEntry } from 'astro:content';
 
 interface Props {
@@ -18,7 +20,7 @@ const { collections, trayCount = 0 } = Astro.props;
   <nav class="links" aria-label="Primary">
     {
       collections.map((c) => (
-        <a href={`#${c.data.slug}`}>{c.data.title}</a>
+        <a href={`/collections/${c.data.slug}`}>{c.data.title}</a>
       ))
     }
   </nav>

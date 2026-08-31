@@ -8,15 +8,18 @@ interface Props {
   title: string;
   description?: string;
   name?: string;
+  /** Heading level: 1 on standalone pages, 2 inside homepage sections. */
+  level?: 1 | 2;
 }
 
-const { index, title, description, name } = Astro.props;
+const { index, title, description, name, level = 2 } = Astro.props;
+const Heading = `h${level}` as 'h1' | 'h2';
 ---
 
 <div class="sec-head">
   <div>
     <div class="num">{index}{name && <> / {name}</>}</div>
-    <h2 class="display">{title}</h2>
+    <Heading class="display">{title}</Heading>
   </div>
   {description && <p>{description}</p>}
 </div>

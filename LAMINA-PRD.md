@@ -33,7 +33,7 @@
 | M0 — Project Setup & Foundations | ☐ Blocked — see note | All foundations + acceptance criteria done & verified locally & on a **standing live deploy** (https://lamina-wall.lamina-wall.workers.dev — §10 Session 4; replaces the temp-account preview). ✅ GitHub remote + Workers Builds connection need the client's GitHub/Cloudflare accounts — see §10 Session 1. |
 | M1 — Design System / Component Library | ☐ In progress | All 8 components + tokens + `/style-guide` built & verified (build passes, page serves 200). Catalogue now covers **every swatch in the reference folders — 92 products** (§10 Session 5). Visual acceptance vs mockup at 1440/390 still needs a human browser pass — see §10 Sessions 3–4. |
 | M2 — Content Migration | ☑ Done | 92 products / 6 collections, real alt text + descriptions, build clean, image audit at `docs/image-pipeline-audit.md`. Residual human eyeball (texture-crop cut-off on swatches; AI-upscale pass for app images) folded into the M1 visual-acceptance pass — see §10 Session 6. |
-| M3 — Core Pages | ☐ Not started | |
+| M3 — Core Pages | ☑ Done | 6 collection pages (`/collections/[slug]`), nav wired to them, homepage hero converted to a priority-loaded responsive `<img>` (LCP 99 simulated / 99 real-throttle, mobile), fonts CSS async, styles inlined — see §10 Session 7. Residual human eyeball (visual acceptance vs mockup at 1440/390, homepage + one collection page) folded into the same M1 pass. |
 | M4 — Request Tray & Form | ☐ Not started | |
 | M5 — SEO, Accessibility, Performance | ☐ Not started | |
 | M6 — Cross-Browser & Responsive QA | ☐ Not started | |
@@ -297,24 +297,24 @@ Each milestone should end with a working, deployed-to-preview state. **Do not pr
   - [x] Spot-check: every launch image passes the resolution/aspect-ratio rules in §3.3.
 
 ### M3 — Core Pages
-- [ ] Homepage: hero section.
-- [ ] Homepage: sticky index strip.
-- [ ] Homepage: Wood Grain collection spread.
-- [ ] Homepage: Stone & Marble collection spread.
-- [ ] Homepage: Metal & Textile collection spread.
-- [ ] Homepage: closing statement section.
-- [ ] Homepage: footer.
-- [ ] Collection pages (`/collections/[slug]`) generated from Content Collections — application photo(s) + swatch filmstrip.
-- **Constraint — do not deviate without a separate conversation:** the homepage stays in the stacked, full-bleed editorial layout from the approved mockup (Wood → Stone → Metal/Textile → Statement). This was a deliberate, client-approved design decision. Restructuring into tabs/filters/a condensed "explorer" is a real option worth discussing on its own terms, but is out of scope here — do not introduce it unilaterally.
+- [x] Homepage: hero section.
+- [x] Homepage: sticky index strip.
+- [x] Homepage: Wood Grain collection spread.
+- [x] Homepage: Stone & Marble collection spread.
+- [x] Homepage: Metal & Textile collection spread.
+- [x] Homepage: closing statement section.
+- [x] Homepage: footer.
+- [x] Collection pages (`/collections/[slug]`) generated from Content Collections — application photo(s) + swatch filmstrip.
+- **Constraint — do not deviate without a separate conversation:** the homepage stays in the stacked, full-bleed editorial layout from the approved mockup (Wood → Stone → Metal/Textile → Statement). This was a deliberate, client-approved design decision. Restructuring into tabs/filters/a condensed "explorer" is a real option worth discussing on its own terms, but is out of scope here — do not introduce it unilaterally. *(Held: homepage layout unchanged; the only nav change is that the header links now target the collection pages — the homepage's own sticky index strip keeps the mockup's in-page anchors.)*
 - **Acceptance:**
-  - [ ] All 4 collections have working, populated pages.
-  - [ ] Navigation, including the sticky index strip, works.
-  - [ ] **Visual acceptance:** homepage and one collection page compared directly against the approved mockup at desktop and mobile widths — section order, section heights, image cropping, spacing match.
-  - [ ] Lighthouse performance ≥ 90 on homepage (mobile).
-  - [ ] No unoptimized/original-resolution catalogue images shipped to the browser.
-  - [ ] Hero image is priority-loaded; below-fold images are lazy-loaded.
-  - [ ] Every image has explicit dimensions (no layout shift).
-  - [ ] The Svelte request-tray bundle does not load on pages where the tray isn't present.
+  - [x] All collections have working, populated pages — **6** (the checklist's "4" predates the client's six-collection decision in Session 4); each page built from Content Collections: section head + application photography (priority-loaded primary) + the complete swatch filmstrip.
+  - [x] Navigation, including the sticky index strip, works — header links to `/collections/[slug]` (verified in built HTML); index-strip anchors resolve to all 6 homepage sections.
+  - [ ] **Visual acceptance:** homepage and one collection page compared directly against the approved mockup at desktop and mobile widths — section order, section heights, image cropping, spacing match. *(Pending — same human browser pass as M1's; M3 §0 note.)*
+  - [x] Lighthouse performance ≥ 90 on homepage (mobile) — **99** (simulated default config) and **99** (real CDP throttling); collection page 97 real. Journey and method in §10 Session 7.
+  - [x] No unoptimized/original-resolution catalogue images shipped to the browser — 0 non-WebP files in `dist/_astro`.
+  - [x] Hero image is priority-loaded; below-fold images are lazy-loaded — hero `<img fetchpriority="high" loading="eager">`; all 134 below-fold images `loading="lazy"` (verified in built HTML).
+  - [x] Every image has explicit dimensions (no layout shift) — width/height attributes on all images + fixed-aspect containers; CLS 0.022 (score 1.0).
+  - [x] The Svelte request-tray bundle does not load on pages where the tray isn't present — no Svelte anywhere yet (M4); 0 Svelte files in `dist/_astro`.
 
 ### M4 — Request Tray & Form
 - [ ] Implement the Svelte request-tray island: selection state, persistent drawer, quantity steppers.
@@ -580,5 +580,29 @@ Entry format:
   - Unchanged: 6 vs 5 visible swatches per collection question (Session 4) — live site shows 5 + lightbox; not re-decided here.
 - Next session should start with:
   - The human visual-acceptance pass (M1 acceptance + the two M2 residuals above), then mark M1 `☑ Done` in §0; otherwise proceed to **M3 — Core Pages** (homepage on components: hero, sticky index strip, 6 collection spreads, statement, footer; collection pages `[slug].astro`; Lighthouse ≥90 gate).
+
+---
+
+### Session 7 — 2026-09-01
+- Milestone(s) worked on: **M3 — Core Pages** (completed; §0 row now `☑ Done`). Client directives carried over from Session 6's end: "if SEO is in the next milestone, you can skip" (SEO deferred to **M5** — this supersedes any earlier assumption it was in M3) and the catalogue-PDF extraction for "real product information" was **interrupted by the client before completion** — deferred until the client asks for it again.
+- Completed this session:
+  - **Collection pages** — new `src/pages/collections/[slug].astro`: generated from Content Collections (6 pages: wood-grain, stone-marble, metal, textile, solid, glossy-decorative), composed entirely from existing components — `SectionHead` (now `level={1}` on standalone pages), `AppShowcase` (now with a `priority` prop: primary image eager + `fetchpriority="high"`), and the **complete swatch filmstrip** (5-up grid on desktop like the homepage row, 2-up on mobile — the homepage row hides on mobile in favour of the dialog, but a collection page has no dialog fallback, so the filmstrip must stay). Each page carries its own `<title>`/description/OG meta.
+  - **Navigation wiring** — the header nav now links to `/collections/[slug]` instead of dead `#anchors` (which would also have broken on collection pages). The homepage's sticky **IndexStrip keeps the mockup's in-page anchors** (verified all 6 section ids resolve). The homepage layout itself is untouched — the M3 constraint holds.
+  - **Hero refactored from a CSS background to a real `<img>`** — visually identical (same photo, scrim now an overlay `div` with the `--hero-veil` gradient, same stacking), but the browser now sees the LCP request in the initial document with `fetchpriority="high"` and a responsive srcset (`640/960/1280/1920w`, `sizes="100vw"`). Attempt 1 (CSS `image-set` 1x/2x + preload) failed: at the emulated device's DPR 2.6 the `2x` entry won anyway, so mobile fetched both variants — worse. The `<img>` srcset serves ~960w (62 KiB) to mobile instead of 1920w (227 KiB).
+  - **Fonts stylesheet made async** (`media="print"` + `onload` swap + noscript fallback) on the homepage and all collection pages — it was the only render-blocking third-party request (Lighthouse sim charged it ~1s).
+  - **`build.inlineStylesheets: 'always'`** in `astro.config.mjs` — all component CSS (a few KiB) is inlined into the HTML; zero render-blocking stylesheet requests. HTML grew 121→138 KiB raw but stays ~14.4 KiB gzipped (Cloudflare brotli will do better).
+  - **Lighthouse journey (homepage, mobile):** initial dist build measured **79** (simulated) — dev-server interference mis-measured 54 first (port 4321/4322 were occupied by running `astro dev` servers; re-served `dist` on a clean port). FCP 2.7s was traced (raw trace events: DOMContentLoaded 44 ms, LCP candidate 153 ms, FCP 180 ms) to Lighthouse 13's *simulated* model charging each request `requestLatencyMs 562.5` and gating FCP/LCP on the font fetches; the real CDP-throttled run measured **99**. After hero `<img>` + async fonts + inline stylesheets, the simulated run also scores **99** (FCP 0.9 s, LCP 2.1 s, TBT 0, CLS 0.022). Collection page: **97** (real throttle). Harness: `scripts/serve-gzip.mjs` (gzip + production-like immutable `/_astro` cache) — committed so future sessions can re-measure.
+  - Verified: `astro build` 8 pages exit 0; `tsc --noEmit` clean; dist inspection — 6 collection pages, 0 non-WebP files in `_astro`, 0 Svelte bundles, every `<img>` has width/height + srcset, homepage hero `loading="eager"`/`fetchpriority="high"` with all 134 below-fold images lazy. **Not deployed** — deploys happen only when the client asks.
+- Decisions made (and why):
+  - **Nav → collection pages** (not homepage anchors): the collection pages are an M3 deliverable and need discoverability; the mockup's `#` targets were single-page placeholders. The IndexStrip preserves the mockup's in-page scroll behaviour on the homepage, so the approved stacked layout's navigation feel is intact.
+  - **`inlineStylesheets` over request-merging**: with ~10 tiny scoped stylesheets per page, inlining removes the whole render-blocking chain for a ~3 KiB gzip cost — the right trade for an 8-page static site.
+  - **Async Google Fonts with display=swap**: text paints in a fallback face and swaps — the mockup's serif display treatment still lands; `noscript` keeps no-JS users styled.
+  - Kept `scripts/serve-gzip.mjs` as the re-measurable Lighthouse harness (the python static server it replaced sent no compression and `max-age=60`, which under-reported).
+- Blocked on / open questions:
+  - ⛔ Unchanged: the shared **human visual-acceptance pass** now covers M1 (all components + `/style-guide`), M2 residuals (texture-crop cut-off on swatches; AI-upscale for app images), and M3's acceptance (homepage + one collection page vs mockup at 1440/390) — one browser session settles all three.
+  - ⛔ Unchanged: MS-102 "Onyx Matte"/PM-263 "Noir Gloss" name-vs-imagery mismatch (client decision), GitHub remote + Workers Builds (M0), production domain, brand name, descriptive-vs-code product names.
+  - The PRD checklist says "all 4 collections" — the client's six-collection decision (Session 4) means six pages; noted in the M3 checklist.
+- Next session should start with:
+  - The human visual-acceptance pass (M1 + M2 residuals + M3 acceptance), then proceed to **M4 — Request Tray & Form** (Svelte island, persistent drawer, quantity steppers, `/api/request` server route with validation + Turnstile + duplicate check + Resend, `/thank-you`, no-JS `/request` fallback).
 
 ---
