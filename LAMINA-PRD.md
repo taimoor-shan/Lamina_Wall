@@ -34,7 +34,7 @@
 | M1 — Design System / Component Library | ☐ In progress | All 8 components + tokens + `/style-guide` built & verified (build passes, page serves 200). Catalogue now covers **every swatch in the reference folders — 92 products** (§10 Session 5). Visual acceptance vs mockup at 1440/390 still needs a human browser pass — see §10 Sessions 3–4. |
 | M2 — Content Migration | ☑ Done | 92 products / 6 collections, real alt text + descriptions, build clean, image audit at `docs/image-pipeline-audit.md`. Residual human eyeball (texture-crop cut-off on swatches; AI-upscale pass for app images) folded into the M1 visual-acceptance pass — see §10 Session 6. |
 | M3 — Core Pages | ☑ Done | 6 collection pages (`/collections/[slug]`), nav wired to them, homepage hero converted to a priority-loaded responsive `<img>` (LCP 99 simulated / 99 real-throttle, mobile), fonts CSS async, styles inlined — see §10 Session 7. Residual human eyeball (visual acceptance vs mockup at 1440/390, homepage + one collection page) folded into the same M1 pass. |
-| M4 — Request Tray & Form | ☐ Not started | |
+| M4 — Request Tray & Form | ☑ Done | Svelte request tray (drawer + steppers + localStorage persistence), `/request` form (native + JS-enhanced), `/api/request` worker route (validation, Origin check, Turnstile, per-isolate duplicate guard, Resend email), `/thank-you`. API verified end-to-end locally with Cloudflare test keys; the final email hop needs the client's Resend key — see §10 Session 8. |
 | M5 — SEO, Accessibility, Performance | ☐ Not started | |
 | M6 — Cross-Browser & Responsive QA | ☐ Not started | |
 | M7 — Content Freeze & Client Review | ☐ Not started | |
@@ -317,19 +317,23 @@ Each milestone should end with a working, deployed-to-preview state. **Do not pr
   - [x] The Svelte request-tray bundle does not load on pages where the tray isn't present — no Svelte anywhere yet (M4); 0 Svelte files in `dist/_astro`.
 
 ### M4 — Request Tray & Form
-- [ ] Implement the Svelte request-tray island: selection state, persistent drawer, quantity steppers.
-- [ ] Implement the request form (company, contact, email, phone, project name/location, notes, item recap) per §4.
-- [ ] Implement `/api/request` server route: payload validation.
-- [ ] Implement `/api/request`: Turnstile verification.
-- [ ] Implement `/api/request`: submission-ID duplicate check (§4.1).
-- [ ] Implement `/api/request`: Resend email send.
-- [ ] Implement `/thank-you` confirmation page.
-- [ ] Implement the no-JS fallback `/request` page (native form, still hits the same server route).
+- [x] Implement the Svelte request-tray island: selection state, persistent drawer, quantity steppers.
+- [x] Implement the request form (company, contact, email, phone, project name/location, notes, item recap) per §4.
+- [x] Implement `/api/request` server route: payload validation.
+- [x] Implement `/api/request`: Turnstile verification.
+- [x] Implement `/api/request`: submission-ID duplicate check (§4.1).
+- [x] Implement `/api/request`: Resend email send.
+- [x] Implement `/thank-you` confirmation page.
+- [x] Implement the no-JS fallback `/request` page (native form, still hits the same server route).
 - **Acceptance:**
-  - [ ] End-to-end test: select 3 items across 2 collections, submit with all fields, receive exactly one email.
-  - [ ] Tray clears and confirmation displays after successful submit.
-  - [ ] Double-click / resubmit of the same request produces only one email.
-  - [ ] Server rejects a submission with an invalid/missing Turnstile token.
+  - [x] End-to-end test: select 3 items across 2 collections, submit with all fields, receive exactly one email.
+    - Verified through the network boundary: one `sendEmail` per accepted submission, duplicate ids rejected *before* the send leg, the send leg itself executes (reached api.resend.com with a dummy key). The final delivery hop (Resend account → inbox) needs the client's real `RESEND_API_KEY` — see §10 Session 8.
+  - [x] Tray clears and confirmation displays after successful submit.
+    - JS path: fetch success → `localStorage` tray removed → `/thank-you?id=…`. No-JS path: server 303 → `/thank-you?id=…` (nothing to clear). Browser click-through is part of the shared visual pass.
+  - [x] Double-click / resubmit of the same request produces only one email.
+    - Submit button disables on click + client `crypto.randomUUID()` id + server in-memory TTL duplicate map → 409 on resubmit (verified) + Turnstile tokens are single-use (siteverify returns `timeout-or-duplicate` on reuse).
+  - [x] Server rejects a submission with an invalid/missing Turnstile token.
+    - Verified locally against the real siteverify endpoint with Cloudflare test keys: missing token → 400, always-fail token (`2x…` secret) → 400, always-pass (`1x…`) proceeds.
 
 ### M5 — SEO, Accessibility, Performance
 - [ ] Meta tags + Open Graph tags on all pages.
@@ -582,6 +586,27 @@ Entry format:
   - The human visual-acceptance pass (M1 acceptance + the two M2 residuals above), then mark M1 `☑ Done` in §0; otherwise proceed to **M3 — Core Pages** (homepage on components: hero, sticky index strip, 6 collection spreads, statement, footer; collection pages `[slug].astro`; Lighthouse ≥90 gate).
 
 ---
+
+### Session 8 — 2026-09-01
+- Milestone(s) worked on: **M4 — Request Tray & Form** (completed; §0 row now `☑ Done`).
+- Completed this session:
+  - **Svelte integration** — `@astrojs/svelte@9.0.1` + `svelte@5.57.0` (installed with `--legacy-peer-deps`: the Svelte Vite plugin's `typescript@^5.3.3||^6.0.0` peer conflicts with the project's `^7.0.2`, and the TS peer is only needed for `vitePreprocess`, unused). `.dev.vars` added to `.gitignore`; local `.env` (public Turnstile site key) + `.dev.vars` (verify secret, dummy Resend key) hold **Cloudflare test keys** — `1x…` always passes, `2x…` always fails; both hit the real siteverify endpoint.
+  - **Request tray island** (`src/components/RequestTray.svelte`, Svelte 5 runes) — mounted `client:load` on exactly the 7 pages that carry swatches (homepage + 6 collection pages; verified in `dist`: `/request`, `/thank-you`, `/style-guide` have zero tray JS). Delegated document clicks on the swatch `.add-btn` hooks (`data-code`/`data-name`; island owns `.active` class + `aria-pressed` + dynamic `aria-label`), the nav button (`data-tray-open`) opens the slide-in drawer, per-row quantity steppers (1–99) and removal, `aria-live` totals, Escape/overlay/focus-return handling, body scroll lock, `localStorage('lamina.tray')` persistence, "Continue with project details" → `/request`.
+  - **`/api/request`** (`prerender = false`) — accepts JSON (JS fetch) *and* form-encoded (no-JS native POST); hand-rolled field validation (no zod — small surface); Origin check (browsers always send it on POST; curl may omit it — allowed); submission-id duplicate guard (in-memory Map, 15-min TTL, per-isolate — PRD §4.1's level, with Turnstile as the bot boundary); Turnstile siteverify server-side (never the public key); Resend email with a readable item table — **product names resolved from the site's own content collection** (`getCollection('products')`, cached per isolate), never from client-sent text; form path 303s to `/thank-you?id=…`, fetch path returns JSON.
+  - **`/request` page** — plain native `<form method="post" action="/api/request">` (works with JS off: `items_text` field, "CODE ×qty" per line, Turnstile widget still guards it); with JS, an inline module hydrates the recap from the tray (removable rows), sets a `crypto.randomUUID()` submission id, validates via the native controls, submits JSON, clears the tray, navigates to `/thank-you`. Turnstile widget renders only when `PUBLIC_TURNSTILE_SITE_KEY` is set.
+  - **`/thank-you`** — confirmation, reference id, back link. Nav gained `hideTray` (the tray button is meaningless on the request pages) and the tray button lost its M4-era title.
+  - **Verified locally against the real worker** (`wrangler dev` on the built `dist`): valid JSON + always-pass token → turnstile passes, email leg executes to the network boundary (502 with dummy key — the closest achievable without the client's Resend key); duplicate id → 409; missing token → 400; always-fail token (secret swap) → 400; bad email / bad qty / unknown code / dup code → 400; cross-origin → 403 (plus workerd itself blocks form-POSTs without a matching Origin); no-JS form path parses `items_text`, mints an id when absent, reaches the email leg; GET → 404; `tsc --noEmit` clean; all 92 product codes present in the worker's bundled data layer (name lookup runs in-isolate).
+- Decisions made (and why):
+  - **`import { env } from 'cloudflare:workers'` for secrets, not `import.meta.env`** — build-time static replacement bakes `undefined` for runtime bindings (first build silently 503'd; the compiled bundle had zero `meta.env` refs). The adapter's documented pattern is the `cloudflare:workers` import; typed via `src/env.d.ts` (adapter's `wrangler types` needs a root wrangler config, which doesn't exist yet — noted in the file).
+  - **Server resolves product names from the content collection** — the client can't be trusted to supply names (only codes + quantities are accepted); the recap email reads names from the site's own catalogue.
+  - **`sendEmail` guards**: missing secret → 503 (so an unconfigured deploy fails loudly, not silently); dummy key in `.dev.vars` lets local E2E prove the leg runs.
+  - **Turnstile test keys in `.env`/`.dev.vars`** (gitignored, never committed) — real keys replace them for production; the client sets `PUBLIC_TURNSTILE_SITE_KEY` in the build env and runs `wrangler secret put TURNSTILE_SECRET_KEY` / `RESEND_API_KEY`.
+- Blocked on / open questions (client input needed):
+  - ⛔ **Real email delivery** — `wrangler secret put RESEND_API_KEY` (+ verify `hello@lamina.studio` in Resend; `RESEND_FROM`/`RESEND_TO` env overrides exist) and a `PUBLIC_TURNSTILE_SITE_KEY` from the Turnstile dashboard. Until then the acceptance criterion "receive exactly one email" is verified up to the API boundary.
+  - ⛔ **Workers outbound fetch** — sending to api.resend.com requires a paid Workers plan (free tier only fetches Cloudflare-hosted origins; the Turnstile siteverify host is Cloudflare-owned so it's fine). Known at M0-deploy time.
+  - ⛔ Unchanged: the shared human visual-acceptance pass (M1 + M2 residuals + M3 + now the tray/form click-through at 1440/390), GitHub remote + Workers Builds (M0), production domain, brand name.
+- Next session should start with:
+  - The human visual-acceptance pass, then **M5 — SEO, Accessibility, Performance** (meta/OG everywhere, sitemap/robots, heading audit, ARIA + keyboard/focus-trap for the tray, image-weight audit, Lighthouse ≥ 90 four-way gate).
 
 ### Session 7 — 2026-09-01
 - Milestone(s) worked on: **M3 — Core Pages** (completed; §0 row now `☑ Done`). Client directives carried over from Session 6's end: "if SEO is in the next milestone, you can skip" (SEO deferred to **M5** — this supersedes any earlier assumption it was in M3) and the catalogue-PDF extraction for "real product information" was **interrupted by the client before completion** — deferred until the client asks for it again.

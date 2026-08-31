@@ -9,6 +9,7 @@ import IndexStrip from '../components/IndexStrip.astro';
 import CollectionSpread from '../components/CollectionSpread.astro';
 import StatementBanner from '../components/StatementBanner.astro';
 import Footer from '../components/Footer.astro';
+import RequestTray from '../components/RequestTray.svelte';
 
 import heroImage from '../assets/applications/hero-001.jpeg';
 
@@ -100,5 +101,6 @@ for (const arr of productsByCollection.values()) {
     </main>
 
     <Footer />
+    <RequestTray client:load />
   </body>
 </html>

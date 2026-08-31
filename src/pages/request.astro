@@ -1,0 +1,473 @@
+---
+// Request page — /request (PRD §4). The form itself is a plain native
+// <form method="post" action="/api/request"> so it submits without any
+// JavaScript (PRD §4.1 no-JS fallback): a no-JS visitor types the article
+// numbers into the items_text field, Turnstile's widget still guards the
+// submit, and the worker redirects to /thank-you.
+//
+// With JS, an inline enhancement replaces the recap area with the items
+// carried in the tray (localStorage), validates via the same native form
+// controls, submits JSON through fetch, clears the tray on success and
+// navigates to /thank-you. The server treats both payloads identically
+// after parsing. No Svelte on this page — no tray bundle here.
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sample request — LAMINA</title>
+    <meta name="description" content="Request samples of LAMINA wall panels for your project." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+  </head>
+  <body>
+    <Nav hideTray />
+
+    <main class="request-page">
+      <header class="request-head">
+        <p class="eyebrow">Request</p>
+        <h1 class="display">Project details</h1>
+        <p class="request-intro">
+          Tell us where the samples are headed and we'll confirm availability
+          and shipping by email. Your tray stays with you until the request
+          is sent.
+        </p>
+      </header>
+
+      <form id="request-form" class="request-form" method="post" action="/api/request">
+        <div class="fields">
+          <label class="field">
+            <span class="field-label">Company *</span>
+            <input type="text" name="company" required maxlength="120" autocomplete="organization" />
+          </label>
+          <label class="field">
+            <span class="field-label">Contact person *</span>
+            <input type="text" name="contact" required maxlength="120" autocomplete="name" />
+          </label>
+          <label class="field">
+            <span class="field-label">Email *</span>
+            <input type="email" name="email" required maxlength="254" autocomplete="email" />
+          </label>
+          <label class="field">
+            <span class="field-label">Phone <span class="opt">(optional)</span></span>
+            <input type="tel" name="phone" maxlength="40" autocomplete="tel" />
+          </label>
+          <label class="field">
+            <span class="field-label">Project name / location <span class="opt">(optional)</span></span>
+            <input type="text" name="project" maxlength="200" />
+          </label>
+          <label class="field field-wide">
+            <span class="field-label">Notes <span class="opt">(optional)</span></span>
+            <textarea name="notes" rows="4" maxlength="2000"
+              placeholder="Stage of project, estimated sample quantity, finish notes…"></textarea>
+          </label>
+        </div>
+
+        <section class="recap" aria-labelledby="recap-title">
+          <h2 id="recap-title" class="recap-title">Your request</h2>
+          <!-- JS renders the tray recap here; no-JS visitors use the field below. -->
+          <div id="recap-list" class="recap-list">
+            <p class="recap-empty">Loading your request tray…</p>
+          </div>
+          <noscript>
+            <label class="field field-wide">
+              <span class="field-label">Article numbers <span class="opt">(one per line — Code ×quantity)</span></span>
+              <textarea name="items_text" rows="4" required
+                placeholder="LAM-01 ×2&#10;SMD-12"></textarea>
+            </label>
+          </noscript>
+        </section>
+
+        <input type="hidden" name="submission_id" id="submission-id" value="" />
+
+        {siteKey && (
+          <div
+            class="cf-turnstile"
+            data-sitekey={siteKey}
+            data-theme="light"
+          ></div>
+        )}
+
+        <div class="submit-row">
+          <button id="submit-btn" class="submit-btn" type="submit">
+            Send request
+          </button>
+          <a class="back-link" href="/">← back to collections</a>
+        </div>
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+      </form>
+    </main>
+
+    <Footer />
+
+    {siteKey && (
+      <script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        async
+        defer
+      ></script>
+    )}
+    <script>
+      // Request-page enhancement (runs only when JS is available):
+      // hydrate the recap from the tray, submit via fetch, clear on success.
+      const form = document.getElementById('request-form') as HTMLFormElement;
+      const recapList = document.getElementById('recap-list') as HTMLElement;
+      const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+      const errorEl = document.getElementById('form-error') as HTMLElement;
+      const idInput = document.getElementById('submission-id') as HTMLInputElement;
+
+      const STORAGE_KEY = 'lamina.tray';
+
+      function loadTray(): { code: string; name: string; qty: number }[] {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function showError(message: string) {
+        errorEl.textContent = message;
+        errorEl.hidden = false;
+      }
+
+      function renderRecap() {
+        const items = loadTray();
+        if (items.length === 0) {
+          recapList.innerHTML =
+            '<p class="recap-empty">Your request tray is empty — ' +
+            '<a href="/">browse the collections</a> and add article numbers.</p>';
+          return;
+        }
+        recapList.innerHTML = '';
+        items.forEach((item, index) => {
+          const row = document.createElement('div');
+          row.className = 'recap-row';
+          row.innerHTML =
+            `<span class="recap-code">${item.code}</span>` +
+            `<span class="recap-name">${item.name}</span>` +
+            `<span class="recap-qty">×${item.qty}</span>`;
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'recap-remove';
+          remove.setAttribute('aria-label', `Remove ${item.code} from the request`);
+          remove.textContent = 'Remove';
+          remove.addEventListener('click', () => {
+            items.splice(index, 1);
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+            } catch {}
+            renderRecap();
+          });
+          row.appendChild(remove);
+          recapList.appendChild(row);
+        });
+      }
+
+      renderRecap();
+
+      // Client-generated submission id: lets the server reject a duplicated
+      // submit even if the button were re-enabled by a page reload.
+      idInput.value = crypto.randomUUID();
+
+      form.addEventListener('submit', async (e) => {
+        // Native constraint validation (required / email) runs first; when
+        // those pass we bypass the native submit with fetch.
+        if (!form.reportValidity()) return;
+        e.preventDefault();
+
+        const tokenEl = document.querySelector(
+          '[name="cf-turnstile-response"]',
+        ) as HTMLInputElement | null;
+        if (!tokenEl || !tokenEl.value) {
+          showError('Please complete the security check before sending.');
+          return;
+        }
+
+        const items = loadTray();
+        if (items.length === 0) {
+          showError('Your request tray is empty — add at least one article number.');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+        errorEl.hidden = true;
+
+        const body = {
+          company: (form.elements.namedItem('company') as HTMLInputElement).value,
+          contact: (form.elements.namedItem('contact') as HTMLInputElement).value,
+          email: (form.elements.namedItem('email') as HTMLInputElement).value,
+          phone: (form.elements.namedItem('phone') as HTMLInputElement).value,
+          project: (form.elements.namedItem('project') as HTMLInputElement).value,
+          notes: (form.elements.namedItem('notes') as HTMLInputElement).value,
+          items,
+          submission_id: idInput.value,
+          turnstile_token: tokenEl.value,
+        };
+
+        try {
+          const res = await fetch('/api/request', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+          if (res.ok) {
+            try {
+              localStorage.removeItem(STORAGE_KEY);
+            } catch {}
+            const data = await res.json().catch(() => null);
+            location.href = `/thank-you?id=${encodeURIComponent(data?.id ?? idInput.value)}`;
+            return;
+          }
+          const data = await res.json().catch(() => null);
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send request';
+          showError(data?.error ?? 'Something went wrong — please try again.');
+        } catch {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send request';
+          showError('Could not reach the server — please try again.');
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .request-page {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--section-v) var(--gutter) 80px;
+  }
+  .request-head {
+    max-width: 560px;
+    margin-bottom: 48px;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 16px;
+  }
+  .display {
+    font-family: var(--font-serif);
+    font-size: var(--fs-display-lg);
+    font-weight: 400;
+    line-height: var(--lh-display);
+    margin: 0 0 20px;
+  }
+  .request-intro {
+    color: var(--ash);
+    font-size: var(--fs-body-lg);
+    line-height: var(--lh-body);
+  }
+  .request-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px var(--gutter);
+    align-items: start;
+  }
+  .fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 28px;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .field-wide {
+    grid-column: 1 / -1;
+  }
+  .field-label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+  }
+  .field-label .opt {
+    text-transform: none;
+    letter-spacing: 0.02em;
+    color: var(--line);
+  }
+  .field input,
+  .field textarea {
+    font-family: inherit;
+    font-size: var(--fs-body-lg);
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: var(--border);
+    border-radius: 0;
+    padding: 8px 2px;
+    outline: none;
+    transition: border-color var(--dur-fade) var(--ease-out);
+  }
+  .field textarea {
+    border-bottom: none;
+    border: var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    resize: vertical;
+    min-height: 96px;
+  }
+  .field input:focus,
+  .field textarea:focus {
+    border-color: var(--ember);
+  }
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: var(--line);
+  }
+  .recap {
+    border: var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+  }
+  .recap-title {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+    margin: 0 0 16px;
+  }
+  .recap-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .recap-empty {
+    color: var(--ash);
+    font-size: var(--fs-body);
+    margin: 0;
+  }
+  .recap-empty a {
+    color: var(--ember);
+  }
+  .recap-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--fs-body);
+  }
+  .recap-row:last-child {
+    border-bottom: none;
+  }
+  .recap-code {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--ash);
+    letter-spacing: var(--ls-mono);
+    min-width: 84px;
+  }
+  .recap-name {
+    flex: 1;
+  }
+  .recap-qty {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--ash);
+  }
+  .recap-remove {
+    border: none;
+    background: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .recap-remove:hover {
+    color: var(--ember);
+  }
+  .submit-row {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+  .submit-btn {
+    border: none;
+    border-radius: var(--radius);
+    background: var(--ink);
+    color: var(--stone);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label-btn);
+    letter-spacing: var(--ls-mono-wide);
+    text-transform: uppercase;
+    padding: 14px 32px;
+    cursor: pointer;
+    transition: background var(--dur-fade) var(--ease-out);
+  }
+  .submit-btn:hover:not(:disabled) {
+    background: var(--ember);
+  }
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .back-link {
+    color: var(--ash);
+    font-size: var(--fs-body);
+  }
+  .back-link:hover {
+    color: var(--ink);
+  }
+  .form-error {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--ember);
+    font-size: var(--fs-body);
+  }
+  .cf-turnstile {
+    grid-column: 1 / -1;
+  }
+  @media (max-width: 900px) {
+    .request-form {
+      grid-template-columns: 1fr;
+    }
+    .fields {
+      grid-template-columns: 1fr;
+    }
+    .field-wide {
+      grid-column: auto;
+    }
+  }
+</style>

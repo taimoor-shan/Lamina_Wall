@@ -14,6 +14,7 @@ import SectionHead from '../../components/SectionHead.astro';
 import AppShowcase from '../../components/AppShowcase.astro';
 import SwatchCard from '../../components/SwatchCard.astro';
 import Footer from '../../components/Footer.astro';
+import RequestTray from '../../components/RequestTray.svelte';
 
 // Note: getStaticPaths must fetch its own data — the Cloudflare adapter
 // evaluates it in the prerender server without module-level scope.
@@ -108,6 +109,7 @@ const products = (await getCollection('products'))
     </main>
 
     <Footer />
+    <RequestTray client:load />
   </body>
 </html>
 

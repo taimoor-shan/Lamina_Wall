@@ -1,18 +1,18 @@
 ---
 // Nav — sticky site header, extracted from the approved mockup
 // (reference/lamina-design-direction.html). All values come from tokens.css.
-// The Request button is rendered for visual parity only — M4 wires the
-// Svelte request tray. Do not make it functional before M4.
-// Nav items target the collection pages (M3); the homepage's own in-page
-// index strip keeps the mockup's anchor behaviour.
+// The Request button is the tray trigger: the M4 Svelte island owns it via
+// [data-tray-open] and keeps the [data-tray-count] readout live. Pages that
+// are themselves the tray flow (the /request form, thank-you) hide the
+// button rather than open an empty drawer.
 import type { CollectionEntry } from 'astro:content';
 
 interface Props {
-  collections: CollectionEntry<'collections'>[];
-  trayCount?: number;
+  collections?: CollectionEntry<'collections'>[];
+  hideTray?: boolean;
 }
 
-const { collections, trayCount = 0 } = Astro.props;
+const { collections = [], hideTray = false } = Astro.props;
 ---
 
 <header class="site-header">
@@ -25,10 +25,17 @@ const { collections, trayCount = 0 } = Astro.props;
     }
   </nav>
   <div class="nav-right">
-    <button class="tray-btn" type="button" title="Request tray arrives in M4">
-      <span class="dot" aria-hidden="true"></span> Request{' '}
-      <span aria-hidden="true">({trayCount})</span>
-    </button>
+    {!hideTray && (
+      <button
+        class="tray-btn"
+        type="button"
+        data-tray-open
+        aria-label="Open request tray"
+      >
+        <span class="dot" aria-hidden="true"></span> Request{' '}
+        <span data-tray-count aria-hidden="true">(0)</span>
+      </button>
+    )}
   </div>
 </header>
 
