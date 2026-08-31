@@ -12,11 +12,13 @@
 // after parsing. No Svelte on this page — no tray bundle here.
 //
 // The recap renders as a responsive catalogue table (design system:
-// tokens.css / style-guide): swatch thumbnail, mono article code, name,
-// qty and remove. Thumbnails are baked at build time as a small code→URL
-// JSON map (one 120w WebP per article) so the client needs no server
-// round-trips and stale localStorage codes simply fall back to a blank
-// swatch tile.
+// tokens.css / style-guide) with cart-style rows — small swatch
+// thumbnail, mono article code, the collection the article belongs to,
+// qty and remove. Everything the client needs is baked at build time
+// into one small code→{thumbnail, collection} JSON map (one 120w WebP
+// per article; collection titles from the collections collection) so
+// there are no server round-trips and stale localStorage codes simply
+// fall back to a blank tile.
 import { getCollection } from 'astro:content';
 import { getImage } from 'astro:assets';
 import '../styles/tokens.css';
@@ -27,10 +29,21 @@ import Footer from '../components/Footer.astro';
 
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
-const recapThumbs: Record<string, string> = {};
+const collectionTitles = new Map<string, string>();
+for (const c of await getCollection('collections')) {
+  collectionTitles.set(c.id, c.data.title);
+}
+
+const recapData: Record<string, { img: string; collection: string }> = {};
 for (const p of await getCollection('products')) {
   const img = await getImage({ src: p.data.swatchImage, widths: [120], format: 'webp' });
-  recapThumbs[p.data.code] = img.src;
+  // reference('collections') resolves to { id, collection } — the entry id
+  // (the slug filename) is the map key.
+  const ref = p.data.collection as { id: string };
+  recapData[p.data.code] = {
+    img: img.src,
+    collection: collectionTitles.get(ref.id) ?? ref.id,
+  };
 }
 ---
 
@@ -106,15 +119,6 @@ for (const p of await getCollection('products')) {
                hidden without JS (the items_text field below takes over). -->
           <div id="recap-js">
             <table class="recap-table">
-              <thead>
-                <tr>
-                  <th scope="col" aria-label="Swatch"></th>
-                  <th scope="col">Article</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Qty</th>
-                  <th scope="col" aria-label="Remove"></th>
-                </tr>
-              </thead>
               <tbody id="recap-body"></tbody>
             </table>
           </div>
@@ -165,13 +169,14 @@ for (const p of await getCollection('products')) {
         defer
       ></script>
     )}
-    <!-- Build-time catalogue thumbnails for the recap table (code → webp URL),
-         embedded as JSON so the client needs no server round-trips. -->
+    <!-- Build-time catalogue data for the recap table (code → {thumbnail,
+         collection}), embedded as JSON so the client needs no server
+         round-trips. -->
     <script
       is:inline
       type="application/json"
-      id="recap-thumbs"
-      data-thumbs={JSON.stringify(recapThumbs)}
+      id="recap-data"
+      data-value={JSON.stringify(recapData)}
     ></script>
     <script>
       // Request-page enhancement (runs only when JS is available):
@@ -185,8 +190,8 @@ for (const p of await getCollection('products')) {
       const idInput = document.getElementById('submission-id') as HTMLInputElement;
 
       const STORAGE_KEY = 'lamina.tray';
-      const recapThumbs: Record<string, string> = JSON.parse(
-        (document.getElementById('recap-thumbs') as HTMLScriptElement).getAttribute('data-thumbs') ?? '{}',
+      const recapData: Record<string, { img: string; collection: string }> = JSON.parse(
+        (document.getElementById('recap-data') as HTMLScriptElement).getAttribute('data-value') ?? '{}',
       );
 
       // Items come from localStorage (visitor-controlled) — never inject
@@ -223,17 +228,20 @@ for (const p of await getCollection('products')) {
         recapBody.replaceChildren();
         items.forEach((item, index) => {
           const qty = Number.isInteger(item.qty) && item.qty >= 1 && item.qty <= 99 ? item.qty : 1;
-          // Swatch thumbnail from the build-time map; codes left over from an
-          // older tray get a blank tile instead.
-          const thumb = recapThumbs[item.code]
-            ? `<img src="${recapThumbs[item.code]}" alt="" loading="lazy" width="120" height="81">`
+          // Thumbnail + collection from the build-time map; codes left over
+          // from an older tray get a blank tile and an em dash.
+          const meta = recapData[item.code];
+          const thumb = meta
+            ? `<img src="${meta.img}" alt="" loading="lazy" width="120" height="120">`
             : '<span class="rc-thumb-none" aria-hidden="true"></span>';
           const row = document.createElement('tr');
           row.className = 'recap-row';
           row.innerHTML =
             `<td class="rc-thumb">${thumb}</td>` +
-            `<td class="rc-code">${escapeHtml(item.code)}</td>` +
-            `<td class="rc-name">${escapeHtml(item.name)}</td>` +
+            `<td class="rc-text">` +
+            `<span class="rc-code">${escapeHtml(item.code)}</span>` +
+            `<span class="rc-collection">${escapeHtml(meta ? meta.collection : '—')}</span>` +
+            `</td>` +
             `<td class="rc-qty">×${qty}</td>` +
             `<td class="rc-remove"></td>`;
           const remove = document.createElement('button');
@@ -422,84 +430,88 @@ for (const p of await getCollection('products')) {
     margin: 0 0 16px;
   }
   /* Catalogue recap — the design system's hairline table language
-     (style-guide): swatch thumbnail, mono article, name, qty. */
-  .recap-table {
+     (style-guide), rows like a cart table: small swatch thumbnail,
+     the mono article code stacked above its collection, right-aligned
+     qty, uppercase-underline remove. Headerless by design — the rows
+     are self-evident (thumb, code over collection, ×qty, Remove); the
+     first row's top rule frames the table. The rows are rendered by
+     the inline script at runtime, and Astro scopes a page's <style>
+     to static markup only — so every recap selector is wrapped in
+     :global() or it silently matches nothing (the table then falls
+     back to raw browser styles). */
+  :global(.recap-table) {
     width: 100%;
     border-collapse: collapse;
     font-size: var(--fs-body);
+    border-top: 1px solid var(--line);
+
   }
-  .recap-table thead th {
-    font-family: var(--font-mono);
-    font-size: var(--fs-label);
-    font-weight: 400;
-    letter-spacing: var(--ls-eyebrow);
-    text-transform: uppercase;
-    color: var(--ash);
-    text-align: left;
-    padding: 0 0 10px;
+  :global(tr.recap-row ){
     border-bottom: 1px solid var(--line);
-    white-space: nowrap;
+}
+  :global(.recap-table .rc-thumb) {
+    width: 60px;
   }
-  .recap-table thead th:nth-child(4),
-  .recap-table thead th:nth-child(5),
-  .recap-table .rc-qty,
-  .recap-table .rc-remove {
-    text-align: right;
+  :global(.recap-table .rc-qty) {
+    width: 48px;
   }
-  .recap-table .rc-thumb {
-    width: 56px;
+  :global(.recap-table .rc-remove) {
+    width: 88px;
   }
-  .recap-table .rc-code {
-    width: 96px;
-  }
-  .recap-table .rc-qty {
-    width: 64px;
-  }
-  .recap-table .rc-remove {
-    width: 92px;
-  }
-  .recap-row td {
-    padding: 12px 0;
-    border-bottom: 1px solid var(--line);
+  :global(.recap-row td) {
+    padding: 10px 0;
+    /* border-bottom: 1px solid var(--line); */
     vertical-align: middle;
   }
-  .recap-row:hover {
+  :global(.recap-row:first-child td) {
+    /* border-top: 1px solid var(--line); */
+  }
+  :global(.recap-row:hover) {
     background: var(--stone-card);
   }
-  .rc-thumb img {
+  :global(.rc-thumb img) {
     display: block;
-    width: 56px;
-    height: 38px;
+    width: 48px;
+    height: 48px;
     object-fit: cover;
     border: 1px solid var(--line);
     border-radius: var(--radius);
   }
-  .rc-thumb-none {
+  :global(.rc-thumb-none) {
     display: block;
-    width: 56px;
-    height: 38px;
+    width: 48px;
+    height: 48px;
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: var(--stone-card);
   }
-  .rc-code {
+  :global(.rc-text) {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  :global(.rc-code) {
     font-family: var(--font-mono);
     font-size: var(--fs-meta);
     color: var(--ash);
     letter-spacing: var(--ls-mono);
     white-space: nowrap;
   }
-  .rc-name {
+  :global(.rc-collection) {
     font-size: var(--fs-label-lg);
     line-height: 1.35;
   }
-  .rc-qty {
+  :global(.rc-qty) {
     font-family: var(--font-mono);
     font-size: var(--fs-meta);
     color: var(--ash);
     white-space: nowrap;
+    text-align: right;
   }
-  .rc-remove-btn {
+  :global(.rc-remove) {
+    text-align: right;
+  }
+  :global(.rc-remove-btn) {
     border: none;
     background: none;
     padding: 0;
@@ -512,7 +524,7 @@ for (const p of await getCollection('products')) {
     text-decoration: underline;
     text-underline-offset: 3px;
   }
-  .rc-remove-btn:hover {
+  :global(.rc-remove-btn:hover) {
     color: var(--ember);
   }
   .recap-empty {
@@ -523,58 +535,64 @@ for (const p of await getCollection('products')) {
   .recap-empty a {
     color: var(--ember);
   }
-  /* Narrow screens: the table becomes a card grid — swatch leading,
-     code over name, qty over remove. */
+  /* Narrow screens: each row becomes a cart-style card — thumbnail
+     leading, code over collection, qty over remove. */
   @media (max-width: 640px) {
-    .recap-table,
-    .recap-table tbody {
+    :global(.recap-table),
+    :global(.recap-table tbody) {
       display: block;
     }
-    .recap-table thead {
-      display: none;
-    }
-    .recap-table tr {
+    :global(.recap-table tr) {
       display: grid;
-      grid-template-columns: 52px 1fr auto;
+      grid-template-columns: 44px 1fr auto;
       grid-template-areas:
-        'thumb code qty'
-        'thumb name remove';
+        'thumb text qty'
+        'thumb text remove';
       column-gap: 14px;
       row-gap: 5px;
-      align-items: start;
-      padding: 14px 0;
+      align-items: center;
+      padding: 12px 0;
       border-bottom: 1px solid var(--line);
     }
-    .recap-row:hover {
+    :global(.recap-row:hover) {
       background: none;
     }
-    .recap-row td {
+    :global(.recap-row td) {
       padding: 0;
       border-bottom: none;
     }
-    .rc-thumb {
+    :global(.rc-thumb) {
       grid-area: thumb;
-      width: 52px;
+      width: 44px;
     }
-    .rc-thumb img,
-    .rc-thumb-none {
-      width: 52px;
-      height: 35px;
+    :global(.rc-thumb img),
+    :global(.rc-thumb-none) {
+      width: 44px;
+      height: 44px;
     }
-    .rc-code {
-      grid-area: code;
-      white-space: normal;
+    :global(.rc-text) {
+      grid-area: text;
     }
-    .rc-name {
-      grid-area: name;
-    }
-    .rc-qty {
+    :global(.rc-qty) {
       grid-area: qty;
       text-align: right;
     }
-    .rc-remove {
+    :global(.rc-remove) {
       grid-area: remove;
       text-align: right;
+    }
+  }
+  /* Phones: tighten the cards further. */
+  @media (max-width: 480px) {
+    :global(.recap-table tr) {
+      grid-template-columns: 40px 1fr auto;
+      column-gap: 12px;
+    }
+    :global(.rc-thumb),
+    :global(.rc-thumb img),
+    :global(.rc-thumb-none) {
+      width: 40px;
+      height: 40px;
     }
   }
   .submit-row {
