@@ -5,7 +5,7 @@
 
 :root {
   /* ---------- COLOR ---------- */
-  --stone: #e7e2d6;      /* page background */
+  --stone: #FAF9F6;      /* page background */
   --stone-card: #efebe1; /* hover / card tint */
   --paper: #fbf9f4;      /* light surfaces, drawer */
   --ink: #1b1914;        /* primary text */
@@ -41,7 +41,7 @@
   --fs-display-xl: clamp(48px, 7vw, 108px);  /* hero h1 */
   --fs-display-lg: clamp(36px, 4.2vw, 64px); /* section h2 */
   --fs-display-md: clamp(34px, 5.4vw, 72px); /* statement h2 */
-  --fs-logo: 24px;
+  --fs-logo: 28px;
   --fs-tray-title: 26px;
 
   /* Mono label scale */
@@ -80,4 +80,24 @@
   --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
   --dur-drawer: 0.35s;
   --dur-fade: 0.3s;
+
+  /* ---------- COMPONENT TOKENS (added during M1, from the mockup) ---------- */
+  --ash-mid: #5d5747;      /* footer column headings (darker than --ash) */
+  --fs-hero-sub: 14.5px;   /* hero sub-copy */
+  --fs-caption: 11px;      /* app captions, hero callout */
+  --fs-meta: 11.5px;       /* swatch code, mono metadata */
+  /* Semantic display sizes used by components (mockup: hero h1 / section h2).
+     Aliases of the scale tokens above — one source of truth for the clamps. */
+  --fs-display-hero: var(--fs-display-xl);
+  --fs-display-section: var(--fs-display-lg);
+  --header-bg: var(--ink); /* sticky header — --stone @ 86% */
+  --callout-ring-glow: rgba(251, 249, 244, 0.15); /* --paper @ 15% */
+  --swatch-overlay: rgba(15, 13, 9, 0.62); /* "+N more" tile scrim */
+  --swatch-overlay-strong: rgba(15, 13, 9, 0.78); /* overlay hover */
+  --dlg-backdrop: rgba(15, 13, 9, 0.66); /* lightbox backdrop */
+  --hero-h: calc(100vh - var(--nav-h)); /* full-bleed hero below sticky nav */
+  --hero-bg: none; /* fallback only — Hero.astro sets the optimized image URL inline */
+  --index-strip-top: var(--nav-h);      /* sticky offset for the index strip */
+  --swatch-ratio: 4 / 2.7; /* swatch image box */
+  --app-ratio: 16 / 8.4;   /* in-page application photo box */
 }

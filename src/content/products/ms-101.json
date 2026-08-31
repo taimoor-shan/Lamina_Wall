@@ -1,0 +1,11 @@
+{
+  "code": "MS-101",
+  "name": "Matte Ivory",
+  "collection": "solid",
+  "swatchImage": "../../assets/products/solid/ms-101.png",
+  "alt": "Matte solid-colour panel swatch in warm off-white ivory.",
+  "description": "Provisional sample product for M1 — flat matte ivory solid panel. Name and copy finalised in M2 catalogue migration.",
+  "tags": ["solid", "matte", "ivory"],
+  "featured": false,
+  "order": 4
+}

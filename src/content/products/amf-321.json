@@ -1,0 +1,11 @@
+{
+  "code": "AMF-321",
+  "name": "Brushed Aluminium",
+  "collection": "metal",
+  "swatchImage": "../../assets/products/metal/amf-321.png",
+  "alt": "Brushed aluminium panel swatch with a fine machined metal surface.",
+  "description": "Provisional sample product for M1 — brushed aluminium finish. Name and copy finalised in M2 catalogue migration.",
+  "tags": ["aluminium", "brushed", "machined"],
+  "featured": true,
+  "order": 1
+}

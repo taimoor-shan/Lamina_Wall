@@ -1,0 +1,11 @@
+{
+  "slug": "solid",
+  "title": "Solid",
+  "tagline": "Colour, without compromise.",
+  "description": "High-gloss and matte solid-colour panels, deep and even across the full sheet. The quiet anchor that lets wood, stone, metal and textile do the talking.",
+  "heroApplicationImage": "../../assets/applications/solid/app-solid.jpeg",
+  "heroAlt": "High-gloss solid-colour wall panels in a calm residential interior, softly lit.",
+  "order": 5,
+  "secondaryApplicationImage": "../../assets/applications/solid/application-matte-skin.jpeg",
+  "secondaryApplicationAlt": "Matte solid-colour wall panels in a residential interior, alternate application view."
+}

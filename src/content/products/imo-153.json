@@ -1,0 +1,13 @@
+{
+  "code": "IMO-153",
+  "name": "IMO-153",
+  "collection": "wood-grain",
+  "swatchImage": "../../assets/products/wood-grain/imo-153.png",
+  "alt": "Wood-grain panel swatch,  IMO-153.",
+  "description": "Provisional sample product for M1 — wood-grain swatch. Copy finalised in M2 catalogue migration.",
+  "tags": [
+    "wood-grain"
+  ],
+  "featured": false,
+  "order": 46
+}

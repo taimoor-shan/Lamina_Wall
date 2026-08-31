@@ -1,0 +1,13 @@
+{
+  "code": "TDM-311",
+  "name": "TDM-311",
+  "collection": "stone-marble",
+  "swatchImage": "../../assets/products/stone-marble/tdm-311.png",
+  "alt": "Marble-effect panel swatch,  TDM-311.",
+  "description": "Provisional sample product for M1 — marble-effect swatch. Copy finalised in M2 catalogue migration.",
+  "tags": [
+    "marble"
+  ],
+  "featured": false,
+  "order": 9
+}

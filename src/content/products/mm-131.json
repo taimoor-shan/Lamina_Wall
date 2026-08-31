@@ -1,0 +1,11 @@
+{
+  "code": "MM-131",
+  "name": "MM-131",
+  "collection": "stone-marble",
+  "swatchImage": "../../assets/products/stone-marble/mm-131.png",
+  "alt": "Marble-effect panel swatch, MM-131.",
+  "description": "Provisional sample product for M1 — marble-effect swatch. Copy finalised in M2 catalogue migration.",
+  "tags": ["marble"],
+  "featured": false,
+  "order": 3
+}

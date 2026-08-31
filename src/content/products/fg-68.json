@@ -1,0 +1,14 @@
+{
+  "code": "FG-68",
+  "name": "FG-68",
+  "collection": "textile",
+  "swatchImage": "../../assets/products/textile/fg-68.png",
+  "alt": "Fabric-wrapped panel swatch,  FG-68.",
+  "description": "Provisional sample product for M1 — fabric-wrapped swatch. Copy finalised in M2 catalogue migration.",
+  "tags": [
+    "textile",
+    "fabric"
+  ],
+  "featured": false,
+  "order": 8
+}

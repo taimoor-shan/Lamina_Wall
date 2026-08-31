@@ -44,6 +44,10 @@ const collection = defineCollection({
       heroApplicationImage: image(),
       // Alt text for the hero application image (PRD §3.3).
       heroAlt: z.string(),
+      // Second application photo, shown beside the hero image in the
+      // collection section's 8/4 grid (AppShowcase.astro).
+      secondaryApplicationImage: image(),
+      secondaryApplicationAlt: z.string(),
       // Controls index-strip ordering.
       order: z.number(),
     }),
