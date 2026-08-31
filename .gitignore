@@ -1,3 +1,25 @@
 
+# dependencies
+node_modules/
+
+# astro build output
+dist/
+.astro/
+
+# wrangler local state
+.wrangler/
+
+# raw catalogue source imagery (local working set for M2; not committed)
 assets/
+reference/assets/
+
+# extracted catalogue source (PDF extraction workspace)
 extracted/
+
+# env / secrets — never commit
+.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store
