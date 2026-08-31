@@ -30,8 +30,8 @@
 
 | Milestone | Status | Notes |
 |---|---|---|
-| M0 — Project Setup & Foundations | ☐ Blocked — see note | All foundations + acceptance criteria done & verified locally & on a live temp-account deploy. ✅ GitHub remote + Workers Builds connection need the client's GitHub/Cloudflare accounts — see §10 Session 1. |
-| M1 — Design System / Component Library | ☐ Not started | |
+| M0 — Project Setup & Foundations | ☐ Blocked — see note | All foundations + acceptance criteria done & verified locally & on a **standing live deploy** (https://lamina-wall.lamina-wall.workers.dev — §10 Session 4; replaces the temp-account preview). ✅ GitHub remote + Workers Builds connection need the client's GitHub/Cloudflare accounts — see §10 Session 1. |
+| M1 — Design System / Component Library | ☐ In progress | All 8 components + tokens + `/style-guide` built & verified (build passes, page serves 200). Catalogue now covers **every swatch in the reference folders — 92 products** (§10 Session 5). Visual acceptance vs mockup at 1440/390 still needs a human browser pass — see §10 Sessions 3–4. |
 | M2 — Content Migration | ☐ Not started | |
 | M3 — Core Pages | ☐ Not started | |
 | M4 — Request Tray & Form | ☐ Not started | |
@@ -268,18 +268,18 @@ Each milestone should end with a working, deployed-to-preview state. **Do not pr
   - [x] Broken-reference test confirmed failing as expected.
 
 ### M1 — Design System / Component Library
-- [ ] Build `Nav.astro`.
-- [ ] Build `Hero.astro`.
-- [ ] Build `IndexStrip.astro`.
-- [ ] Build `SwatchCard.astro`.
-- [ ] Build `CollectionSpread.astro`.
-- [ ] Build `SectionHead.astro`.
-- [ ] Build `StatementBanner.astro`.
-- [ ] Build `Footer.astro`.
-- [ ] Componentize the type/color system as CSS custom properties — no magic numbers repeated across files.
-- [ ] Build a `/style-guide` page (dev-only, not linked in nav) rendering every component in isolation with real sample content.
+- [x] Build `Nav.astro`.
+- [x] Build `Hero.astro`.
+- [x] Build `IndexStrip.astro`.
+- [x] Build `SwatchCard.astro`.
+- [x] Build `CollectionSpread.astro`.
+- [x] Build `SectionHead.astro`.
+- [x] Build `StatementBanner.astro`.
+- [x] Build `Footer.astro`.
+- [x] Componentize the type/color system as CSS custom properties — no magic numbers repeated across files.
+- [x] Build a `/style-guide` page (dev-only, not linked in nav) rendering every component in isolation with real sample content.
 - **Acceptance:**
-  - [ ] `/style-guide` renders all components with sample content.
+  - [x] `/style-guide` renders all components with sample content.
   - [ ] **Visual acceptance:** each component compared side-by-side against the approved mockup at desktop (~1440px) and mobile (~390px). Typography, spacing, color values, and interactive states (hover/focus/active) match the reference. Any deviation flagged for approval before checking this milestone done — "it renders" is not sufficient.
 
 ### M2 — Content Migration
@@ -478,5 +478,85 @@ Entry format:
   - Unchanged from Session 1: GitHub remote + Cloudflare Workers Builds connection (blocking M0 completion), production domain, final brand name.
 - Next session should start with:
   - Continue with M1 (component library + `/style-guide`), comparing against the mockup — `Hero.astro` should absorb this intro treatment.
+
+---
+
+### Session 3 — 2026-08-31
+- Milestone(s) worked on: **M1 — Design System / Component Library** (in progress — build side done, visual acceptance pending).
+- Completed this session:
+  - **Content expanded to 6 collections** (client directive: "we will have 6 categories/collection available in 'reference'"): `wood-grain`, `stone-marble`, `metal`, `textile` (existing) + **`solid`** + **`glossy-decorative`** (new, from `reference/assets/solid/` and `reference/assets/glossy:decorative/`). Copied app photos + 4 product swatches into `src/assets` following PRD §3.3 naming; added `src/content/{collections,products}/*.json` for the new entries.
+  - **Fixed a pre-existing broken build:** `collections/wood-grain.json` referenced `app-wood-grain.png` which didn't exist (actual file `app-wood.png`) — `astro build` was failing before M1. Corrected the path.
+  - **Built all 8 M1 components** in `src/components/`, each rendered from `tokens.css` only (no magic numbers) and mirroring the mockup's exact CSS from `reference/styles.css`:
+    - `Nav.astro` (sticky header, collection links, inert Request button for M4)
+    - `Hero.astro` (full-bleed optimized bg via `getImage`, `--hero-veil` scrim, callout, bottom headline/sub)
+    - `IndexStrip.astro` (sticky mono index of all 6 collections)
+    - `SwatchCard.astro` (fixed-aspect image box + code/name + inert add button carrying `data-code`/`data-name` for M4)
+    - `SectionHead.astro` / `CollectionSpread.astro` (num + tagline + description; app-photo + caption + swatch grid)
+    - `StatementBanner.astro` (dark statement block; inert CTA for M4)
+    - `Footer.astro` (brand blurb + SPECIFY/STUDIO columns, links inert until real destinations exist)
+  - Added component tokens to `tokens.css` (`--ash-mid`, `--fs-hero-sub`, `--fs-caption`, `--fs-meta`, `--hero-h`, `--index-strip-top`, `--swatch-ratio`, `--app-ratio`, `--fs-display-hero`, `--fs-display-section`).
+  - **Built `/style-guide`** (dev-only: `<meta name="robots" content="noindex">`, not linked in nav) rendering every component with live content-collection data + color/type token specimens.
+  - Verified: `astro build` exit 0 (2 pages, 46 optimized images), `tsc --noEmit` clean, `astro preview` serves `/` and `/style-guide` HTTP 200 with all component markup and all 6 collections present.
+- Decisions made (and why):
+  - Slug for the new glossy collection is `glossy-decorative` (source folder is literally `glossy:decorative`; a colon in an ID/anchor is unsafe).
+  - New solid/glossy product names ("Matte Ivory", "Onyx Matte", "High-Gloss Pearl", "Noir Gloss") are **provisional sample content** for M1 and are explicitly labelled as such in each product JSON — M2 replaces them with the real catalogue naming.
+  - Left `index.astro` page CSS as-is — the homepage refactor onto these components is M3's job (per "work milestone by milestone"). The homepage now simply renders 6 collection sections (content-driven) and its previously broken wood image was fixed.
+  - Kept the "Request" buttons/tray CTA inert & visually per mockup; M4 wires the Svelte tray. Buttons carry machine-readable hooks (`data-code`, `data-name`) so M4 can attach with minimal churn.
+  - Swatch cropping uses PRD §3.3 option 2 (fixed-aspect container + `object-fit: cover`) exactly as the mockup CSS does; option is consistent across all swatches.
+- Blocked on / open questions:
+  - ⛔ M1 **visual acceptance** cannot be verified from this terminal: components must be eyeballed side-by-side against `reference/lamina-design-direction.html` at ~1440px and ~390px (hover/focus states included). Run `npm run dev` and open `/style-guide`. Ask the client/reviewer to approve before the milestone is marked Done.
+  - Unchanged: GitHub remote + Cloudflare Workers Builds (M0), production domain, final brand name.
+- Next session should start with:
+  - A human/visual pass on `/style-guide` vs the mockup at 1440 + 390; fix any flagged deviations, then mark M1 `☑ Done` in §0.
+  - Otherwise proceed to **M2 — Content Migration** (full catalogue crops, real product metadata, application tagging, PRD §3.3 image prep incl. upscale notes).
+
+---
+
+### Session 4 — 2026-08-31
+- Milestone(s) worked on: **M1 — Design System / Component Library** (content curation + code-review pass). Client directives this session: "show 5–6 swatches (products) under each collection", "swatch names are the image names, just use them", "we will have 6 collections".
+- Completed this session:
+  - **Curated 5–6 products per collection from `reference/assets/<collection>/swatches/`** — first codes in each folder (rest stay in `reference/` for M2): `wood-grain` WG-01…06, `stone-marble` HGM-274/275 + MM-131…134, `metal` AMF-321…324 + BM-203, `textile` FG-61…66, `solid` HGS-239…241 + MS-101…103, `glossy-decorative` HGF-245/248/249/252 + PM-263/264. **35 products total** (was 12).
+  - Copied the 24 new swatch PNGs into `src/assets/products` with PRD §3.3 naming (code lowercased = JSON filename = image filename); new product `name` = code per client directive; per-collection `order` is contiguous 1…N in code order.
+  - **Removed the stale `mm-144` product** (JSON + image) — code no longer present in the refined `reference/assets/stone-marble/swatches/`.
+  - **Ran `/code-review` inline on the M1 working tree** and applied the high-confidence findings:
+    - Bug: `StatementBanner`'s eyebrow prop was passed as `&amp;` and rendered literally as `&amp;amp;` on the page (Astro does not entity-decode component prop strings) — fixed in `index.astro` + `style-guide.astro`.
+    - `Nav.astro` hardcoded the header background rgba and `Hero.astro` the callout ring glow — both now use the `--header-bg` / `--callout-ring-glow` tokens that existed for exactly those values.
+    - `StatementBanner` CTA was an `<a>` without `href` (not keyboard-focusable) — now a real `<button type="button">` like the nav tray button; still inert until M4.
+    - `Hero.astro` `linkHref` had a dead default (`#collections` matches nothing) — now a required prop; both callers pass it.
+    - Removed dead `.btn-outline` styles from `global.css` (no usage left after the homepage was componentised).
+  - Verified: `astro build` exit 0 (2 pages, 109 optimized images), `tsc --noEmit` clean, `astro preview` serves `/` (35 swatch cards) and `/style-guide/` HTTP 200.
+  - **First standing deploy to the client's Cloudflare account** (previously only the Session 1 `--temporary` anonymous preview): `wrangler login` (user's account) → `wrangler deploy` → **https://lamina-wall.lamina-wall.workers.dev** (107 assets uploaded, worker `lamina-wall` v43eb0f84). Fixed `npm run deploy`: the `cd dist/client` inside the script breaks wrangler 4.127 — the adapter records a deploy config at repo-root `.wrangler/deploy/config.json` during `astro build`, and wrangler must be run **from the repo root** so the two config sources share a base path (running it from `dist/client` errors with a config-ambiguity message).
+  - Note: a concurrent Cline session reformatted `CollectionSpread.astro` and capped each collection at **5 visible swatches** (`products.slice(0, 5)` + 5-column grid). The 6th product per collection (WG-06, MM-134, FG-66, MS-103, PM-264) still exists in `src/content/products/` but is not rendered. Live page: 30 swatch cards. Both 5 and 6 satisfy the client's "5–6 per collection" directive — confirm which is wanted before M1 visual acceptance.
+  - **Swatch lightbox (client directive):** each collection shows 5 swatches; when more exist, the last card carries a **"+N more"** overlay on desktop and a **"View available options"** button on mobile, both opening a full-screen `<dialog>` with the complete swatch grid. Built as a separate `CollectionDialog.astro` component (owns dialog markup, CSS, and the one bundled wiring script); triggers live in `CollectionSpread.astro` and reference the dialog by `data-dialog-open` id. Collections with ≤5 products (metal) render no overlay/button/dialog. Verified locally (`astro build` exit 0, `tsc` clean, 5 dialogs × 6 swatches). **Not deployed** — deploys happen only when the client asks.
+- Decisions made (and why):
+  - Curation rule = first 5–6 codes alphabetically per reference folder; adding/removing a swatch later is one JSON + one PNG, no schema or component change.
+  - New products' `name` = code. The four earlier provisional names ("Matte Ivory", "Onyx Matte", "High-Gloss Pearl", "Noir Gloss") and the M0 names (WG-01 "Classic Technology Wood", metal names, etc.) were **left unchanged** — WG-01's name is baked into the approved mockup's hero callout. Flagged for client decision.
+- Blocked on / open questions:
+  - ⛔ Unchanged: M1 **visual acceptance** needs a human pass on `/style-guide` at ~1440px / ~390px (hover/focus included) — `npm run dev` → `/style-guide`.
+  - Unchanged: GitHub remote + Cloudflare Workers Builds (M0), production domain, final brand name.
+  - Open: collapse ALL product names to codes for consistency, or keep descriptive names for the established codes?
+- Next session should start with:
+  - Same as Session 3: visual acceptance pass on `/style-guide`, then mark M1 `☑ Done` in §0; otherwise proceed to **M2 — Content Migration**.
+
+---
+
+### Session 5 — 2026-09-01
+- Milestone(s) worked on: **M1 — Design System / Component Library** (catalogue completion + mobile swatch UX). Client directives this session: "I want to show all available swatches/products. Why we are limiting them to only 6?" and "On mobile hide the swatches just show the button."
+- Completed this session:
+  - **Expanded the catalogue from 35 → 92 products** — every swatch image in the six `reference/assets/<collection>/swatches/` folders now has a product JSON + copied image (Session 4's "first 5–6 codes" curation rule is retired): `wood-grain` 51 (WG-01…43 + IMO-151…158), `stone-marble` 10 (+MM-135/136, TDM-311/316), `textile` 10 (+FG-67…70), `solid` 9 (+MS-104…106), `glossy-decorative` 7 (+PM-265), `metal` 5 (complete as-is). PRD §3.3 conventions held: code lowercased = JSON filename = image filename, `name` = code, per-collection `order` contiguous 1…N. `metal/swatches/` contains a stray `Screenshot 2026-08-31 at 6.40.05 PM.png` — not a swatch, deliberately excluded. Existing `wg-01.jpg` / `wg-02.jpg` retained (the reference folder's `.png` twins are the same source).
+  - **Mobile swatch UX:** at ≤900px the `.swatch-row` is now hidden entirely and only the "View available options" button shows (opens the same lightbox). The button + `CollectionDialog` render for **every** collection — previously gated on `remaining > 0`, which would have left `metal` (exactly 5 products) with no swatches and no button on mobile. Desktop unchanged: 5 visible + "+N more" overlay, now "+2 / +4 / +5 / +5 / +46 more".
+  - Verified: `astro build` exit 0 (2 pages, 247 optimized images), `tsc --noEmit` clean; dist inspection: 6 dialogs, 6 mobile buttons, 5 overlays, 122 swatch articles (30 visible + 92 inside dialogs), 1 bundled wiring script; built CSS contains `@media (width<=900px){.swatch-row{display:none}.view-options{display:block}}`. **Not deployed** — deploys happen only when the client asks.
+  - **Reorganised swatch images per collection** (client directive: "products belonging to a collection should go in their own folder"): `src/assets/products/` is now 6 subfolders named by collection slug (`wood-grain` 51, `stone-marble` 10, `textile` 10, `solid` 9, `glossy-decorative` 7, `metal` 5) — folder name = collection, 1:1. All 92 product JSONs' `swatchImage` paths updated to `../../assets/products/<slug>/<file>`; validated every path resolves into its collection's folder and no stray files remain at the root. `src/assets/applications/` was already one file per collection (`app-<slug>.*`), unchanged. Build + `tsc` re-verified clean.
+  - **Same treatment for application images** (client directive, same session): `src/assets/applications/` is now 6 slug-named subfolders holding every app photo from the reference folders — primary `app-<slug>.*` + the alternates (`application-wood-2/3/4`, `application-textile-1/2`, `application-metal-1`, `application-high-gloss-solid`, `application-matte-skin`, `application-high-gloss-marble`, `application-marble-2`, `apllication-glossy-2` [sic]). `hero-001.jpeg` (the site hero, not a collection image) stays at the root.
+  - **Collections schema extended**: added required `secondaryApplicationImage` + `secondaryApplicationAlt` to the collections collection (`content.config.ts`); all 6 collection JSONs updated. Secondary picks = first distinct alternate view per folder — **Solid needed a swap**: `application-high-gloss-solid.jpeg` is a byte-identical duplicate of the primary `app-solid.jpeg` (the build skipped it; caught via md5), so Solid's secondary is `application-matte-skin.jpeg`.
+  - **New `AppShowcase.astro` component** (client directive: "make this div a component, show 2 images in a grid of 8 and 4 columns"): the app-photo + caption block extracted from `CollectionSpread`; renders a 12-column grid — main spans 8, secondary spans 4 (1px hairline gap, secondary stretches to the main's row height) — with the mono caption row ("caption / Fig. NN") beneath. Stacks full-width on mobile (≤900px). `CollectionSpread` now renders `<AppShowcase>` per collection.
+  - Verified: `astro build` exit 0, `tsc` clean; dist has 6 `app-main` + 6 `app-side` + 6 captions, all 6 secondary images optimized and served, built CSS carries `grid-column:span 8` / `span 4`. **Not deployed** — deploys happen only when the client asks.
+- Decisions made (and why):
+  - Catalogue = complete set of reference swatches; the desktop "5 visible + lightbox" pattern still keeps each section compact while the dialog now carries up to 51 swatches (wood) in a scrollable auto-fill grid.
+  - Zero-padding note: reference wood codes are `wg-07`…`wg-43` (two digits); a `seq`-generated `wg-7` mismatch was caught by the image-ref validation and fixed.
+- Blocked on / open questions:
+  - Unchanged: M1 visual acceptance (human pass at 1440/390), GitHub remote + Workers Builds, production domain, brand name, descriptive-vs-code product names.
+- Next session should start with:
+  - Visual acceptance pass on `/style-guide` + homepage (incl. mobile button + wood lightbox), then mark M1 `☑ Done` in §0; otherwise proceed to **M2 — Content Migration**.
 
 ---

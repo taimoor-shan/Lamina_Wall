@@ -1,0 +1,64 @@
+---
+// Footer — mockup footer: brand blurb + SPECIFY/STUDIO link columns.
+// All links are inert placeholders (anchors "#") until real destinations
+// exist (sample box, PDF catalogue, trade accounts land in M3/M4).
+---
+
+<footer>
+  <div>
+    <div class="logo">LAMINA</div>
+    <p>
+      Wall panels &amp; architectural surfaces. Wood, stone, metal and textile
+      finishes for commercial and residential interiors.
+    </p>
+  </div>
+  <div>
+    <p class="col-head">SPECIFY</p>
+    <a href="#">Request a sample box</a>
+    <br /><br />
+    <a href="#">Download full catalogue (PDF)</a>
+    <br /><br />
+    <a href="#">Trade &amp; project accounts</a>
+  </div>
+  <div>
+    <p class="col-head">STUDIO</p>
+    <a href="mailto:hello@lamina.studio">hello@lamina.studio</a>
+    <br /><br />
+    <a href="#">Collections</a>
+    <br /><br />
+    <a href="#">Projects</a>
+  </div>
+</footer>
+
+<style>
+  footer {
+    background: var(--basalt);
+    color: var(--ash-dark);
+    padding: 0 var(--gutter) 46px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 12.5px;
+  }
+  footer .logo {
+    color: var(--sand);
+    font-family: var(--font-serif);
+    font-size: var(--fs-logo);
+    letter-spacing: 0.02em;
+  }
+  footer p {
+    max-width: 260px;
+    line-height: 1.6;
+    margin-top: 10px;
+  }
+  footer .col-head {
+    /* Column heading in the mockup: #5D5747, kept as --ash-mid token */
+    color: var(--ash-mid);
+    margin-bottom: 8px;
+    margin-top: 0;
+  }
+  footer a {
+    color: var(--sand);
+  }
+</style>

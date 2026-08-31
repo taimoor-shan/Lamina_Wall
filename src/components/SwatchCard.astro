@@ -1,0 +1,103 @@
+---
+// SwatchCard — one product swatch: fixed-aspect image box + code/name + add
+// button (mockup .swatch). The add button is inert until M4 wires the tray;
+// keep its markup stable so M4 can hook it (data-code / data-name included).
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  product: CollectionEntry<'products'>;
+}
+
+const { product } = Astro.props;
+const { code, name, swatchImage, alt } = product.data;
+---
+
+<article class="swatch">
+  <div class="swatch-img">
+    <Image
+      src={swatchImage}
+      alt={alt}
+      widths={[480, 720]}
+      sizes="(max-width: 900px) 50vw, 25vw"
+      loading="lazy"
+    />
+  </div>
+  <div class="swatch-meta">
+    <div class="txt">
+      <div class="code">{code}</div>
+      <div class="name">{name}</div>
+    </div>
+    <button
+      class="add-btn"
+      type="button"
+      data-code={code}
+      data-name={name}
+      aria-label={`Add ${code} ${name} to the request`}
+      title="Request tray arrives in M4"
+    >
+      +
+    </button>
+  </div>
+</article>
+
+<style>
+  .swatch {
+    background: var(--paper);
+    position: relative;
+  }
+  .swatch-img {
+    aspect-ratio: var(--swatch-ratio);
+    overflow: hidden;
+  }
+  .swatch-img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .swatch-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+  }
+  .swatch-meta .txt {
+    line-height: 1.35;
+  }
+  .swatch-meta .code {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--ash);
+  }
+  .swatch-meta .name {
+    font-size: var(--fs-label-lg);
+    margin-top: 2px;
+  }
+  .add-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-family: inherit;
+    cursor: pointer;
+    background: var(--paper);
+    color: var(--ink);
+    flex-shrink: 0;
+    transition: background var(--dur-fade) var(--ease-out), color var(--dur-fade) var(--ease-out);
+  }
+  .add-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  /* Active state mirrors the mockup .add-btn.active; applied by M4 when
+     the product is in the tray. */
+  .add-btn:global(.active) {
+    background: var(--ember);
+    color: var(--paper);
+    border-color: var(--ember);
+  }
+</style>

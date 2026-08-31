@@ -1,0 +1,93 @@
+---
+// Nav — sticky site header, extracted from the approved mockup
+// (reference/lamina-design-direction.html). All values come from tokens.css.
+// The Request button is rendered for visual parity only — M4 wires the
+// Svelte request tray. Do not make it functional before M4.
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  collections: CollectionEntry<'collections'>[];
+  trayCount?: number;
+}
+
+const { collections, trayCount = 0 } = Astro.props;
+---
+
+<header class="site-header">
+  <a class="logo" href="/">LAMINA</a>
+  <nav class="links" aria-label="Primary">
+    {
+      collections.map((c) => (
+        <a href={`#${c.data.slug}`}>{c.data.title}</a>
+      ))
+    }
+  </nav>
+  <div class="nav-right">
+    <button class="tray-btn" type="button" title="Request tray arrives in M4">
+      <span class="dot" aria-hidden="true"></span> Request{' '}
+      <span aria-hidden="true">({trayCount})</span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px var(--gutter);
+    background: var(--header-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .logo {
+    font-family: var(--font-serif);
+    font-size: var(--fs-logo);
+    letter-spacing: 0.02em;
+    color: var(--stone);
+  }
+  .links {
+    display: flex;
+    gap: 34px;
+    font-size: var(--fs-label-lg);
+    letter-spacing: 0.01em;
+  }
+  .links a {
+    position: relative;
+    padding-bottom: 2px;
+    color: var(--stone);
+    opacity: 0.75;
+  }
+  .links a:hover {
+    opacity: 1;
+  }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+  }
+  .tray-btn {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label-btn);
+    letter-spacing: 0.04em;
+    border: 1px solid var(--stone);
+    padding: 9px 16px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    background: transparent;
+    color: var(--stone);
+  }
+  .tray-btn .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ember);
+    display: inline-block;
+  }
+</style>

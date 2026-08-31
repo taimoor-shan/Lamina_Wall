@@ -1,0 +1,50 @@
+---
+// SectionHead — collection section header: mono number, display tagline,
+// description (mockup .sec-head). Note: accepted "index" is the padded
+// 01/02/… string so callers control formatting. "name" renders the
+// collection title after the number, mockup style "01 / Wood Grain".
+interface Props {
+  index: string;
+  title: string;
+  description?: string;
+  name?: string;
+}
+
+const { index, title, description, name } = Astro.props;
+---
+
+<div class="sec-head">
+  <div>
+    <div class="num">{index}{name && <> / {name}</>}</div>
+    <h2 class="display">{title}</h2>
+  </div>
+  {description && <p>{description}</p>}
+</div>
+
+<style>
+  .sec-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: var(--sec-head-gap);
+    gap: 40px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 28px;
+  }
+  .sec-head .num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label-btn);
+    color: var(--ash);
+  }
+  .sec-head h2 {
+    font-size: var(--fs-display-section);
+    margin-top: 8px;
+  }
+  .sec-head p {
+    max-width: 360px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--ash);
+    padding-bottom: 6px;
+  }
+</style>

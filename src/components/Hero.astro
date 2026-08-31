@@ -1,0 +1,137 @@
+---
+// Hero — full-bleed application photo under the --hero-veil scrim, with a
+// floating material callout and bottom-aligned headline (mockup lines 29-43).
+// The image is optimised through astro:assets at build time.
+import { getImage } from 'astro:assets';
+
+interface Line {
+  text: string;
+  italic?: boolean;
+}
+interface Props {
+  image: ImageMetadata;
+  alt: string;
+  eyebrow: string;
+  lines: Line[];
+  sub: string;
+  linkHref: string;
+  linkLabel?: string;
+  callout?: { code: string; name: string };
+}
+
+const { image, alt, eyebrow, lines, sub, linkHref, linkLabel = 'View the collections', callout } =
+  Astro.props;
+
+const heroBg = await getImage({
+  src: image,
+  width: 1920,
+  format: 'webp',
+});
+---
+
+<section
+  class="hero"
+  style={`--hero-bg: url("${heroBg.src}")`}
+>
+  {
+    callout && (
+      <div class="callout">
+        <span class="ring" aria-hidden="true"></span>
+        <span class="code">{callout.code}</span>&nbsp;{callout.name}
+      </div>
+    )
+  }
+  <div class="hero-content">
+    <div class="hero-headline">
+      <div class="eyebrow">{eyebrow}</div>
+      <h1 class="display">
+        {
+          lines.map((l, i) => (
+            <span>
+              {i > 0 ? <br /> : ''}
+              {l.italic ? <span class="i">{l.text}</span> : l.text}
+            </span>
+          ))
+        }
+      </h1>
+    </div>
+    <div class="hero-sub">
+      {sub}
+      <a href={linkHref}>{linkLabel}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    height: var(--hero-h);
+    min-height: var(--hero-min-h);
+    overflow: hidden;
+    /* Approved hero treatment: optimized application photo under the veil */
+    background-image: var(--hero-veil), var(--hero-bg);
+    background-size: cover;
+    background-position: center;
+  }
+  .callout {
+    position: absolute;
+    z-index: 3;
+    top: 38%;
+    left: 57%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--paper);
+    font-family: var(--font-mono);
+    font-size: var(--fs-caption);
+    letter-spacing: 0.05em;
+  }
+  .callout .ring {
+    width: 9px;
+    height: 9px;
+    border: 1.5px solid var(--paper);
+    border-radius: 50%;
+    box-shadow: 0 0 0 5px var(--callout-ring-glow);
+  }
+  .callout .code {
+    color: var(--peach);
+  }
+  .hero-content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    padding: 0 var(--gutter) 56px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 60px;
+  }
+  .hero-headline .eyebrow {
+    color: var(--sand-soft);
+    margin-bottom: 18px;
+  }
+  .hero-headline h1 {
+    font-size: var(--fs-display-hero);
+    color: var(--paper);
+  }
+  .hero-sub {
+    max-width: 280px;
+    color: var(--paper-soft);
+    font-size: var(--fs-hero-sub);
+    line-height: 1.55;
+    padding-bottom: 10px;
+  }
+  .hero-sub a {
+    display: inline-block;
+    margin-top: 16px;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label-lg);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--paper-soft);
+    padding-bottom: 3px;
+    color: var(--paper-soft);
+  }
+</style>

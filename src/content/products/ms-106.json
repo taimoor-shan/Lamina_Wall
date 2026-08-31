@@ -1,0 +1,13 @@
+{
+  "code": "MS-106",
+  "name": "MS-106",
+  "collection": "solid",
+  "swatchImage": "../../assets/products/solid/ms-106.png",
+  "alt": "Solid-colour panel swatch,  MS-106.",
+  "description": "Provisional sample product for M1 — solid-colour swatch. Copy finalised in M2 catalogue migration.",
+  "tags": [
+    "solid"
+  ],
+  "featured": false,
+  "order": 9
+}

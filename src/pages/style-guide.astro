@@ -1,0 +1,263 @@
+---
+// Style guide — M1 deliverable. Dev-only: noindex, NOT linked from the nav.
+// Renders each component in isolation with real content-collection data, so
+// visual comparison against reference/lamina-design-direction.html is direct.
+import { getCollection } from 'astro:content';
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import IndexStrip from '../components/IndexStrip.astro';
+import SectionHead from '../components/SectionHead.astro';
+import SwatchCard from '../components/SwatchCard.astro';
+import CollectionSpread from '../components/CollectionSpread.astro';
+import StatementBanner from '../components/StatementBanner.astro';
+import Footer from '../components/Footer.astro';
+
+import heroImage from '../assets/applications/hero-001.jpeg';
+
+const collections = (await getCollection('collections')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const products = await getCollection('products');
+
+const wood = collections.find((c) => c.id === 'wood-grain')!;
+const woodProducts = products
+  .filter((p) => p.data.collection.id === wood.id)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const firstProducts = products.slice(0, 4);
+
+const tokens: { label: string; value: string; css: string }[] = [
+  { label: 'stone', value: 'Page background', css: 'var(--stone)' },
+  { label: 'stone-card', value: 'Hover / card tint', css: 'var(--stone-card)' },
+  { label: 'paper', value: 'Light surface', css: 'var(--paper)' },
+  { label: 'ink', value: 'Primary text', css: 'var(--ink)' },
+  { label: 'ash', value: 'Secondary text', css: 'var(--ash)' },
+  { label: 'ash-mid', value: 'Footer headings', css: 'var(--ash-mid)' },
+  { label: 'line', value: 'Hairline borders', css: 'var(--line)' },
+  { label: 'ember', value: 'Accent / active', css: 'var(--ember)' },
+  { label: 'basalt', value: 'Dark surfaces', css: 'var(--basalt)' },
+  { label: 'sand', value: 'On dark body', css: 'var(--sand)' },
+  { label: 'sand-deep', value: 'On dark eyebrow', css: 'var(--sand-deep)' },
+  { label: 'peach', value: 'On dark accent', css: 'var(--peach)' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>LAMINA — Style Guide (dev)</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="sg-note">
+      STYLE GUIDE — dev only, not linked in navigation. Compare each block
+      against <code>reference/lamina-design-direction.html</code>.
+    </div>
+
+    <main class="sg-main">
+      <h1 class="sg-title">M1 — Component Library</h1>
+
+      <section class="sg-block">
+        <h2 class="sg-h">Nav.astro</h2>
+        <Nav collections={collections} trayCount={0} />
+      </section>
+
+      <section class="sg-block">
+        <h2 class="sg-h">Hero.astro</h2>
+        <Hero
+          image={heroImage}
+          alt="Wood-panelled living room with warm oak grain"
+          eyebrow="Architectural Surfaces — 2026 Collection"
+          lines={[
+            { text: 'Surfaces with' },
+            { text: 'provenance.', italic: true },
+          ]}
+          sub="Wood, stone, metal and textile, reproduced with the grain, depth and hand-feel of the original material. Specified by the panel, not the pallet."
+          linkHref="#wood-grain"
+          linkLabel="View the collections ↓"
+          callout={{ code: 'WG-01', name: 'Classic Technology Wood' }}
+        />
+      </section>
+
+      <section class="sg-block">
+        <h2 class="sg-h">IndexStrip.astro</h2>
+        <IndexStrip collections={collections} />
+      </section>
+
+      <section class="sg-block">
+        <h2 class="sg-h">SectionHead.astro</h2>
+        <div class="sg-narrow">
+          <SectionHead
+            index="01"
+            name="Wood Grain"
+            title="Timber, without the tree."
+            description="Technology veneers milled with real cathedral grain and cross-silking, run in lengths a forest can't supply. Twenty-one tones, oak to walnut."
+          />
+        </div>
+      </section>
+
+      <section class="sg-block">
+        <h2 class="sg-h">SwatchCard.astro</h2>
+        <div class="sg-swatches">
+          {firstProducts.map((p) => (
+            <SwatchCard product={p} />
+          ))}
+        </div>
+      </section>
+
+      <section class="sg-block">
+        <h2 class="sg-h">CollectionSpread.astro</h2>
+        <CollectionSpread
+          collection={wood}
+          products={woodProducts}
+          caption="Classic Technology Wood — interior fit-out, long-run seamless wall"
+        />
+      </section>
+
+      <section class="sg-block">
+        <h2 class="sg-h">StatementBanner.astro</h2>
+        <StatementBanner
+          eyebrow="For Architects, Designers & Trade Buyers"
+          line1="No prices to guess at."
+          line2="No cart to abandon."
+          body="Select article numbers as you browse — they collect quietly in your Request tray. Add quantities, project details and your team's contact information, and we'll come back with lead times and a formal quote."
+        />
+      </section>
+      <section class="sg-block">
+        <h2 class="sg-h">Footer.astro</h2>
+        <Footer />
+      </section>
+
+      <section class="sg-block">
+        <h2 class="sg-h">Tokens — colors (<code>tokens.css</code>)</h2>
+        <div class="sg-palette">
+          {tokens.map((t) => (
+            <div class="sg-chip">
+              <span class="sg-chip-swatch" style={`background: ${t.css}`}></span>
+              <b>{t.label}</b>
+              <span>{t.value}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="sg-block">
+        <h2 class="sg-h">Type scale</h2>
+        <div class="sg-type">
+          <p class="display" style="font-size: var(--fs-display-xl);">
+            Surfaces with <em>provenance.</em>
+          </p>
+          <p class="display" style="font-size: var(--fs-display-lg);">
+            Timber, without the tree.
+          </p>
+          <p class="display" style="font-size: var(--fs-display-md);">
+            No cart to abandon.
+          </p>
+          <p class="eyebrow" style="margin-top: 24px;">Architectural Surfaces — 2026 Collection</p>
+          <p style="font-family: var(--font-mono); font-size: var(--fs-label-btn); margin-top: 12px;">
+            WG-01 / Classic Technology Wood
+          </p>
+          <p style="margin-top: 12px; color: var(--ash); font-size: var(--fs-body);">
+            Body copy — specified by the panel, not the pallet.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <style>
+      .sg-note {
+        background: var(--basalt);
+        color: var(--paper);
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        letter-spacing: 0.03em;
+        text-align: center;
+        padding: 9px 16px;
+      }
+      .sg-note b {
+        color: var(--peach);
+      }
+      .sg-main {
+        max-width: 1440px;
+        margin: 0 auto;
+      }
+      .sg-title {
+        font-family: var(--font-serif);
+        font-size: clamp(28px, 4vw, 48px);
+        font-weight: 400;
+        padding: 48px var(--gutter) 8px;
+      }
+      .sg-block {
+        margin: 64px 0;
+      }
+      .sg-h {
+        font-family: var(--font-mono);
+        font-weight: 400;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--ember);
+        padding: 0 var(--gutter) 16px;
+      }
+      .sg-narrow {
+        max-width: var(--container-max);
+        margin: 0 auto;
+      }
+      .sg-swatches {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--line);
+        max-width: var(--container-max);
+        margin: 0 auto;
+      }
+      .sg-palette {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        padding: 0 var(--gutter);
+      }
+      .sg-chip {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 12.5px;
+        color: var(--ash);
+      }
+      .sg-chip b {
+        color: var(--ink);
+        font-weight: 400;
+        font-family: var(--font-mono);
+      }
+      .sg-chip-swatch {
+        height: 56px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+      .sg-type {
+        padding: 0 var(--gutter);
+        max-width: 900px;
+      }
+      .sg-type em {
+        font-style: italic;
+      }
+      @media (max-width: 900px) {
+        .sg-swatches {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </body>
+</html>

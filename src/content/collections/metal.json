@@ -3,7 +3,9 @@
   "title": "Metal",
   "tagline": "Machined, brushed, burnished.",
   "description": "Oxidised, brushed and perforated metal surfaces for feature walls and facade linings, specified in sheet lengths up to three metres.",
-  "heroApplicationImage": "../../assets/applications/app-metal.jpeg",
+  "heroApplicationImage": "../../assets/applications/metal/app-metal.jpeg",
   "heroAlt": "Brushed-metal wall cladding with vertical brushed finish in a retail interior.",
-  "order": 3
+  "order": 3,
+  "secondaryApplicationImage": "../../assets/applications/metal/application-metal-1.jpeg",
+  "secondaryApplicationAlt": "Brushed-metal wall cladding with vertical brushed finish, alternate application view."
 }

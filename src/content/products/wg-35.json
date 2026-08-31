@@ -1,0 +1,13 @@
+{
+  "code": "WG-35",
+  "name": "WG-35",
+  "collection": "wood-grain",
+  "swatchImage": "../../assets/products/wood-grain/wg-35.png",
+  "alt": "Wood-grain panel swatch,  WG-35.",
+  "description": "Provisional sample product for M1 — wood-grain swatch. Copy finalised in M2 catalogue migration.",
+  "tags": [
+    "wood-grain"
+  ],
+  "featured": false,
+  "order": 35
+}

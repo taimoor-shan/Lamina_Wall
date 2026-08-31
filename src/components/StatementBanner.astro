@@ -1,0 +1,74 @@
+---
+// StatementBanner — dark request statement block (mockup .statement).
+// The CTA is rendered for visual parity; M4 wires it to the tray.
+interface Props {
+  eyebrow: string;
+  line1: string;
+  line2?: string; // italic line
+  body: string;
+  ctaLabel?: string;
+}
+
+const { eyebrow, line1, line2, body, ctaLabel = 'Open your request (0)' } = Astro.props;
+---
+
+<div class="statement">
+  <div class="eyebrow">{eyebrow}</div>
+  <h2 class="display">
+    {line1}
+    {line2 && (
+      <>
+        <br />
+        <span class="i">{line2}</span>
+      </>
+    )}
+  </h2>
+  <p>{body}</p>
+  <button class="btn" type="button" title="Request tray arrives in M4">
+    {ctaLabel}
+  </button>
+</div>
+
+<style>
+  .statement {
+    background: var(--basalt);
+    color: var(--paper);
+    padding: 150px var(--gutter);
+    margin-top: 80px;
+    text-align: center;
+  }
+  .statement .eyebrow {
+    color: var(--sand-deep);
+    justify-content: center;
+    display: flex;
+    margin-bottom: 26px;
+  }
+  .statement h2 {
+    font-size: var(--fs-display-md);
+    max-width: 900px;
+    margin: 0 auto 34px;
+  }
+  .statement p {
+    max-width: 520px;
+    margin: 0 auto 40px;
+    color: var(--sand);
+    font-size: var(--fs-body-lg);
+    line-height: var(--lh-body);
+  }
+  .statement .btn {
+    display: inline-block;
+    background: transparent;
+    border: 1px solid var(--paper);
+    padding: 16px 34px;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label-btn);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: var(--paper);
+  }
+  .statement .btn:hover {
+    background: var(--paper);
+    color: var(--basalt);
+  }
+</style>

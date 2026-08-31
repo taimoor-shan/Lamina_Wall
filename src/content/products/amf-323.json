@@ -1,0 +1,11 @@
+{
+  "code": "AMF-323",
+  "name": "Linear Brushed Aluminium",
+  "collection": "metal",
+  "swatchImage": "../../assets/products/metal/amf-323.png",
+  "alt": "Aluminium panel swatch with a pronounced linear brushed metal grain.",
+  "description": "Provisional sample product for M1 — linear brushed aluminium finish. Name and copy finalised in M2 catalogue migration.",
+  "tags": ["aluminium", "brushed", "linear"],
+  "featured": false,
+  "order": 3
+}

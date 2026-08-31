@@ -1,0 +1,11 @@
+{
+  "code": "HGM-275",
+  "name": "HGM-275",
+  "collection": "stone-marble",
+  "swatchImage": "../../assets/products/stone-marble/hgm-275.png",
+  "alt": "Marble-effect panel swatch, HGM-275.",
+  "description": "Provisional sample product for M1 — marble-effect swatch. Copy finalised in M2 catalogue migration.",
+  "tags": ["marble"],
+  "featured": false,
+  "order": 2
+}
