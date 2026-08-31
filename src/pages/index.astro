@@ -1,8 +1,19 @@
 ---
 import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import '../styles/tokens.css';
 import '../styles/global.css';
+import '../styles/styles.css';
+
+// Hero background — provisional application photo. M2 swaps in the real
+// catalogue photography (PRD §3.3). Optimised through the astro:assets
+// pipeline like every other image on the page.
+import heroImage from '../assets/applications/hero-001.jpeg';
+const heroBg = await getImage({
+  src: heroImage,
+  width: 1920,
+  format: 'webp',
+});
 
 // M0 pipeline proof: schema-validated content files -> typed data ->
 // validated reference() links -> build-time image optimisation.
@@ -42,15 +53,18 @@ const products = await getCollection('products');
     </header>
 
     <main>
-      <section class="intro">
+      <section
+        class="intro"
+        style={`--hero-bg: url("${heroBg.src}")`}
+      >
         <div class="eyebrow">Architectural Surfaces — 2026 Collection</div>
         <h1 class="display">
-          Surfaces with<span class="i">provenance.</span>
+          Surfaces with<span class="i"> provenance.</span>
         </h1>
         <p class="intro-copy">
-          Foundation build — every swatch below renders from a
-          schema-validated content file through <code>astro:assets</code>.
+          Wood, stone, metal and textile, reproduced with the grain, depth and hand-feel of the original material. Specified by the panel, not the pallet.
         </p>
+        <a class="btn-outline" href="#wood-grain">View the collections</a>
       </section>
 
       {
@@ -67,9 +81,18 @@ const products = await getCollection('products');
                   </div>
                   <h2 class="display">{c.data.tagline}</h2>
                 </div>
-                <p>{c.data.description}</p>
-              </div>
-              <div class="swatch-row">
+               <p>{c.data.description}</p>
+               </div>
+               <div class="app-photo">
+                 <Image
+                   src={c.data.heroApplicationImage}
+                   alt={c.data.heroAlt}
+                   widths={[640, 1024, 1920]}
+                   sizes="(max-width: 900px) 100vw, 1400px"
+                   loading="lazy"
+                 />
+               </div>
+               <div class="swatch-row">
                 {items.map((p) => (
                   <article class="swatch">
                     <div class="swatch-img">
@@ -111,176 +134,3 @@ const products = await getCollection('products');
     </footer>
   </body>
 </html>
-
-<style>
-  .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px var(--gutter);
-    background: rgba(231, 226, 214, 0.86);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--line);
-  }
-  .logo {
-    font-family: var(--font-serif);
-    font-size: var(--fs-logo);
-    letter-spacing: 0.02em;
-  }
-  .links {
-    display: flex;
-    gap: 34px;
-    font-size: 13.5px;
-    letter-spacing: 0.01em;
-  }
-  .links a {
-    position: relative;
-    padding-bottom: 2px;
-    color: var(--ink);
-    opacity: 0.75;
-  }
-  .links a:hover {
-    opacity: 1;
-  }
-
-  .intro {
-    max-width: var(--container-max);
-    margin: 0 auto;
-    padding: 120px var(--gutter) 40px;
-    border-bottom: 1px solid var(--line);
-  }
-  .intro h1 {
-    font-size: var(--fs-display-xl);
-    margin-top: 14px;
-  }
-  .intro .i {
-    font-style: italic;
-  }
-  .intro-copy {
-    margin-top: 26px;
-    max-width: 360px;
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--ash);
-  }
-  .intro-copy code,
-  .pipeline-note code {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    background: var(--stone-card);
-    padding: 1px 5px;
-  }
-
-  section.collection {
-    padding: var(--section-v) var(--gutter) 40px;
-    max-width: var(--container-max);
-    margin: 0 auto;
-  }
-  .sec-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: var(--sec-head-gap);
-    gap: 40px;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 28px;
-  }
-  .sec-head .num {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--ash);
-  }
-  .sec-head h2 {
-    font-size: var(--fs-display-lg);
-    margin-top: 8px;
-  }
-  .sec-head p {
-    max-width: 360px;
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--ash);
-    padding-bottom: 6px;
-  }
-
-  .swatch-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1px;
-    background: var(--line);
-  }
-  .swatch {
-    background: var(--paper);
-    position: relative;
-  }
-  .swatch-img {
-    aspect-ratio: 4 / 2.7;
-    overflow: hidden;
-  }
-  .swatch-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 16px;
-  }
-  .swatch-meta .txt {
-    line-height: 1.35;
-  }
-  .swatch-meta .code {
-    font-family: var(--font-mono);
-    font-size: 11.5px;
-    color: var(--ash);
-  }
-  .swatch-meta .name {
-    font-size: 13.5px;
-    margin-top: 2px;
-  }
-
-  .pipeline-note {
-    max-width: var(--container-max);
-    margin: 80px auto 0;
-    padding: var(--section-v) var(--gutter);
-    background: var(--basalt);
-    color: var(--paper);
-  }
-  .pipeline-note .eyebrow {
-    color: var(--sand-deep);
-    margin-bottom: 18px;
-  }
-  .pipeline-note p {
-    max-width: 520px;
-    color: var(--sand);
-    font-size: 15px;
-    line-height: 1.6;
-  }
-
-  .site-footer {
-    background: var(--basalt);
-    color: var(--ash-dark);
-    padding: 0 var(--gutter) 46px;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
-    font-size: 12.5px;
-  }
-  .site-footer .logo {
-    color: var(--sand);
-  }
-  .site-footer p {
-    max-width: 260px;
-    line-height: 1.6;
-  }
-
-  @media (max-width: 900px) {
-    .swatch-row {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .links {
-      gap: 18px;
-      font-size: 12px;
-    }
-  }
-</style>

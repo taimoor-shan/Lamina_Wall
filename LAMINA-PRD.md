@@ -463,3 +463,20 @@ Entry format:
   - Note: brand name still "LAMINA" placeholder per PRD §7 Q4 — flag before M1 if the client has a final name.
 
 ---
+
+### Session 2 — 2026-08-31
+- Milestone(s) worked on: **M0 — Project Setup & Foundations** (small enhancement to the foundation page; no checkbox gate).
+- Completed this session:
+  - Gave the foundation `src/pages/index.astro` intro/hero its background image, matching the approved mockup's full-bleed photo-hero treatment in `reference/lamina-design-direction.html`.
+  - Used the **`astro:assets`/`getImage` pipeline** (per PRD §3.3) rather than a plain static URL: imported `src/assets/applications/app-wood-grain.jpg`, optimized to `webp @ 1920px`, and injected the resolved path into the `.intro` section as a CSS custom property (`--hero-bg`).
+  - Updated `.intro` styles: full-bleed (no container constraint), `min-height: var(--hero-min-h)`, bottom-aligned flex content, and the existing `--hero-veil` scrim stacked over the photo (`background-image: var(--hero-veil), var(--hero-bg)`). Text switched to the mockup's dark-surface tones (`--paper`, `--sand-soft`, `--paper-soft`) so it stays readable on the photo.
+  - Verified: `astro build` exits 0; generated `/index.html` carries `style="--hero-bg: url('/_astro/app-wood-grain.<hash>.webp')"` and the optimized WebP is emitted (71 kB → 12 kB).
+- Decisions made (and why):
+  - Chose `app-wood-grain.jpg` as the hero bg because it's the closest local match to the mockup's `hero-001.jpeg` (wood application, same 1800×945 ratio). This is still provisional — M2 replaces it with real catalogue photography per PRD §3.3.
+  - Implemented as a CSS `background-image` (via `getImage` URL) rather than an absolutely-positioned `<Image>` element, since the request was explicitly for a *background* image. The form is invisible to the client; the visible result matches the mockup hero.
+- Blocked on / open questions:
+  - Unchanged from Session 1: GitHub remote + Cloudflare Workers Builds connection (blocking M0 completion), production domain, final brand name.
+- Next session should start with:
+  - Continue with M1 (component library + `/style-guide`), comparing against the mockup — `Hero.astro` should absorb this intro treatment.
+
+---

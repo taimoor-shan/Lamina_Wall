@@ -70,3 +70,16 @@ button {
   background: var(--ink);
   color: var(--paper);
 }
+
+/* Buttons */
+.btn-outline{
+  padding: 14px 24px;
+  border :1px solid #dddddd;
+  display: inline-flex;
+  margin-top:2em;
+  transition: all .3s;
+}
+.btn-outline:hover{
+background:#ffffff;
+color: #000000;
+}
