@@ -3,9 +3,13 @@
   "name": "Polar Brushed Aluminium",
   "collection": "metal",
   "swatchImage": "../../assets/products/metal/amf-324.png",
-  "alt": "Light-toned aluminium panel swatch with a fine brushed metal finish.",
-  "description": "Provisional sample product for M1 — light brushed aluminium finish. Name and copy finalised in M2 catalogue migration.",
-  "tags": ["aluminium", "brushed", "light"],
+  "alt": "Metal panel swatch in a mid-grey with an even metal surface.",
+  "description": "Metal panel in a mid-grey with an even metal surface.",
+  "tags": [
+    "aluminium",
+    "brushed",
+    "light"
+  ],
   "featured": false,
   "order": 4
 }

@@ -3,9 +3,11 @@
   "name": "MM-132",
   "collection": "stone-marble",
   "swatchImage": "../../assets/products/stone-marble/mm-132.png",
-  "alt": "Marble-effect panel swatch, MM-132.",
-  "description": "Provisional sample product for M1 — marble-effect swatch. Copy finalised in M2 catalogue migration.",
-  "tags": ["marble"],
+  "alt": "Marble-effect panel swatch in near-white with a faint olive tint.",
+  "description": "Marble-effect panel in a near-white tone with a faint olive tint.",
+  "tags": [
+    "marble"
+  ],
   "featured": false,
   "order": 4
 }

@@ -3,9 +3,11 @@
   "name": "HGS-241",
   "collection": "solid",
   "swatchImage": "../../assets/products/solid/hgs-241.png",
-  "alt": "Solid-colour panel swatch, HGS-241.",
-  "description": "Provisional sample product for M1 — solid-colour swatch. Copy finalised in M2 catalogue migration.",
-  "tags": ["solid"],
+  "alt": "High-gloss solid-colour panel swatch in near-black with a blue undertone.",
+  "description": "High-gloss solid-colour panel in near-black with a blue undertone.",
+  "tags": [
+    "solid"
+  ],
   "featured": false,
   "order": 3
 }

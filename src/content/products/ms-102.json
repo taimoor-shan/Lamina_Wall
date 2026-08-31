@@ -3,9 +3,13 @@
   "name": "Onyx Matte",
   "collection": "solid",
   "swatchImage": "../../assets/products/solid/ms-102.png",
-  "alt": "Matte solid-colour panel swatch in deep near-black onyx.",
-  "description": "Provisional sample product for M1 — matte charcoal solid panel. Name and copy finalised in M2 catalogue migration.",
-  "tags": ["solid", "matte", "graphite"],
+  "alt": "Matte solid-colour panel swatch in a bright orange.",
+  "description": "Matte solid-colour panel in a bright orange tone.",
+  "tags": [
+    "solid",
+    "matte",
+    "graphite"
+  ],
   "featured": false,
   "order": 5
 }

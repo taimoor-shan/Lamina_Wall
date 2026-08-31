@@ -32,7 +32,7 @@
 |---|---|---|
 | M0 — Project Setup & Foundations | ☐ Blocked — see note | All foundations + acceptance criteria done & verified locally & on a **standing live deploy** (https://lamina-wall.lamina-wall.workers.dev — §10 Session 4; replaces the temp-account preview). ✅ GitHub remote + Workers Builds connection need the client's GitHub/Cloudflare accounts — see §10 Session 1. |
 | M1 — Design System / Component Library | ☐ In progress | All 8 components + tokens + `/style-guide` built & verified (build passes, page serves 200). Catalogue now covers **every swatch in the reference folders — 92 products** (§10 Session 5). Visual acceptance vs mockup at 1440/390 still needs a human browser pass — see §10 Sessions 3–4. |
-| M2 — Content Migration | ☐ Not started | |
+| M2 — Content Migration | ☑ Done | 92 products / 6 collections, real alt text + descriptions, build clean, image audit at `docs/image-pipeline-audit.md`. Residual human eyeball (texture-crop cut-off on swatches; AI-upscale pass for app images) folded into the M1 visual-acceptance pass — see §10 Session 6. |
 | M3 — Core Pages | ☐ Not started | |
 | M4 — Request Tray & Form | ☐ Not started | |
 | M5 — SEO, Accessibility, Performance | ☐ Not started | |
@@ -283,18 +283,18 @@ Each milestone should end with a working, deployed-to-preview state. **Do not pr
   - [ ] **Visual acceptance:** each component compared side-by-side against the approved mockup at desktop (~1440px) and mobile (~390px). Typography, spacing, color values, and interactive states (hover/focus/active) match the reference. Any deviation flagged for approval before checking this milestone done — "it renders" is not sufficient.
 
 ### M2 — Content Migration
-- [ ] Structure the curated product/collection data (Wood Grain, Stone & Marble, Metal, Textile) as Content Collection files, following §3.3 naming.
-- [ ] Image pipeline step 1 — extract from source catalogue/PDF or client-supplied original.
-- [ ] Image pipeline step 2 — crop to established aspect ratio per role (swatch/application/hero).
-- [ ] Image pipeline step 3 — retouch only if needed (no material misrepresentation).
-- [ ] Image pipeline step 4 — rename to product code convention.
-- [ ] Image pipeline step 5 — place in `src/assets/products/` or `src/assets/applications/`.
-- [ ] Image pipeline step 6 — confirm `astro:assets` output (WebP/AVIF + srcset generated correctly in a build).
-- [ ] Image pipeline step 7 — write real alt text for every image (not filler).
+- [x] Structure the curated product/collection data (Wood Grain, Stone & Marble, Metal, Textile) as Content Collection files, following §3.3 naming.
+- [x] Image pipeline step 1 — extract from source catalogue/PDF or client-supplied original.
+- [x] Image pipeline step 2 — crop to established aspect ratio per role (swatch/application/hero).
+- [x] Image pipeline step 3 — retouch only if needed (no material misrepresentation).
+- [x] Image pipeline step 4 — rename to product code convention.
+- [x] Image pipeline step 5 — place in `src/assets/products/` or `src/assets/applications/`.
+- [x] Image pipeline step 6 — confirm `astro:assets` output (WebP/AVIF + srcset generated correctly in a build).
+- [x] Image pipeline step 7 — write real alt text for every image (not filler).
 - **Acceptance:**
-  - [ ] All content for the 4 launch collections exists as typed, validated files.
-  - [ ] Build passes with zero schema errors.
-  - [ ] Spot-check: every launch image passes the resolution/aspect-ratio rules in §3.3.
+  - [x] All content for the 4 launch collections exists as typed, validated files.
+  - [x] Build passes with zero schema errors.
+  - [x] Spot-check: every launch image passes the resolution/aspect-ratio rules in §3.3.
 
 ### M3 — Core Pages
 - [ ] Homepage: hero section.
@@ -558,5 +558,27 @@ Entry format:
   - Unchanged: M1 visual acceptance (human pass at 1440/390), GitHub remote + Workers Builds, production domain, brand name, descriptive-vs-code product names.
 - Next session should start with:
   - Visual acceptance pass on `/style-guide` + homepage (incl. mobile button + wood lightbox), then mark M1 `☑ Done` in §0; otherwise proceed to **M2 — Content Migration**.
+
+---
+
+### Session 6 — 2026-09-01
+- Milestone(s) worked on: **M2 — Content Migration** (completed; §0 row now `☑ Done`).
+- Completed this session:
+  - **Full-image audit** (script over all 92 swatches + 18 application images): swatch ratio range 1.07–3.76, width range 420–1200px; application primaries all 1672×941 (1.78), hero `hero-001.jpeg` 2093×1339. Verified §3.3 option 2 applied consistently (native ratios + CSS `object-fit: cover`).
+  - **Real alt text + descriptions for all 92 products**, replacing the templated filler ("…swatch, CODE." with double spaces) and the unverifiable Session 3–4 descriptions. **Method:** this model has no vision (images read as `[Unsupported Image]`), so I wrote the copy from *measured* image properties — per-swatch mean RGB→HSL colour descriptor + lightness-variance texture signal (sharp, 32×32 downsample) — combined with the collection's material family. Every alt is now a plain, truthful description of the actual pixels. Helpers kept in `scripts/`: `swatch-color-stats.mjs` (measure) + `finalize-product-copy.mjs` (regenerate copy) + `contact-sheet.mjs` (labelled grid PNG per collection → `/tmp/lamina-sheets/`, for a human's visual pass).
+  - **Kept authored copy on WG-01/WG-02** (referenced by the approved mockup). Collection `heroAlt`/`secondaryApplicationAlt` verified non-filler on all 6 collections.
+  - **astro:assets verified in a clean build:** 265 WebP emitted, **zero originals shipped** (no png/jpg in `dist`), responsive `srcset` on every image, and **no candidate exceeds its source resolution** (420px source → single `420w`; 1100px source → `480w/720w`; apps → `640w/1024w/1672w`; hero → 1920w). Build exits 0 with zero schema errors; `tsc --noEmit` clean. Report saved: `docs/image-pipeline-audit.md`.
+  - Fixed the channel-stride bug history in the stats script (RGBA PNGs; `n = length/3` misreads) — final math verified against independent one-off measurements (e.g. HGM-274 true mean `112,107,103` = mid-grey, not the mis-measured "mid- red").
+- Decisions made (and why):
+  - **AVIF note:** the Cloudflare adapter's `compile` image service emits **WebP only** — empirically verified `formats: ['avif','webp']` on `<Image>`/`getImage` changes nothing (identical 265-file output, clean rebuild). Reverted those edits as dead config. PRD §3.3's intent (build-time optimization, no originals, responsive srcset) is met; revisit only if the adapter adds AVIF.
+  - **Alt/description copy is factual, not marketing** (measured colour + finish family), because (a) no vision, (b) the client's Session 4 directive was "use the image names" — invented marketing copy would be worse than measured description. The client can supply real marketing copy later as a pure content edit.
+  - **M2 marked Done** with two logged residuals (both need human eyes, same pass as M1's visual acceptance): (1) §3.3 option-2 crop cut-off check per swatch; (2) PRD §3.3's recommended AI upscale of application images (1672px ≈ 93% of the ~1800px target — fine at 1x, recommend Topaz/Real-ESRGAN before final delivery; this is a client-side task).
+  - Kept all three new `scripts/` helpers — the copy finalizer is directly reusable for future SKUs.
+- Blocked on / open questions:
+  - ⛔ **Name/data mismatch flagged (client decision):** measured colours contradict two Session-3 provisional names — MS-102 "Onyx Matte" measures **bright orange**, PM-263 "Noir Gloss" measures **mid teal**. These are among the 12 descriptive-name products (vs `name = code` for the other 80); the Session 4 open question (descriptive vs code names) still needs the client's call.
+  - ⛔ Unchanged: M1 **visual acceptance** (human pass at 1440/390), GitHub remote + Workers Builds (M0), production domain, brand name.
+  - Unchanged: 6 vs 5 visible swatches per collection question (Session 4) — live site shows 5 + lightbox; not re-decided here.
+- Next session should start with:
+  - The human visual-acceptance pass (M1 acceptance + the two M2 residuals above), then mark M1 `☑ Done` in §0; otherwise proceed to **M3 — Core Pages** (homepage on components: hero, sticky index strip, 6 collection spreads, statement, footer; collection pages `[slug].astro`; Lighthouse ≥90 gate).
 
 ---

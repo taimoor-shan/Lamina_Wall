@@ -3,9 +3,13 @@
   "name": "Black Brushed Metal",
   "collection": "metal",
   "swatchImage": "../../assets/products/metal/bm-203.png",
-  "alt": "Black metal panel swatch with a dark brushed machined surface.",
-  "description": "Provisional sample product for M1 — black brushed metal finish. Name and copy finalised in M2 catalogue migration.",
-  "tags": ["metal", "brushed", "black"],
+  "alt": "Metal panel swatch in a dark grey with an even metal surface.",
+  "description": "Metal panel in a dark grey with an even metal surface.",
+  "tags": [
+    "metal",
+    "brushed",
+    "black"
+  ],
   "featured": false,
   "order": 5
 }

@@ -4,8 +4,13 @@
   "collection": "glossy-decorative",
   "swatchImage": "../../assets/products/glossy-decorative/hgf-245.png",
   "alt": "High-gloss decorative panel swatch in pearl white with a reflective lacquer finish.",
-  "description": "Provisional sample product for M1 — high-gloss pearl decorative panel. Name and copy finalised in M2 catalogue migration.",
-  "tags": ["gloss", "decorative", "pearl", "feature"],
+  "description": "High-gloss decorative panel in pearl white with a reflective finish.",
+  "tags": [
+    "gloss",
+    "decorative",
+    "pearl",
+    "feature"
+  ],
   "featured": true,
   "order": 1
 }

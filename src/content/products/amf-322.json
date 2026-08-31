@@ -3,9 +3,13 @@
   "name": "Satin Aluminium",
   "collection": "metal",
   "swatchImage": "../../assets/products/metal/amf-322.png",
-  "alt": "Satin aluminium panel swatch with a smooth low-sheen metal surface.",
-  "description": "Provisional sample product for M1 — satin aluminium finish. Name and copy finalised in M2 catalogue migration.",
-  "tags": ["aluminium", "satin", "machined"],
+  "alt": "Metal panel swatch in a mid-grey with an even metal surface.",
+  "description": "Metal panel in a mid-grey with an even metal surface.",
+  "tags": [
+    "aluminium",
+    "satin",
+    "machined"
+  ],
   "featured": false,
   "order": 2
 }

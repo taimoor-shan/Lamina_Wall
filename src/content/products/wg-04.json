@@ -3,9 +3,11 @@
   "name": "WG-04",
   "collection": "wood-grain",
   "swatchImage": "../../assets/products/wood-grain/wg-04.png",
-  "alt": "Wood-grain panel swatch, WG-04.",
-  "description": "Provisional sample product for M1 — wood-grain swatch. Copy finalised in M2 catalogue migration.",
-  "tags": ["wood-grain"],
+  "alt": "Wood-grain panel swatch in a light brown with fine grain.",
+  "description": "Wood-grain panel in a light brown with fine grain.",
+  "tags": [
+    "wood-grain"
+  ],
   "featured": false,
   "order": 4
 }

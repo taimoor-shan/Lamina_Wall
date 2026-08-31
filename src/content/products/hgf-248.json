@@ -3,9 +3,12 @@
   "name": "HGF-248",
   "collection": "glossy-decorative",
   "swatchImage": "../../assets/products/glossy-decorative/hgf-248.png",
-  "alt": "High-gloss decorative panel swatch, HGF-248.",
-  "description": "Provisional sample product for M1 — high-gloss decorative swatch. Copy finalised in M2 catalogue migration.",
-  "tags": ["gloss", "decorative"],
+  "alt": "High-gloss decorative panel swatch in a dark teal with a high-gloss finish.",
+  "description": "High-gloss decorative panel in a dark teal with a high-gloss finish.",
+  "tags": [
+    "gloss",
+    "decorative"
+  ],
   "featured": false,
   "order": 2
 }

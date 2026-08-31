@@ -3,9 +3,12 @@
   "name": "FG-62",
   "collection": "textile",
   "swatchImage": "../../assets/products/textile/fg-62.png",
-  "alt": "Fabric-wrapped panel swatch, FG-62.",
-  "description": "Provisional sample product for M1 — fabric-wrapped swatch. Copy finalised in M2 catalogue migration.",
-  "tags": ["textile", "fabric"],
+  "alt": "Fabric-wrapped panel swatch in a light brown.",
+  "description": "Fabric-wrapped panel in a light brown.",
+  "tags": [
+    "textile",
+    "fabric"
+  ],
   "featured": false,
   "order": 2
 }

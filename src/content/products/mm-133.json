@@ -3,9 +3,11 @@
   "name": "MM-133",
   "collection": "stone-marble",
   "swatchImage": "../../assets/products/stone-marble/mm-133.png",
-  "alt": "Marble-effect panel swatch, MM-133.",
-  "description": "Provisional sample product for M1 — marble-effect swatch. Copy finalised in M2 catalogue migration.",
-  "tags": ["marble"],
+  "alt": "Marble-effect panel swatch in a mid-grey.",
+  "description": "Marble-effect panel in a mid-grey.",
+  "tags": [
+    "marble"
+  ],
   "featured": false,
   "order": 5
 }

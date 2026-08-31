@@ -3,9 +3,12 @@
   "name": "FG-64",
   "collection": "textile",
   "swatchImage": "../../assets/products/textile/fg-64.png",
-  "alt": "Fabric-wrapped panel swatch, FG-64.",
-  "description": "Provisional sample product for M1 — fabric-wrapped swatch. Copy finalised in M2 catalogue migration.",
-  "tags": ["textile", "fabric"],
+  "alt": "Fabric-wrapped panel swatch in off-white.",
+  "description": "Fabric-wrapped panel in off-white.",
+  "tags": [
+    "textile",
+    "fabric"
+  ],
   "featured": false,
   "order": 4
 }
