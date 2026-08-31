@@ -10,6 +10,15 @@
 // controls, submits JSON through fetch, clears the tray on success and
 // navigates to /thank-you. The server treats both payloads identically
 // after parsing. No Svelte on this page — no tray bundle here.
+//
+// The recap renders as a responsive catalogue table (design system:
+// tokens.css / style-guide): swatch thumbnail, mono article code, name,
+// qty and remove. Thumbnails are baked at build time as a small code→URL
+// JSON map (one 120w WebP per article) so the client needs no server
+// round-trips and stale localStorage codes simply fall back to a blank
+// swatch tile.
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
 import '../styles/tokens.css';
 import '../styles/global.css';
 
@@ -17,6 +26,12 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+
+const recapThumbs: Record<string, string> = {};
+for (const p of await getCollection('products')) {
+  const img = await getImage({ src: p.data.swatchImage, widths: [120], format: 'webp' });
+  recapThumbs[p.data.code] = img.src;
+}
 ---
 
 <!doctype html>
@@ -87,11 +102,32 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
         <section class="recap" aria-labelledby="recap-title">
           <h2 id="recap-title" class="recap-title">Your request</h2>
-          <!-- JS renders the tray recap here; no-JS visitors use the field below. -->
-          <div id="recap-list" class="recap-list">
-            <p class="recap-empty">Loading your request tray…</p>
+          <!-- Catalogue table — filled from the tray by the inline script;
+               hidden without JS (the items_text field below takes over). -->
+          <div id="recap-js">
+            <table class="recap-table">
+              <thead>
+                <tr>
+                  <th scope="col" aria-label="Swatch"></th>
+                  <th scope="col">Article</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Qty</th>
+                  <th scope="col" aria-label="Remove"></th>
+                </tr>
+              </thead>
+              <tbody id="recap-body"></tbody>
+            </table>
           </div>
+          <p id="recap-empty" class="recap-empty" hidden>
+            Your request tray is empty —
+            <a href="/">browse the collections</a> and add article numbers.
+          </p>
           <noscript>
+            <style>
+              #recap-js {
+                display: none;
+              }
+            </style>
             <label class="field field-wide">
               <span class="field-label">Article numbers <span class="opt">(one per line — Code ×quantity)</span></span>
               <textarea name="items_text" rows="4" required
@@ -129,16 +165,35 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
         defer
       ></script>
     )}
+    <!-- Build-time catalogue thumbnails for the recap table (code → webp URL),
+         embedded as JSON so the client needs no server round-trips. -->
+    <script
+      is:inline
+      type="application/json"
+      id="recap-thumbs"
+      data-thumbs={JSON.stringify(recapThumbs)}
+    ></script>
     <script>
       // Request-page enhancement (runs only when JS is available):
       // hydrate the recap from the tray, submit via fetch, clear on success.
       const form = document.getElementById('request-form') as HTMLFormElement;
-      const recapList = document.getElementById('recap-list') as HTMLElement;
+      const recapJs = document.getElementById('recap-js') as HTMLElement;
+      const recapBody = document.getElementById('recap-body') as HTMLTableSectionElement;
+      const recapEmpty = document.getElementById('recap-empty') as HTMLElement;
       const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
       const errorEl = document.getElementById('form-error') as HTMLElement;
       const idInput = document.getElementById('submission-id') as HTMLInputElement;
 
       const STORAGE_KEY = 'lamina.tray';
+      const recapThumbs: Record<string, string> = JSON.parse(
+        (document.getElementById('recap-thumbs') as HTMLScriptElement).getAttribute('data-thumbs') ?? '{}',
+      );
+
+      // Items come from localStorage (visitor-controlled) — never inject
+      // raw strings into the recap table.
+      function escapeHtml(s: string): string {
+        return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+      }
 
       function loadTray(): { code: string; name: string; qty: number }[] {
         try {
@@ -159,22 +214,31 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
       function renderRecap() {
         const items = loadTray();
         if (items.length === 0) {
-          recapList.innerHTML =
-            '<p class="recap-empty">Your request tray is empty — ' +
-            '<a href="/">browse the collections</a> and add article numbers.</p>';
+          recapJs.hidden = true;
+          recapEmpty.hidden = false;
           return;
         }
-        recapList.innerHTML = '';
+        recapJs.hidden = false;
+        recapEmpty.hidden = true;
+        recapBody.replaceChildren();
         items.forEach((item, index) => {
-          const row = document.createElement('div');
+          const qty = Number.isInteger(item.qty) && item.qty >= 1 && item.qty <= 99 ? item.qty : 1;
+          // Swatch thumbnail from the build-time map; codes left over from an
+          // older tray get a blank tile instead.
+          const thumb = recapThumbs[item.code]
+            ? `<img src="${recapThumbs[item.code]}" alt="" loading="lazy" width="120" height="81">`
+            : '<span class="rc-thumb-none" aria-hidden="true"></span>';
+          const row = document.createElement('tr');
           row.className = 'recap-row';
           row.innerHTML =
-            `<span class="recap-code">${item.code}</span>` +
-            `<span class="recap-name">${item.name}</span>` +
-            `<span class="recap-qty">×${item.qty}</span>`;
+            `<td class="rc-thumb">${thumb}</td>` +
+            `<td class="rc-code">${escapeHtml(item.code)}</td>` +
+            `<td class="rc-name">${escapeHtml(item.name)}</td>` +
+            `<td class="rc-qty">×${qty}</td>` +
+            `<td class="rc-remove"></td>`;
           const remove = document.createElement('button');
           remove.type = 'button';
-          remove.className = 'recap-remove';
+          remove.className = 'rc-remove-btn';
           remove.setAttribute('aria-label', `Remove ${item.code} from the request`);
           remove.textContent = 'Remove';
           remove.addEventListener('click', () => {
@@ -184,8 +248,8 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
             } catch {}
             renderRecap();
           });
-          row.appendChild(remove);
-          recapList.appendChild(row);
+          (row.querySelector('.rc-remove') as HTMLElement).appendChild(remove);
+          recapBody.appendChild(row);
         });
       }
 
@@ -349,11 +413,6 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
   .field textarea::placeholder {
     color: var(--line);
   }
-  .recap {
-    border: var(--border);
-    border-radius: var(--radius);
-    padding: 24px 28px;
-  }
   .recap-title {
     font-family: var(--font-mono);
     font-size: var(--fs-label);
@@ -362,45 +421,85 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
     color: var(--ash);
     margin: 0 0 16px;
   }
-  .recap-list {
-    display: flex;
-    flex-direction: column;
-  }
-  .recap-empty {
-    color: var(--ash);
+  /* Catalogue recap — the design system's hairline table language
+     (style-guide): swatch thumbnail, mono article, name, qty. */
+  .recap-table {
+    width: 100%;
+    border-collapse: collapse;
     font-size: var(--fs-body);
-    margin: 0;
   }
-  .recap-empty a {
-    color: var(--ember);
+  .recap-table thead th {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    font-weight: 400;
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+    text-align: left;
+    padding: 0 0 10px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
   }
-  .recap-row {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
+  .recap-table thead th:nth-child(4),
+  .recap-table thead th:nth-child(5),
+  .recap-table .rc-qty,
+  .recap-table .rc-remove {
+    text-align: right;
+  }
+  .recap-table .rc-thumb {
+    width: 56px;
+  }
+  .recap-table .rc-code {
+    width: 96px;
+  }
+  .recap-table .rc-qty {
+    width: 64px;
+  }
+  .recap-table .rc-remove {
+    width: 92px;
+  }
+  .recap-row td {
     padding: 12px 0;
     border-bottom: 1px solid var(--line);
-    font-size: var(--fs-body);
+    vertical-align: middle;
   }
-  .recap-row:last-child {
-    border-bottom: none;
+  .recap-row:hover {
+    background: var(--stone-card);
   }
-  .recap-code {
+  .rc-thumb img {
+    display: block;
+    width: 56px;
+    height: 38px;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .rc-thumb-none {
+    display: block;
+    width: 56px;
+    height: 38px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--stone-card);
+  }
+  .rc-code {
     font-family: var(--font-mono);
     font-size: var(--fs-meta);
     color: var(--ash);
     letter-spacing: var(--ls-mono);
-    min-width: 84px;
+    white-space: nowrap;
   }
-  .recap-name {
-    flex: 1;
+  .rc-name {
+    font-size: var(--fs-label-lg);
+    line-height: 1.35;
   }
-  .recap-qty {
+  .rc-qty {
     font-family: var(--font-mono);
     font-size: var(--fs-meta);
     color: var(--ash);
+    white-space: nowrap;
   }
-  .recap-remove {
+  .rc-remove-btn {
     border: none;
     background: none;
     padding: 0;
@@ -413,8 +512,70 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
     text-decoration: underline;
     text-underline-offset: 3px;
   }
-  .recap-remove:hover {
+  .rc-remove-btn:hover {
     color: var(--ember);
+  }
+  .recap-empty {
+    color: var(--ash);
+    font-size: var(--fs-body);
+    margin: 0;
+  }
+  .recap-empty a {
+    color: var(--ember);
+  }
+  /* Narrow screens: the table becomes a card grid — swatch leading,
+     code over name, qty over remove. */
+  @media (max-width: 640px) {
+    .recap-table,
+    .recap-table tbody {
+      display: block;
+    }
+    .recap-table thead {
+      display: none;
+    }
+    .recap-table tr {
+      display: grid;
+      grid-template-columns: 52px 1fr auto;
+      grid-template-areas:
+        'thumb code qty'
+        'thumb name remove';
+      column-gap: 14px;
+      row-gap: 5px;
+      align-items: start;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .recap-row:hover {
+      background: none;
+    }
+    .recap-row td {
+      padding: 0;
+      border-bottom: none;
+    }
+    .rc-thumb {
+      grid-area: thumb;
+      width: 52px;
+    }
+    .rc-thumb img,
+    .rc-thumb-none {
+      width: 52px;
+      height: 35px;
+    }
+    .rc-code {
+      grid-area: code;
+      white-space: normal;
+    }
+    .rc-name {
+      grid-area: name;
+    }
+    .rc-qty {
+      grid-area: qty;
+      text-align: right;
+    }
+    .rc-remove {
+      grid-area: remove;
+      text-align: right;
+    }
   }
   .submit-row {
     grid-column: 1 / -1;
