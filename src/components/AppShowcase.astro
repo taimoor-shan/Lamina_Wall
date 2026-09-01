@@ -33,8 +33,7 @@ const { primary, primaryAlt, secondary, secondaryAlt, caption, title, order, pri
         alt={primaryAlt}
         widths={[640, 1024, 1920]}
         sizes="(max-width: 900px) 100vw, 70vw"
-        loading={priority ? 'eager' : 'lazy'}
-        fetchpriority={priority ? 'high' : undefined}
+        priority={priority}
       />
     </div>
     <div class="app-side">

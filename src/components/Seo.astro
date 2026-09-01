@@ -1,0 +1,42 @@
+---
+// Seo — one place for the head's metadata block: title, description,
+// canonical, Open Graph, robots. Every page passes its own values; SITE_URL
+// (src/site.ts) is the single source for absolute URLs (canonical, og:url,
+// og:image). noindex marks the transactional/dev pages (/request,
+// /thank-you, /style-guide) — a lead form and its confirmation have no
+// place in SERPs; content pages are indexable and carry a share image.
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { SITE_URL } from '../site';
+
+interface Props {
+  title: string;
+  description: string;
+  /** URL path after the origin, e.g. '/' or '/collections/wood-grain'. */
+  path: string;
+  /** Share image (content pages only) — optimized via the same
+      astro:assets pipeline as the page images, at a share-friendly width. */
+  ogImage?: ImageMetadata;
+  noindex?: boolean;
+}
+
+const { title, description, path, ogImage, noindex = false } = Astro.props;
+const url = SITE_URL + path;
+
+let ogImageUrl: string | null = null;
+if (ogImage) {
+  const img = await getImage({ src: ogImage, widths: [1200], format: 'webp' });
+  ogImageUrl = SITE_URL + img.src;
+}
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={url} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="LAMINA" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={url} />
+{ogImageUrl && <meta property="og:image" content={ogImageUrl} />}

@@ -17,6 +17,7 @@
     "svelte": "^5.57.0"
   },
   "devDependencies": {
+    "@types/node": "^26.4.0",
     "typescript": "^7.0.2",
     "wrangler": "^4.125.0"
   },

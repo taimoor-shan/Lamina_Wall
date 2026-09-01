@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Swap for the production domain at M8 (PRD §7 Q1) — keep in sync with
+# SITE_URL in src/site.ts, which generates the sitemap it points at.
+Sitemap: https://lamina-wall.lamina-wall.workers.dev/sitemap.xml

@@ -35,8 +35,8 @@
 | M2 — Content Migration | ☑ Done | 92 products / 6 collections, real alt text + descriptions, build clean, image audit at `docs/image-pipeline-audit.md`. Residual human eyeball (texture-crop cut-off on swatches; AI-upscale pass for app images) folded into the M1 visual-acceptance pass — see §10 Session 6. |
 | M3 — Core Pages | ☑ Done | 6 collection pages (`/collections/[slug]`), nav wired to them, homepage hero converted to a priority-loaded responsive `<img>` (LCP 99 simulated / 99 real-throttle, mobile), fonts CSS async, styles inlined — see §10 Session 7. Residual human eyeball (visual acceptance vs mockup at 1440/390, homepage + one collection page) folded into the same M1 pass. |
 | M4 — Request Tray & Form | ☑ Done | Svelte request tray (drawer + steppers + localStorage persistence), `/request` form (native + JS-enhanced), `/api/request` worker route (validation, Origin check, Turnstile, per-isolate duplicate guard, Resend email), `/thank-you`. API verified end-to-end locally with Cloudflare test keys; the final email hop needs the client's Resend key — see §10 Session 8. |
-| M5 — SEO, Accessibility, Performance | ☐ Not started | |
-| M6 — Cross-Browser & Responsive QA | ☐ Not started | |
+| M5 — SEO, Accessibility, Performance | ☐ In progress | All checklist items done (Seo component + canonical/OG + noindex, build-time sitemap/robots, heading audit, alt audit, ARIA, focus trap runtime-verified 6/6, 40.8 MB image prune hook — which had a bug that silently killed island hydration; caught & fixed this session). **Acceptance gate (Lighthouse ≥ 90 × 4 combos) straddles the line:** desktops 100; mobiles bounce 85–98 (home) / 86–99 (col) run-to-run — simulator variance, structural fixes done, re-run on a quiet machine during M6. Full numbers in §10 Session 9. |
+| M6 — Cross-Browser & Responsive QA | ☐ In progress | Chrome + breakpoints done (24/24: no horizontal scroll at 320–1440, tray usable at every width, `docs/qa-report.md`). Safari/Firefox/Edge/iOS/Android rows blocked on human/device access. Also re-run the M5 Lighthouse gate on a quiet machine here. |
 | M7 — Content Freeze & Client Review | ☐ Not started | |
 | M8 — Launch | ☐ Not started | |
 | M9 — Handover | ☐ Not started | |
@@ -336,30 +336,50 @@ Each milestone should end with a working, deployed-to-preview state. **Do not pr
     - Verified locally against the real siteverify endpoint with Cloudflare test keys: missing token → 400, always-fail token (`2x…` secret) → 400, always-pass (`1x…`) proceeds.
 
 ### M5 — SEO, Accessibility, Performance
-- [ ] Meta tags + Open Graph tags on all pages.
-- [ ] `sitemap.xml` and `robots.txt`.
-- [ ] Semantic HTML pass — correct heading hierarchy site-wide.
-- [ ] Alt text present on every image sourced from content (should already be true from M2 — verify).
-- [ ] ARIA labels on the tray/drawer and the form.
-- [ ] Keyboard navigation: tray operable and dismissible via keyboard; focus trapped while open.
-- [ ] Image weight audit: confirm no full-resolution catalogue scans are reaching mobile.
+- [x] Meta tags + Open Graph tags on all pages.
+  - `src/components/Seo.astro` on all 8 pages: title, description, canonical, OG (type/site_name/title/description/url/image), robots. Absolute URLs from `SITE_URL` (`src/site.ts`). Transactional/dev pages (`/request`, `/thank-you`, `/style-guide`) are `noindex, nofollow`; content pages carry an OG image (1200w, built via `astro:assets`).
+- [x] `sitemap.xml` and `robots.txt`.
+  - `src/pages/sitemap.xml.ts` — generated at build time from the content collections (homepage + 6 collection pages; noindex routes excluded). `public/robots.txt` points at it. Both keyed to `SITE_URL` (standing live deploy; M8 swaps for the production domain).
+- [x] Semantic HTML pass — correct heading hierarchy site-wide.
+  - Single `h1` per page (homepage hero, `SectionHead level={1}` on collection pages, `h1` on /request, /thank-you, /style-guide); sections/regions nav with `aria-label="Primary"`; audit re-verified in built output.
+- [x] Alt text present on every image sourced from content (should already be true from M2 — verify).
+  - Re-verified in dist: every `<img>` from the content schema carries real alt (M2 copy) or a meaningful component-provided alt (hero/application photography); decorative elements are `aria-hidden`.
+- [x] ARIA labels on the tray/drawer and the form.
+  - Tray: `role="dialog"` + `aria-modal="true"` + `aria-label="Request tray"` + labelled close button; swatch add buttons carry `aria-pressed`/dynamic `aria-label`; totals `aria-live`. Form: labels bound to every control, Turnstile note.
+- [x] Keyboard navigation: tray operable and dismissible via keyboard; focus trapped while open.
+  - Focus trap implemented in `RequestTray.svelte` (Tab/Shift+Tab cycle inside the dialog, Escape closes, focus returns to the opener, scroll lock). **Runtime-verified via CDP headless Chrome: 6/6 checks** (focus enters dialog on open, cycle wraps both directions, Escape closes, focus restored).
+- [x] Image weight audit: confirm no full-resolution catalogue scans are reaching mobile.
+  - All catalogue scans compile to responsive WebP at build time; mobile srcset serves ~960w (62 KiB) hero. Found ~40.8 MB of unreferenced full-resolution source copies in `dist/_astro` → `prune-unreferenced-images` build hook (see §10 Session 9 — the hook itself then had a bug that was caught and fixed this session).
 - **Acceptance:**
   - [ ] Lighthouse ≥ 90 across Performance/Accessibility/Best Practices/SEO, mobile and desktop, on homepage and one collection page.
+    - **IN PROGRESS — scores straddle the line due to run-to-run simulator variance.** Best single batches: home-desktop 100/100/96/100 ✓, col-desktop 100/100/96/100 ✓; mobile scores bounce between batches — home-mobile 85–98, col-mobile 86–99 (no batch yet has all four ≥ 90 simultaneously). Structural fixes landed this session (inline font CSS, LCP preloads, prune-hook 404 fix); the residual variance is the Lighthouse 13 simulator gating simulated FCP on observed first-paint timing, which the gstatic woff2 latency shifts run-to-run. See §10 Session 9 for the full numbers; re-run the gate on a quiet machine as part of the M6 QA pass.
 
 ### M6 — Cross-Browser & Responsive QA
-- [ ] Test on latest Chrome.
+- [x] Test on latest Chrome.
+  - Headless + real window, all breakpoints below (CDP-driven, `docs/qa-report.md`).
 - [ ] Test on latest Safari.
+  - ⛔ Needs a human/device pass — safaridriver not available in this environment.
 - [ ] Test on latest Firefox.
+  - ⛔ Not present in this environment — human pass.
 - [ ] Test on latest Edge.
+  - ⛔ Not present — human pass (Chromium engine; low risk, still required).
 - [ ] Test on iOS Safari (real device or emulated).
+  - ⛔ Needs real device or Xcode simulator — human/device pass.
 - [ ] Test on Android Chrome (real device or emulated).
-- [ ] Verify mobile breakpoint (< 480px).
-- [ ] Verify tablet breakpoint (481-900px).
-- [ ] Verify desktop breakpoint (901px+).
+  - ⛔ Needs device/emulator — human/device pass.
+- [x] Verify mobile breakpoint (< 480px).
+  - 320/390/480 on homepage + collection page — no horizontal scroll, tray usable (24/24 assertions, headless Chrome).
+- [x] Verify tablet breakpoint (481-900px).
+  - 768 — same checks pass.
+- [x] Verify desktop breakpoint (901px+).
+  - 1024/1440 — same checks pass.
 - **Acceptance:**
-  - [ ] No layout breakage or horizontal scroll at any breakpoint.
-  - [ ] Tray/drawer usable at all breakpoints.
-  - [ ] Short QA checklist/report written and saved to the repo (e.g. `/docs/qa-report.md`).
+  - [x] No layout breakage or horizontal scroll at any breakpoint.
+    - Verified programmatically on Chrome (scrollWidth ≤ innerWidth at 6 widths × 2 pages); the shared human visual pass adds the eyeball layer for the other engines.
+  - [x] Tray/drawer usable at all breakpoints.
+    - Opens, settles inside the viewport (full-width ≤390px, 420px panel above), no inner overflow — all widths.
+  - [x] Short QA checklist/report written and saved to the repo (e.g. `/docs/qa-report.md`).
+    - `docs/qa-report.md` — results, browser matrix, blocked rows, re-run instructions.
 
 ### M7 — Content Freeze & Client Review
 - [ ] Client reviews all live collection/product copy and imagery on the Cloudflare preview URL.
@@ -608,6 +628,28 @@ Entry format:
   - ⛔ Unchanged: the shared human visual-acceptance pass (M1 + M2 residuals + M3 + now the tray/form click-through at 1440/390), GitHub remote + Workers Builds (M0), production domain, brand name.
 - Next session should start with:
   - The human visual-acceptance pass, then **M5 — SEO, Accessibility, Performance** (meta/OG everywhere, sitemap/robots, heading audit, ARIA + keyboard/focus-trap for the tray, image-weight audit, Lighthouse ≥ 90 four-way gate).
+
+### Session 9 — 2026-09-01
+- Milestone(s) worked on: **M5 — SEO, Accessibility, Performance** (in progress — all checklist items done, acceptance gate straddles the line).
+- Completed this session:
+  - **SEO head block** — `src/components/Seo.astro` on all 8 pages: `<title>`, meta description, canonical, OG (type/site_name/title/description/url/image — the image compiled via `astro:assets` at 1200w, only on content pages), robots. `src/site.ts` is the single `SITE_URL` source (currently the standing live deploy `https://lamina-wall.lamina-wall.workers.dev`; M8 swaps it for the production domain). Transactional/dev pages (`/request`, `/thank-you`, `/style-guide`) are `noindex, nofollow` — a lead form, its confirmation, and an internal reference page have no place in SERPs.
+  - **`src/pages/sitemap.xml.ts`** — build-time generation from the content collections (homepage + 6 collection pages only); **`public/robots.txt`** pointing at it. Both keyed to `SITE_URL`, with a swap-for-M8 comment keeping them in sync.
+  - **A11y pass** — heading hierarchy audit (single `h1` per page; collection pages' `SectionHead` is `level={1}`); nav `aria-label="Primary"`; alt-text re-verification in dist (every content-sourced `<img>` has real alt; decorative elements `aria-hidden`); tray already `role="dialog"` + `aria-modal` + labelled controls from M4. **Focus trap + return-focus implemented in `RequestTray.svelte`** (Tab/Shift+Tab cycle contained in the dialog, Escape closes, focus restored to the opener, body scroll lock). Runtime-verified with a CDP harness driving real headless Chrome (`/tmp/focus-trap-check.mjs`, throwaway): **6/6 checks passed** — focus enters dialog on open (lands on close button), Tab wraps last→first, Shift+Tab wraps first→last, Escape closes, focus returns to the opener.
+  - **Fonts moved off the network critical path** — `src/fonts.ts` fetches the Google Fonts css2 stylesheet at build time (Chrome UA for woff2 rules, 4 s timeout, offline fallback); `src/components/Fonts.astro` inlines the `@font-face` rules into the head (`<style is:inline set:html>` — Astro does not template expressions inside `<style>`; the first attempt rendered the literal text `{css}` into the head and was caught by grepping the served HTML). The woff2 files still load from fonts.gstatic.com at runtime (PRD §2: Google Fonts, no local files), so this removes only the ~460 ms observed css2 round trip that was on the first-paint path — col-mobile's simulated FCP dropped 2.73 → 2.06 s.
+  - **LCP image preloads** — homepage hero and collection application hero (`app-wood`) get `<link rel="preload" as="image" imagesrcset imagesizes fetchpriority="high">` in the head, resolving to the same candidate as the `<img>` (identical widths/sizes/formats — no double download). Homepage observed LCP 1143 → 552 ms.
+  - **Image weight audit** — no full-res catalogue scans reach mobile (all compile to responsive WebP; mobile hero is ~960w/62 KiB). The audit also surfaced ~40.8 MB of unreferenced full-resolution source copies in `dist/_astro` (content layer marks every schema-referenced image as "referenced", keeping the originals); `prune-unreferenced-images` build hook added (images only — the fix below).
+  - **🐞 Critical bug found & fixed — the prune hook was killing island hydration.** The hook's HTML-reference regex matched every `/_astro/<file>` string; the Svelte shared runtime chunk (`client.*.js`) is imported only from JS (never named in HTML), so it was unlinked every build. The island's `import()` 404'd → `astro-retry` re-fetched at ~1.1 s → hydration never attached → **the request tray was silently dead in every served build** (swatch add buttons, tray drawer). It also explains the astro-retry churn seen in earlier Lighthouse traces (misread as environmental noise). Caught by the focus-trap CDP verification (clicks did nothing; retry URLs in the resource list; the imported chunk missing from `dist`). Fix: the hook now matches image extensions only (`\.(webp|avif|jpe?g|png)$`), with a comment explaining why JS/CSS chunks must survive. After the fix: 6/6 focus-trap checks pass and `_astro` contains exactly the referenced images + 3 JS chunks.
+  - Verified: `astro build` clean (8 pages + worker), `tsc --noEmit` clean, built head greps (`@font-face` present ×38, zero `css2` requests), served HTML over the gzip harness confirms the inline fonts.
+- Decisions made (and why):
+  - **Inline font CSS at build time over the async `<link>`** — the css2 request was the one external wait on the first-paint path; inlining removes the round trip while keeping Google Fonts as the font source (PRD §2). Offline builds keep the async link, so a network-less build machine never breaks the site.
+  - **`noindex` on `/request`, `/thank-you`, `/style-guide`** — indexable lead forms attract spam; nothing on those pages serves a search user.
+  - **Sitemap from content collections at build time, not a hand-maintained file** — a new collection page automatically appears in both nav and sitemap; nothing to remember.
+- Blocked on / open questions (client input needed):
+  - ⛔ **Lighthouse acceptance gate** — best batches: home-desktop 100/100/96/100, col-desktop 100/100/96/100, home-mobile 85–98 across 5 runs (90/98/98/87/85), col-mobile 86–99 across 4 runs (91/99/99/86). No single batch has all four ≥ 90: mobile runs straddle the line. Mechanism: Lighthouse 13's simulated model gates simulated FCP on the trace's observed first-paint timing, and the observed paint jitters with gstatic woff2 latency + machine load (TBT 0, CLS ~0.02–0.03 — nothing on the page side varies). Structural fixes are in; the gate should be re-run on a quiet machine, folded into the M6 QA pass. Marked In progress, not Done, until a full 4× pass.
+  - ⛔ Unchanged: the shared **human visual-acceptance pass** (M1 + M2 residuals + M3 + M4 click-through at 1440/390 — now also settles M5's tray/drawer look), GitHub remote + Workers Builds (M0), production domain, brand name, real Resend key + paid Workers plan (M4).
+- Next session should start with:
+  - The human visual-acceptance pass, then **M6 — Cross-Browser & Responsive QA**: breakpoint sweep (320/390/480/768/1024/1440 — no horizontal scroll, tray usable at each), browsers available on this machine (Chrome real/headless; Safari/Firefox/Edge/iOS/Android need manual or device access), `docs/qa-report.md` as the deliverable — and re-run the M5 Lighthouse gate on a quiet machine as part of it.
+- **M6 start (same session):** breakpoint sweep run — headless Chrome over CDP at 320/390/480/768/1024/1440 on the homepage + `/collections/wood-grain` against the built `dist` (gzip harness): **24/24 pass** — zero horizontal scroll at every width; tray opens, settles fully inside the viewport (full-width ≤390 px, 420 px right panel above), no inner overflow. `docs/qa-report.md` written (results, browser matrix, blocked rows, re-run instructions). M6 checklist updated in §5: Chrome + all three breakpoint ranges ticked; Safari/Firefox/Edge/iOS/Android rows blocked on human/device access. The M5 Lighthouse gate re-run on a quiet machine is folded into M6's remaining work. `tsc --noEmit` clean.
 
 ### Session 7 — 2026-09-01
 - Milestone(s) worked on: **M3 — Core Pages** (completed; §0 row now `☑ Done`). Client directives carried over from Session 6's end: "if SEO is in the next milestone, you can skip" (SEO deferred to **M5** — this supersedes any earlier assumption it was in M3) and the catalogue-PDF extraction for "real product information" was **interrupted by the client before completion** — deferred until the client asks for it again.

@@ -6,6 +6,8 @@ import { getCollection } from 'astro:content';
 import '../styles/tokens.css';
 import '../styles/global.css';
 
+import Seo from '../components/Seo.astro';
+import Fonts from '../components/Fonts.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
 import IndexStrip from '../components/IndexStrip.astro';
@@ -50,15 +52,15 @@ const tokens: { label: string; value: string; css: string }[] = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex" />
-    <title>LAMINA — Style Guide (dev)</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
+    <Seo
+      title="LAMINA — Style Guide (dev)"
+      description="LAMINA component and design-token reference — internal use only."
+      path="/style-guide"
+      noindex
     />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <Fonts />
   </head>
   <body>
     <div class="sg-note">

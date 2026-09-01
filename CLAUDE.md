@@ -45,6 +45,8 @@ node scripts/serve-gzip.mjs   # serves dist/client on :4328 (PORT env), gzip-com
 - **`import.meta.env` is statically replaced at build time** — runtime bindings (`TURNSTILE_SECRET_KEY`, `RESEND_API_KEY`) must come from `import { env } from 'cloudflare:workers'` (typed in `src/env.d.ts`), or the compiled bundle bakes in `undefined`. The only frontend key is `PUBLIC_TURNSTILE_SITE_KEY` (from `.env`).
 - **Secrets**: `.env` holds the public Turnstile site key (safe to distribute via build env); `.dev.vars` holds the verify secret + Resend key — both are gitignored, never commit them.
 - **Images are build-time assets**: products reference `swatchImage` via the content schema's `image()` helper — always resolve through `getImage`/`<Image>`/`<Picture>` (never raw `/src/...` paths or runtime URLs).
+- **Astro never templates `<style>` content** — `{expr}` inside a `<style>` tag ships as literal text (`<style>{css}</style>` in the head until caught). Inject a dynamic CSS string with `<style is:inline set:html={css} />` (documented Astro pattern, `guides/styling.mdx`).
+- **`prune-unreferenced-images` build hook prunes images ONLY** — never JS/CSS: the Svelte shared runtime chunk is referenced only via JS `import` (never named in HTML), and a blanket `/_astro/` regex deleted it, 404-ing the island import → hydration silently dead + astro-retry churn (M5 incident, fixed). The hook has an image-extension guard — keep it that way.
 
 ## Working rules (condensed — full text in AGENTS.md)
 

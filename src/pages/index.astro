@@ -1,8 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
 import '../styles/tokens.css';
 import '../styles/global.css';
 
+import Seo from '../components/Seo.astro';
+import Fonts from '../components/Fonts.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
 import IndexStrip from '../components/IndexStrip.astro';
@@ -12,6 +15,16 @@ import Footer from '../components/Footer.astro';
 import RequestTray from '../components/RequestTray.svelte';
 
 import heroImage from '../assets/applications/hero-001.jpeg';
+
+// M5 perf: preload the LCP (hero) image so its request starts from the head
+// at the top of the browser's priority queue, not when the <img> parses.
+// Same widths/sizes/formats as Hero.astro so the preload and the <img>
+// resolve to the same candidate — no double download.
+const heroPreload = await getImage({
+  src: heroImage,
+  widths: [640, 960, 1280, 1920],
+  formats: ['webp'],
+});
 
 const collections = (await getCollection('collections')).sort(
   (a, b) => a.data.order - b.data.order,
@@ -34,34 +47,22 @@ for (const arr of productsByCollection.values()) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>LAMINA — Wall Panels &amp; Architectural Surfaces</title>
-    <meta
-      name="description"
-      content="Wood grain, stone, metal and textile wall panels for architects, designers and trade buyers."
-    />
-    <meta property="og:title" content="LAMINA — Wall Panels & Architectural Surfaces" />
-    <meta
-      property="og:description"
-      content="Wood grain, stone, metal and textile wall panels for architects, designers and trade buyers."
+    <Seo
+      title="LAMINA — Wall Panels & Architectural Surfaces"
+      description="Wood grain, stone, metal and textile wall panels for architects, designers and trade buyers."
+      path="/"
+      ogImage={heroImage}
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Fonts stylesheet loads async (media swap): it is the only render-
-         blocking request to a third party, costing ~1s of FCP on throttled
-         mobile. display=swap already lets text paint in a fallback face. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
+      rel="preload"
+      as="image"
+      href={heroPreload.src}
+      imagesrcset={heroPreload.srcSet.attribute}
+      imagesizes="100vw"
+      fetchpriority="high"
     />
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
-        rel="stylesheet"
-      />
-    </noscript>
+    <Fonts />
   </head>
   <body>
     <Nav collections={collections} trayCount={0} />

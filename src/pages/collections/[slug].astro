@@ -5,10 +5,13 @@
 // approved mockup's design system; no new design is invented here.
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
 
 import '../../styles/tokens.css';
 import '../../styles/global.css';
 
+import Seo from '../../components/Seo.astro';
+import Fonts from '../../components/Fonts.astro';
 import Nav from '../../components/Nav.astro';
 import SectionHead from '../../components/SectionHead.astro';
 import AppShowcase from '../../components/AppShowcase.astro';
@@ -46,6 +49,16 @@ const {
 } = collection.data;
 const index = String(order).padStart(2, '0');
 const pageTitle = `${title} — LAMINA`;
+const pagePath = `/collections/${collection.data.slug}`;
+
+// M5 perf: preload the LCP (application hero) image from the head — the
+// AppShowcase <Image> below carries the same widths/sizes/formats, so the
+// preload and the <img> resolve to the same candidate (no double download).
+const appPreload = await getImage({
+  src: collection.data.heroApplicationImage,
+  widths: [640, 1024, 1920],
+  formats: ['webp'],
+});
 
 // The full filmstrip: every swatch in this collection, in catalogue order.
 // (The homepage spread shows five with a dialog; the collection page is the
@@ -60,26 +73,22 @@ const products = (await getCollection('products'))
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{pageTitle}</title>
-    <meta name="description" content={description} />
-    <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Async fonts stylesheet — see index.astro for rationale. -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
+    <Seo
+      title={pageTitle}
+      description={description}
+      path={pagePath}
+      ogImage={collection.data.heroApplicationImage}
     />
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
-        rel="stylesheet"
-      />
-    </noscript>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="preload"
+      as="image"
+      href={appPreload.src}
+      imagesrcset={appPreload.srcSet.attribute}
+      imagesizes="(max-width: 900px) 100vw, 70vw"
+      fetchpriority="high"
+    />
+    <Fonts />
   </head>
   <body>
     <Nav collections={allCollections} />

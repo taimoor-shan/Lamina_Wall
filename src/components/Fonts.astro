@@ -1,0 +1,34 @@
+---
+// Font loading — shared by every page (M5).
+//
+// When the build fetched the css2 CSS successfully it is inlined here: zero
+// network, no render-blocking request, first paint not held for Google.
+// Otherwise the async media-swap link is used as before. Either way the
+// woff2 files load from fonts.gstatic.com at runtime, and display=swap lets
+// text paint in a fallback face until they arrive.
+import { fontCss, FONT_CSS_URL } from '../fonts';
+
+const css = await fontCss();
+---
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+{
+  css ? (
+    // Astro does not template expressions inside <style>; set:html is the
+    // documented way to inject a dynamic CSS string (styling.mdx).
+    <style is:inline set:html={css}></style>
+  ) : (
+    <>
+      <link
+        href={FONT_CSS_URL}
+        rel="stylesheet"
+        media="print"
+        onload="this.media='all'"
+      />
+      <noscript>
+        <link href={FONT_CSS_URL} rel="stylesheet" />
+      </noscript>
+    </>
+  )
+}

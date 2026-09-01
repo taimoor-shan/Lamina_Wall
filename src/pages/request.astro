@@ -24,6 +24,8 @@ import { getImage } from 'astro:assets';
 import '../styles/tokens.css';
 import '../styles/global.css';
 
+import Seo from '../components/Seo.astro';
+import Fonts from '../components/Fonts.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 
@@ -52,23 +54,15 @@ for (const p of await getCollection('products')) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sample request — LAMINA</title>
-    <meta name="description" content="Request samples of LAMINA wall panels for your project." />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
+    <Seo
+      title="Sample request — LAMINA"
+      description="Request samples of LAMINA wall panels for your project."
+      path="/request"
+      noindex
     />
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
-        rel="stylesheet"
-      />
-    </noscript>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <Fonts />
   </head>
   <body>
     <Nav hideTray />
@@ -395,7 +389,7 @@ for (const p of await getCollection('products')) {
   .field-label .opt {
     text-transform: none;
     letter-spacing: 0.02em;
-    color: var(--line);
+    color: var(--ash);
   }
   .field input,
   .field textarea {

@@ -26,6 +26,7 @@
   let open = $state(false);
   let opener: HTMLElement | null = null;
   let closeBtn: HTMLButtonElement | undefined;
+  let trayEl: HTMLElement | undefined;
 
   const totalQty = $derived(items.reduce((n, i) => n + i.qty, 0));
 
@@ -126,7 +127,35 @@
   }
 
   function onKey(e: KeyboardEvent) {
-    if (e.key === 'Escape' && open) closeDrawer();
+    if (!open) return;
+    if (e.key === 'Escape') closeDrawer();
+    // aria-modal dialogs must contain Tab — trap the cycle inside the
+    // panel so focus can't escape to the page behind (PRD M5).
+    if (e.key === 'Tab') trapFocus(e);
+  }
+
+  function trapFocus(e: KeyboardEvent) {
+    if (!trayEl) return;
+    const focusables = Array.from(
+      trayEl.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    if (focusables.length === 0) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    // A stray focus outside the panel (e.g. from a programmatic focus
+    // while the drawer was opening) is pulled back in before cycling.
+    if (!trayEl.contains(document.activeElement)) {
+      e.preventDefault();
+      first.focus();
+    } else if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   }
 
   // Overlay click (clicking the scrim, not the panel).
@@ -168,7 +197,7 @@
 
 {#if open}
   <div class="tray-scrim" onclick={onOverlayClick}>
-    <aside class="tray" role="dialog" aria-modal="true" aria-label="Request tray">
+    <aside class="tray" role="dialog" aria-modal="true" aria-label="Request tray" bind:this={trayEl}>
       <header class="tray-head">
         <div class="tray-title">Request tray</div>
         <button

@@ -53,8 +53,10 @@
     margin-top: 10px;
   }
   footer .col-head {
-    /* Column heading in the mockup: #5D5747, kept as --ash-mid token */
-    color: var(--ash-mid);
+    /* Column heading. --ash-mid (#5D5747) measured 2.5:1 on the basalt
+       footer — fails WCAG AA for small text; --ash-dark is the footer
+       body tone at 4.9:1 and keeps the heading distinct via case + mono. */
+    color: var(--ash-dark);
     margin-bottom: 8px;
     margin-top: 0;
   }
