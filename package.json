@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.2.5",
-    "astro": "^7.2.9"
+    "@astrojs/svelte": "^9.0.1",
+    "astro": "^7.2.9",
+    "svelte": "^5.57.0"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

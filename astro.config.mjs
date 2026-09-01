@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
+import svelte from '@astrojs/svelte';
 
 // https://astro.build/config
 export default defineConfig({
@@ -14,4 +15,11 @@ export default defineConfig({
     // 'compile' keeps generation at build time (verified locally in `astro build`).
     imageService: 'compile',
   }),
+  // All CSS is tiny (a few KiB per page); inlining removes every
+  // render-blocking stylesheet request — one HTML request to first paint.
+  build: { inlineStylesheets: 'always' },
+  // M4: the request tray is the single interactive island, mounted
+  // client:load only on pages that carry swatches (homepage + collection
+  // pages). The /request page stays plain HTML with a small inline script.
+  integrations: [svelte()],
 });

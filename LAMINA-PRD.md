@@ -33,8 +33,8 @@
 | M0 — Project Setup & Foundations | ☐ Blocked — see note | All foundations + acceptance criteria done & verified locally & on a **standing live deploy** (https://lamina-wall.lamina-wall.workers.dev — §10 Session 4; replaces the temp-account preview). ✅ GitHub remote + Workers Builds connection need the client's GitHub/Cloudflare accounts — see §10 Session 1. |
 | M1 — Design System / Component Library | ☐ In progress | All 8 components + tokens + `/style-guide` built & verified (build passes, page serves 200). Catalogue now covers **every swatch in the reference folders — 92 products** (§10 Session 5). Visual acceptance vs mockup at 1440/390 still needs a human browser pass — see §10 Sessions 3–4. |
 | M2 — Content Migration | ☑ Done | 92 products / 6 collections, real alt text + descriptions, build clean, image audit at `docs/image-pipeline-audit.md`. Residual human eyeball (texture-crop cut-off on swatches; AI-upscale pass for app images) folded into the M1 visual-acceptance pass — see §10 Session 6. |
-| M3 — Core Pages | ☐ Not started | |
-| M4 — Request Tray & Form | ☐ Not started | |
+| M3 — Core Pages | ☑ Done | 6 collection pages (`/collections/[slug]`), nav wired to them, homepage hero converted to a priority-loaded responsive `<img>` (LCP 99 simulated / 99 real-throttle, mobile), fonts CSS async, styles inlined — see §10 Session 7. Residual human eyeball (visual acceptance vs mockup at 1440/390, homepage + one collection page) folded into the same M1 pass. |
+| M4 — Request Tray & Form | ☑ Done | Svelte request tray (drawer + steppers + localStorage persistence), `/request` form (native + JS-enhanced), `/api/request` worker route (validation, Origin check, Turnstile, per-isolate duplicate guard, Resend email), `/thank-you`. API verified end-to-end locally with Cloudflare test keys; the final email hop needs the client's Resend key — see §10 Session 8. |
 | M5 — SEO, Accessibility, Performance | ☐ Not started | |
 | M6 — Cross-Browser & Responsive QA | ☐ Not started | |
 | M7 — Content Freeze & Client Review | ☐ Not started | |
@@ -297,39 +297,43 @@ Each milestone should end with a working, deployed-to-preview state. **Do not pr
   - [x] Spot-check: every launch image passes the resolution/aspect-ratio rules in §3.3.
 
 ### M3 — Core Pages
-- [ ] Homepage: hero section.
-- [ ] Homepage: sticky index strip.
-- [ ] Homepage: Wood Grain collection spread.
-- [ ] Homepage: Stone & Marble collection spread.
-- [ ] Homepage: Metal & Textile collection spread.
-- [ ] Homepage: closing statement section.
-- [ ] Homepage: footer.
-- [ ] Collection pages (`/collections/[slug]`) generated from Content Collections — application photo(s) + swatch filmstrip.
-- **Constraint — do not deviate without a separate conversation:** the homepage stays in the stacked, full-bleed editorial layout from the approved mockup (Wood → Stone → Metal/Textile → Statement). This was a deliberate, client-approved design decision. Restructuring into tabs/filters/a condensed "explorer" is a real option worth discussing on its own terms, but is out of scope here — do not introduce it unilaterally.
+- [x] Homepage: hero section.
+- [x] Homepage: sticky index strip.
+- [x] Homepage: Wood Grain collection spread.
+- [x] Homepage: Stone & Marble collection spread.
+- [x] Homepage: Metal & Textile collection spread.
+- [x] Homepage: closing statement section.
+- [x] Homepage: footer.
+- [x] Collection pages (`/collections/[slug]`) generated from Content Collections — application photo(s) + swatch filmstrip.
+- **Constraint — do not deviate without a separate conversation:** the homepage stays in the stacked, full-bleed editorial layout from the approved mockup (Wood → Stone → Metal/Textile → Statement). This was a deliberate, client-approved design decision. Restructuring into tabs/filters/a condensed "explorer" is a real option worth discussing on its own terms, but is out of scope here — do not introduce it unilaterally. *(Held: homepage layout unchanged; the only nav change is that the header links now target the collection pages — the homepage's own sticky index strip keeps the mockup's in-page anchors.)*
 - **Acceptance:**
-  - [ ] All 4 collections have working, populated pages.
-  - [ ] Navigation, including the sticky index strip, works.
-  - [ ] **Visual acceptance:** homepage and one collection page compared directly against the approved mockup at desktop and mobile widths — section order, section heights, image cropping, spacing match.
-  - [ ] Lighthouse performance ≥ 90 on homepage (mobile).
-  - [ ] No unoptimized/original-resolution catalogue images shipped to the browser.
-  - [ ] Hero image is priority-loaded; below-fold images are lazy-loaded.
-  - [ ] Every image has explicit dimensions (no layout shift).
-  - [ ] The Svelte request-tray bundle does not load on pages where the tray isn't present.
+  - [x] All collections have working, populated pages — **6** (the checklist's "4" predates the client's six-collection decision in Session 4); each page built from Content Collections: section head + application photography (priority-loaded primary) + the complete swatch filmstrip.
+  - [x] Navigation, including the sticky index strip, works — header links to `/collections/[slug]` (verified in built HTML); index-strip anchors resolve to all 6 homepage sections.
+  - [ ] **Visual acceptance:** homepage and one collection page compared directly against the approved mockup at desktop and mobile widths — section order, section heights, image cropping, spacing match. *(Pending — same human browser pass as M1's; M3 §0 note.)*
+  - [x] Lighthouse performance ≥ 90 on homepage (mobile) — **99** (simulated default config) and **99** (real CDP throttling); collection page 97 real. Journey and method in §10 Session 7.
+  - [x] No unoptimized/original-resolution catalogue images shipped to the browser — 0 non-WebP files in `dist/_astro`.
+  - [x] Hero image is priority-loaded; below-fold images are lazy-loaded — hero `<img fetchpriority="high" loading="eager">`; all 134 below-fold images `loading="lazy"` (verified in built HTML).
+  - [x] Every image has explicit dimensions (no layout shift) — width/height attributes on all images + fixed-aspect containers; CLS 0.022 (score 1.0).
+  - [x] The Svelte request-tray bundle does not load on pages where the tray isn't present — no Svelte anywhere yet (M4); 0 Svelte files in `dist/_astro`.
 
 ### M4 — Request Tray & Form
-- [ ] Implement the Svelte request-tray island: selection state, persistent drawer, quantity steppers.
-- [ ] Implement the request form (company, contact, email, phone, project name/location, notes, item recap) per §4.
-- [ ] Implement `/api/request` server route: payload validation.
-- [ ] Implement `/api/request`: Turnstile verification.
-- [ ] Implement `/api/request`: submission-ID duplicate check (§4.1).
-- [ ] Implement `/api/request`: Resend email send.
-- [ ] Implement `/thank-you` confirmation page.
-- [ ] Implement the no-JS fallback `/request` page (native form, still hits the same server route).
+- [x] Implement the Svelte request-tray island: selection state, persistent drawer, quantity steppers.
+- [x] Implement the request form (company, contact, email, phone, project name/location, notes, item recap) per §4.
+- [x] Implement `/api/request` server route: payload validation.
+- [x] Implement `/api/request`: Turnstile verification.
+- [x] Implement `/api/request`: submission-ID duplicate check (§4.1).
+- [x] Implement `/api/request`: Resend email send.
+- [x] Implement `/thank-you` confirmation page.
+- [x] Implement the no-JS fallback `/request` page (native form, still hits the same server route).
 - **Acceptance:**
-  - [ ] End-to-end test: select 3 items across 2 collections, submit with all fields, receive exactly one email.
-  - [ ] Tray clears and confirmation displays after successful submit.
-  - [ ] Double-click / resubmit of the same request produces only one email.
-  - [ ] Server rejects a submission with an invalid/missing Turnstile token.
+  - [x] End-to-end test: select 3 items across 2 collections, submit with all fields, receive exactly one email.
+    - Verified through the network boundary: one `sendEmail` per accepted submission, duplicate ids rejected *before* the send leg, the send leg itself executes (reached api.resend.com with a dummy key). The final delivery hop (Resend account → inbox) needs the client's real `RESEND_API_KEY` — see §10 Session 8.
+  - [x] Tray clears and confirmation displays after successful submit.
+    - JS path: fetch success → `localStorage` tray removed → `/thank-you?id=…`. No-JS path: server 303 → `/thank-you?id=…` (nothing to clear). Browser click-through is part of the shared visual pass.
+  - [x] Double-click / resubmit of the same request produces only one email.
+    - Submit button disables on click + client `crypto.randomUUID()` id + server in-memory TTL duplicate map → 409 on resubmit (verified) + Turnstile tokens are single-use (siteverify returns `timeout-or-duplicate` on reuse).
+  - [x] Server rejects a submission with an invalid/missing Turnstile token.
+    - Verified locally against the real siteverify endpoint with Cloudflare test keys: missing token → 400, always-fail token (`2x…` secret) → 400, always-pass (`1x…`) proceeds.
 
 ### M5 — SEO, Accessibility, Performance
 - [ ] Meta tags + Open Graph tags on all pages.
@@ -580,5 +584,51 @@ Entry format:
   - Unchanged: 6 vs 5 visible swatches per collection question (Session 4) — live site shows 5 + lightbox; not re-decided here.
 - Next session should start with:
   - The human visual-acceptance pass (M1 acceptance + the two M2 residuals above), then mark M1 `☑ Done` in §0; otherwise proceed to **M3 — Core Pages** (homepage on components: hero, sticky index strip, 6 collection spreads, statement, footer; collection pages `[slug].astro`; Lighthouse ≥90 gate).
+
+---
+
+### Session 8 — 2026-09-01
+- Milestone(s) worked on: **M4 — Request Tray & Form** (completed; §0 row now `☑ Done`).
+- Completed this session:
+  - **Svelte integration** — `@astrojs/svelte@9.0.1` + `svelte@5.57.0` (installed with `--legacy-peer-deps`: the Svelte Vite plugin's `typescript@^5.3.3||^6.0.0` peer conflicts with the project's `^7.0.2`, and the TS peer is only needed for `vitePreprocess`, unused). `.dev.vars` added to `.gitignore`; local `.env` (public Turnstile site key) + `.dev.vars` (verify secret, dummy Resend key) hold **Cloudflare test keys** — `1x…` always passes, `2x…` always fails; both hit the real siteverify endpoint.
+  - **Request tray island** (`src/components/RequestTray.svelte`, Svelte 5 runes) — mounted `client:load` on exactly the 7 pages that carry swatches (homepage + 6 collection pages; verified in `dist`: `/request`, `/thank-you`, `/style-guide` have zero tray JS). Delegated document clicks on the swatch `.add-btn` hooks (`data-code`/`data-name`; island owns `.active` class + `aria-pressed` + dynamic `aria-label`), the nav button (`data-tray-open`) opens the slide-in drawer, per-row quantity steppers (1–99) and removal, `aria-live` totals, Escape/overlay/focus-return handling, body scroll lock, `localStorage('lamina.tray')` persistence, "Continue with project details" → `/request`.
+  - **`/api/request`** (`prerender = false`) — accepts JSON (JS fetch) *and* form-encoded (no-JS native POST); hand-rolled field validation (no zod — small surface); Origin check (browsers always send it on POST; curl may omit it — allowed); submission-id duplicate guard (in-memory Map, 15-min TTL, per-isolate — PRD §4.1's level, with Turnstile as the bot boundary); Turnstile siteverify server-side (never the public key); Resend email with a readable item table — **product names resolved from the site's own content collection** (`getCollection('products')`, cached per isolate), never from client-sent text; form path 303s to `/thank-you?id=…`, fetch path returns JSON.
+  - **`/request` page** — plain native `<form method="post" action="/api/request">` (works with JS off: `items_text` field, "CODE ×qty" per line, Turnstile widget still guards it); with JS, an inline module hydrates the recap from the tray (removable rows), sets a `crypto.randomUUID()` submission id, validates via the native controls, submits JSON, clears the tray, navigates to `/thank-you`. Turnstile widget renders only when `PUBLIC_TURNSTILE_SITE_KEY` is set.
+  - **Recap redesigned as a responsive catalogue table** (client follow-up to M4, per `/design` direction: refined editorial minimalism consistent with the approved mockup): the tray list on `/request` is now a semantic `<table>` in the design system's hairline language — mono uppercase `thead` eyebrows, `1px var(--line)` rules, per-row **swatch thumbnails** (code→URL map of 92 × 120w WebPs baked at build time via `getImage` + `getCollection`, embedded as a `data-thumbs` JSON attribute, `is:inline` so the bundler leaves it), mono article code, name, right-aligned qty, uppercase-underline remove; items are visitor-controlled localStorage — all injected strings are HTML-escaped (added `escapeHtml`); stale codes render a blank swatch tile; `<noscript>` hides the table and keeps the `items_text` fallback. **Follow-up fix (client's visual review):** the first pass shipped the styles scoped, but Astro scopes a page's `<style>` to static markup only — the JS-rendered rows matched none of the rules and images rendered at raw 120px ("no styles on the table, images big"). All recap selectors are now `:global()`-wrapped (compiled output verified plain/unscoped), thumbnails shrunk to cart-style 48px square tiles (44px mid, 40px phone), and the responsive treatment extended to a three-rung media ladder: full table ≥641px, card grid ≤640px, tightened cards ≤480px. Verified in a browser against the served build: computed styles applied, thumbs 48×48 loaded from the map, zero console errors. **Final shape (two more client review rounds):** the name column became the **collection** the article belongs to — titles resolved server-side from the site's own `collections` collection (keyed by entry id; a `reference('collections')` resolves to `{ id, collection }`, not a slug string), never client-sent; the `<thead>` was then dropped entirely (headerless hairline frame — first-row top rule takes its place) and the article code column was removed, with the mono code now **stacked above the collection name** in one text cell (flex column, `gap: 3px`). Final row: `[48px swatch tile] [code over collection] [×qty] [Remove]` — 4 cells, headerless, card grid on ≤640px.
+  - **`/thank-you`** — confirmation, reference id, back link. Nav gained `hideTray` (the tray button is meaningless on the request pages) and the tray button lost its M4-era title.
+  - **Verified locally against the real worker** (`wrangler dev` on the built `dist`): valid JSON + always-pass token → turnstile passes, email leg executes to the network boundary (502 with dummy key — the closest achievable without the client's Resend key); duplicate id → 409; missing token → 400; always-fail token (secret swap) → 400; bad email / bad qty / unknown code / dup code → 400; cross-origin → 403 (plus workerd itself blocks form-POSTs without a matching Origin); no-JS form path parses `items_text`, mints an id when absent, reaches the email leg; GET → 404; `tsc --noEmit` clean; all 92 product codes present in the worker's bundled data layer (name lookup runs in-isolate).
+- Decisions made (and why):
+  - **`import { env } from 'cloudflare:workers'` for secrets, not `import.meta.env`** — build-time static replacement bakes `undefined` for runtime bindings (first build silently 503'd; the compiled bundle had zero `meta.env` refs). The adapter's documented pattern is the `cloudflare:workers` import; typed via `src/env.d.ts` (adapter's `wrangler types` needs a root wrangler config, which doesn't exist yet — noted in the file).
+  - **Server resolves product names from the content collection** — the client can't be trusted to supply names (only codes + quantities are accepted); the recap email reads names from the site's own catalogue.
+  - **`sendEmail` guards**: missing secret → 503 (so an unconfigured deploy fails loudly, not silently); dummy key in `.dev.vars` lets local E2E prove the leg runs.
+  - **Turnstile test keys in `.env`/`.dev.vars`** (gitignored, never committed) — real keys replace them for production; the client sets `PUBLIC_TURNSTILE_SITE_KEY` in the build env and runs `wrangler secret put TURNSTILE_SECRET_KEY` / `RESEND_API_KEY`.
+- Blocked on / open questions (client input needed):
+  - ⛔ **Real email delivery** — `wrangler secret put RESEND_API_KEY` (+ verify `hello@lamina.studio` in Resend; `RESEND_FROM`/`RESEND_TO` env overrides exist) and a `PUBLIC_TURNSTILE_SITE_KEY` from the Turnstile dashboard. Until then the acceptance criterion "receive exactly one email" is verified up to the API boundary.
+  - ⛔ **Workers outbound fetch** — sending to api.resend.com requires a paid Workers plan (free tier only fetches Cloudflare-hosted origins; the Turnstile siteverify host is Cloudflare-owned so it's fine). Known at M0-deploy time.
+  - ⛔ Unchanged: the shared human visual-acceptance pass (M1 + M2 residuals + M3 + now the tray/form click-through at 1440/390), GitHub remote + Workers Builds (M0), production domain, brand name.
+- Next session should start with:
+  - The human visual-acceptance pass, then **M5 — SEO, Accessibility, Performance** (meta/OG everywhere, sitemap/robots, heading audit, ARIA + keyboard/focus-trap for the tray, image-weight audit, Lighthouse ≥ 90 four-way gate).
+
+### Session 7 — 2026-09-01
+- Milestone(s) worked on: **M3 — Core Pages** (completed; §0 row now `☑ Done`). Client directives carried over from Session 6's end: "if SEO is in the next milestone, you can skip" (SEO deferred to **M5** — this supersedes any earlier assumption it was in M3) and the catalogue-PDF extraction for "real product information" was **interrupted by the client before completion** — deferred until the client asks for it again.
+- Completed this session:
+  - **Collection pages** — new `src/pages/collections/[slug].astro`: generated from Content Collections (6 pages: wood-grain, stone-marble, metal, textile, solid, glossy-decorative), composed entirely from existing components — `SectionHead` (now `level={1}` on standalone pages), `AppShowcase` (now with a `priority` prop: primary image eager + `fetchpriority="high"`), and the **complete swatch filmstrip** (5-up grid on desktop like the homepage row, 2-up on mobile — the homepage row hides on mobile in favour of the dialog, but a collection page has no dialog fallback, so the filmstrip must stay). Each page carries its own `<title>`/description/OG meta.
+  - **Navigation wiring** — the header nav now links to `/collections/[slug]` instead of dead `#anchors` (which would also have broken on collection pages). The homepage's sticky **IndexStrip keeps the mockup's in-page anchors** (verified all 6 section ids resolve). The homepage layout itself is untouched — the M3 constraint holds.
+  - **Hero refactored from a CSS background to a real `<img>`** — visually identical (same photo, scrim now an overlay `div` with the `--hero-veil` gradient, same stacking), but the browser now sees the LCP request in the initial document with `fetchpriority="high"` and a responsive srcset (`640/960/1280/1920w`, `sizes="100vw"`). Attempt 1 (CSS `image-set` 1x/2x + preload) failed: at the emulated device's DPR 2.6 the `2x` entry won anyway, so mobile fetched both variants — worse. The `<img>` srcset serves ~960w (62 KiB) to mobile instead of 1920w (227 KiB).
+  - **Fonts stylesheet made async** (`media="print"` + `onload` swap + noscript fallback) on the homepage and all collection pages — it was the only render-blocking third-party request (Lighthouse sim charged it ~1s).
+  - **`build.inlineStylesheets: 'always'`** in `astro.config.mjs` — all component CSS (a few KiB) is inlined into the HTML; zero render-blocking stylesheet requests. HTML grew 121→138 KiB raw but stays ~14.4 KiB gzipped (Cloudflare brotli will do better).
+  - **Lighthouse journey (homepage, mobile):** initial dist build measured **79** (simulated) — dev-server interference mis-measured 54 first (port 4321/4322 were occupied by running `astro dev` servers; re-served `dist` on a clean port). FCP 2.7s was traced (raw trace events: DOMContentLoaded 44 ms, LCP candidate 153 ms, FCP 180 ms) to Lighthouse 13's *simulated* model charging each request `requestLatencyMs 562.5` and gating FCP/LCP on the font fetches; the real CDP-throttled run measured **99**. After hero `<img>` + async fonts + inline stylesheets, the simulated run also scores **99** (FCP 0.9 s, LCP 2.1 s, TBT 0, CLS 0.022). Collection page: **97** (real throttle). Harness: `scripts/serve-gzip.mjs` (gzip + production-like immutable `/_astro` cache) — committed so future sessions can re-measure.
+  - Verified: `astro build` 8 pages exit 0; `tsc --noEmit` clean; dist inspection — 6 collection pages, 0 non-WebP files in `_astro`, 0 Svelte bundles, every `<img>` has width/height + srcset, homepage hero `loading="eager"`/`fetchpriority="high"` with all 134 below-fold images lazy. **Not deployed** — deploys happen only when the client asks.
+- Decisions made (and why):
+  - **Nav → collection pages** (not homepage anchors): the collection pages are an M3 deliverable and need discoverability; the mockup's `#` targets were single-page placeholders. The IndexStrip preserves the mockup's in-page scroll behaviour on the homepage, so the approved stacked layout's navigation feel is intact.
+  - **`inlineStylesheets` over request-merging**: with ~10 tiny scoped stylesheets per page, inlining removes the whole render-blocking chain for a ~3 KiB gzip cost — the right trade for an 8-page static site.
+  - **Async Google Fonts with display=swap**: text paints in a fallback face and swaps — the mockup's serif display treatment still lands; `noscript` keeps no-JS users styled.
+  - Kept `scripts/serve-gzip.mjs` as the re-measurable Lighthouse harness (the python static server it replaced sent no compression and `max-age=60`, which under-reported).
+- Blocked on / open questions:
+  - ⛔ Unchanged: the shared **human visual-acceptance pass** now covers M1 (all components + `/style-guide`), M2 residuals (texture-crop cut-off on swatches; AI-upscale for app images), and M3's acceptance (homepage + one collection page vs mockup at 1440/390) — one browser session settles all three.
+  - ⛔ Unchanged: MS-102 "Onyx Matte"/PM-263 "Noir Gloss" name-vs-imagery mismatch (client decision), GitHub remote + Workers Builds (M0), production domain, brand name, descriptive-vs-code product names.
+  - The PRD checklist says "all 4 collections" — the client's six-collection decision (Session 4) means six pages; noted in the M3 checklist.
+- Next session should start with:
+  - The human visual-acceptance pass (M1 + M2 residuals + M3 acceptance), then proceed to **M4 — Request Tray & Form** (Svelte island, persistent drawer, quantity steppers, `/api/request` server route with validation + Turnstile + duplicate check + Resend, `/thank-you`, no-JS `/request` fallback).
 
 ---

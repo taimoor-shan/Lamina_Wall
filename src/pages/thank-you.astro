@@ -1,0 +1,99 @@
+---
+// Thank-you — success state after a request is submitted (PRD §4).
+// Reached via the API route's 303 redirect (?id=…) or the fetch path.
+// The tray is cleared on the way here (JS path); nothing interactive.
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+const id = Astro.url.searchParams.get('id') ?? '';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Request received — LAMINA</title>
+    <meta name="description" content="Your sample request has been received." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+  </head>
+  <body>
+    <Nav hideTray />
+
+    <main class="thanks">
+      <p class="eyebrow">Request received</p>
+      <h1 class="display">Thank you</h1>
+      <p class="thanks-body">
+        Your sample request is with the studio. We'll reply to the email you
+        provided to confirm availability and next steps — usually within a
+        couple of business days.
+      </p>
+      {id && <p class="thanks-id">Reference {id}</p>}
+      <a class="thanks-link" href="/">← back to the collections</a>
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .thanks {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: var(--section-v) var(--gutter) 120px;
+    text-align: center;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 16px;
+  }
+  .display {
+    font-family: var(--font-serif);
+    font-size: var(--fs-display-lg);
+    font-weight: 400;
+    line-height: var(--lh-display);
+    margin: 0 0 24px;
+  }
+  .thanks-body {
+    color: var(--ash);
+    font-size: var(--fs-body-lg);
+    line-height: var(--lh-body);
+    margin: 0 auto 28px;
+    max-width: 460px;
+  }
+  .thanks-id {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--ash);
+    letter-spacing: var(--ls-mono);
+    margin: 0 0 32px;
+  }
+  .thanks-link {
+    color: var(--ink);
+    font-size: var(--fs-body);
+  }
+  .thanks-link:hover {
+    color: var(--ember);
+  }
+</style>

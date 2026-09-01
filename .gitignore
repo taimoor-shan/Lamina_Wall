@@ -9,6 +9,9 @@ dist/
 # wrangler local state
 .wrangler/
 
+# wrangler local secrets (Turnstile verify key, Resend key) — never commit
+.dev.vars
+
 # raw catalogue source imagery (local working set for M2; not committed)
 assets/
 reference/assets/

@@ -1,7 +1,8 @@
 ---
 // SwatchCard — one product swatch: fixed-aspect image box + code/name + add
-// button (mockup .swatch). The add button is inert until M4 wires the tray;
-// keep its markup stable so M4 can hook it (data-code / data-name included).
+// button (mockup .swatch). The button is a stateless hook for the M4 tray
+// island: RequestTray.svelte delegates document clicks on [data-code],
+// toggles .active / aria-pressed, and updates the aria-label.
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 
@@ -33,8 +34,8 @@ const { code, name, swatchImage, alt } = product.data;
       type="button"
       data-code={code}
       data-name={name}
+      aria-pressed="false"
       aria-label={`Add ${code} ${name} to the request`}
-      title="Request tray arrives in M4"
     >
       +
     </button>

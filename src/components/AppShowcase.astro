@@ -16,9 +16,12 @@ interface Props {
   caption?: string;
   title: string;
   order: number;
+  /** Priority-load the primary image — used on collection pages where the
+      application photo is the page hero (above the fold). */
+  priority?: boolean;
 }
 
-const { primary, primaryAlt, secondary, secondaryAlt, caption, title, order } =
+const { primary, primaryAlt, secondary, secondaryAlt, caption, title, order, priority = false } =
   Astro.props;
 ---
 
@@ -30,7 +33,8 @@ const { primary, primaryAlt, secondary, secondaryAlt, caption, title, order } =
         alt={primaryAlt}
         widths={[640, 1024, 1920]}
         sizes="(max-width: 900px) 100vw, 70vw"
-        loading="lazy"
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : undefined}
       />
     </div>
     <div class="app-side">

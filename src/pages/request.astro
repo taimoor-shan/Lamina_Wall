@@ -1,0 +1,657 @@
+---
+// Request page — /request (PRD §4). The form itself is a plain native
+// <form method="post" action="/api/request"> so it submits without any
+// JavaScript (PRD §4.1 no-JS fallback): a no-JS visitor types the article
+// numbers into the items_text field, Turnstile's widget still guards the
+// submit, and the worker redirects to /thank-you.
+//
+// With JS, an inline enhancement replaces the recap area with the items
+// carried in the tray (localStorage), validates via the same native form
+// controls, submits JSON through fetch, clears the tray on success and
+// navigates to /thank-you. The server treats both payloads identically
+// after parsing. No Svelte on this page — no tray bundle here.
+//
+// The recap renders as a responsive catalogue table (design system:
+// tokens.css / style-guide) with cart-style rows — small swatch
+// thumbnail, mono article code, the collection the article belongs to,
+// qty and remove. Everything the client needs is baked at build time
+// into one small code→{thumbnail, collection} JSON map (one 120w WebP
+// per article; collection titles from the collections collection) so
+// there are no server round-trips and stale localStorage codes simply
+// fall back to a blank tile.
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+
+const collectionTitles = new Map<string, string>();
+for (const c of await getCollection('collections')) {
+  collectionTitles.set(c.id, c.data.title);
+}
+
+const recapData: Record<string, { img: string; collection: string }> = {};
+for (const p of await getCollection('products')) {
+  const img = await getImage({ src: p.data.swatchImage, widths: [120], format: 'webp' });
+  // reference('collections') resolves to { id, collection } — the entry id
+  // (the slug filename) is the map key.
+  const ref = p.data.collection as { id: string };
+  recapData[p.data.code] = {
+    img: img.src,
+    collection: collectionTitles.get(ref.id) ?? ref.id,
+  };
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sample request — LAMINA</title>
+    <meta name="description" content="Request samples of LAMINA wall panels for your project." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+  </head>
+  <body>
+    <Nav hideTray />
+
+    <main class="request-page">
+      <header class="request-head">
+        <p class="eyebrow">Request</p>
+        <h1 class="display">Project details</h1>
+        <p class="request-intro">
+          Tell us where the samples are headed and we'll confirm availability
+          and shipping by email. Your tray stays with you until the request
+          is sent.
+        </p>
+      </header>
+
+      <form id="request-form" class="request-form" method="post" action="/api/request">
+        <div class="fields">
+          <label class="field">
+            <span class="field-label">Company *</span>
+            <input type="text" name="company" required maxlength="120" autocomplete="organization" />
+          </label>
+          <label class="field">
+            <span class="field-label">Contact person *</span>
+            <input type="text" name="contact" required maxlength="120" autocomplete="name" />
+          </label>
+          <label class="field">
+            <span class="field-label">Email *</span>
+            <input type="email" name="email" required maxlength="254" autocomplete="email" />
+          </label>
+          <label class="field">
+            <span class="field-label">Phone <span class="opt">(optional)</span></span>
+            <input type="tel" name="phone" maxlength="40" autocomplete="tel" />
+          </label>
+          <label class="field">
+            <span class="field-label">Project name / location <span class="opt">(optional)</span></span>
+            <input type="text" name="project" maxlength="200" />
+          </label>
+          <label class="field field-wide">
+            <span class="field-label">Notes <span class="opt">(optional)</span></span>
+            <textarea name="notes" rows="4" maxlength="2000"
+              placeholder="Stage of project, estimated sample quantity, finish notes…"></textarea>
+          </label>
+        </div>
+
+        <section class="recap" aria-labelledby="recap-title">
+          <h2 id="recap-title" class="recap-title">Your request</h2>
+          <!-- Catalogue table — filled from the tray by the inline script;
+               hidden without JS (the items_text field below takes over). -->
+          <div id="recap-js">
+            <table class="recap-table">
+              <tbody id="recap-body"></tbody>
+            </table>
+          </div>
+          <p id="recap-empty" class="recap-empty" hidden>
+            Your request tray is empty —
+            <a href="/">browse the collections</a> and add article numbers.
+          </p>
+          <noscript>
+            <style>
+              #recap-js {
+                display: none;
+              }
+            </style>
+            <label class="field field-wide">
+              <span class="field-label">Article numbers <span class="opt">(one per line — Code ×quantity)</span></span>
+              <textarea name="items_text" rows="4" required
+                placeholder="LAM-01 ×2&#10;SMD-12"></textarea>
+            </label>
+          </noscript>
+        </section>
+
+        <input type="hidden" name="submission_id" id="submission-id" value="" />
+
+        {siteKey && (
+          <div
+            class="cf-turnstile"
+            data-sitekey={siteKey}
+            data-theme="light"
+          ></div>
+        )}
+
+        <div class="submit-row">
+          <button id="submit-btn" class="submit-btn" type="submit">
+            Send request
+          </button>
+          <a class="back-link" href="/">← back to collections</a>
+        </div>
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+      </form>
+    </main>
+
+    <Footer />
+
+    {siteKey && (
+      <script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        async
+        defer
+      ></script>
+    )}
+    <!-- Build-time catalogue data for the recap table (code → {thumbnail,
+         collection}), embedded as JSON so the client needs no server
+         round-trips. -->
+    <script
+      is:inline
+      type="application/json"
+      id="recap-data"
+      data-value={JSON.stringify(recapData)}
+    ></script>
+    <script>
+      // Request-page enhancement (runs only when JS is available):
+      // hydrate the recap from the tray, submit via fetch, clear on success.
+      const form = document.getElementById('request-form') as HTMLFormElement;
+      const recapJs = document.getElementById('recap-js') as HTMLElement;
+      const recapBody = document.getElementById('recap-body') as HTMLTableSectionElement;
+      const recapEmpty = document.getElementById('recap-empty') as HTMLElement;
+      const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+      const errorEl = document.getElementById('form-error') as HTMLElement;
+      const idInput = document.getElementById('submission-id') as HTMLInputElement;
+
+      const STORAGE_KEY = 'lamina.tray';
+      const recapData: Record<string, { img: string; collection: string }> = JSON.parse(
+        (document.getElementById('recap-data') as HTMLScriptElement).getAttribute('data-value') ?? '{}',
+      );
+
+      // Items come from localStorage (visitor-controlled) — never inject
+      // raw strings into the recap table.
+      function escapeHtml(s: string): string {
+        return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+      }
+
+      function loadTray(): { code: string; name: string; qty: number }[] {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function showError(message: string) {
+        errorEl.textContent = message;
+        errorEl.hidden = false;
+      }
+
+      function renderRecap() {
+        const items = loadTray();
+        if (items.length === 0) {
+          recapJs.hidden = true;
+          recapEmpty.hidden = false;
+          return;
+        }
+        recapJs.hidden = false;
+        recapEmpty.hidden = true;
+        recapBody.replaceChildren();
+        items.forEach((item, index) => {
+          const qty = Number.isInteger(item.qty) && item.qty >= 1 && item.qty <= 99 ? item.qty : 1;
+          // Thumbnail + collection from the build-time map; codes left over
+          // from an older tray get a blank tile and an em dash.
+          const meta = recapData[item.code];
+          const thumb = meta
+            ? `<img src="${meta.img}" alt="" loading="lazy" width="120" height="120">`
+            : '<span class="rc-thumb-none" aria-hidden="true"></span>';
+          const row = document.createElement('tr');
+          row.className = 'recap-row';
+          row.innerHTML =
+            `<td class="rc-thumb">${thumb}</td>` +
+            `<td class="rc-text">` +
+            `<span class="rc-code">${escapeHtml(item.code)}</span>` +
+            `<span class="rc-collection">${escapeHtml(meta ? meta.collection : '—')}</span>` +
+            `</td>` +
+            `<td class="rc-qty">×${qty}</td>` +
+            `<td class="rc-remove"></td>`;
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'rc-remove-btn';
+          remove.setAttribute('aria-label', `Remove ${item.code} from the request`);
+          remove.textContent = 'Remove';
+          remove.addEventListener('click', () => {
+            items.splice(index, 1);
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+            } catch {}
+            renderRecap();
+          });
+          (row.querySelector('.rc-remove') as HTMLElement).appendChild(remove);
+          recapBody.appendChild(row);
+        });
+      }
+
+      renderRecap();
+
+      // Client-generated submission id: lets the server reject a duplicated
+      // submit even if the button were re-enabled by a page reload.
+      idInput.value = crypto.randomUUID();
+
+      form.addEventListener('submit', async (e) => {
+        // Native constraint validation (required / email) runs first; when
+        // those pass we bypass the native submit with fetch.
+        if (!form.reportValidity()) return;
+        e.preventDefault();
+
+        const tokenEl = document.querySelector(
+          '[name="cf-turnstile-response"]',
+        ) as HTMLInputElement | null;
+        if (!tokenEl || !tokenEl.value) {
+          showError('Please complete the security check before sending.');
+          return;
+        }
+
+        const items = loadTray();
+        if (items.length === 0) {
+          showError('Your request tray is empty — add at least one article number.');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+        errorEl.hidden = true;
+
+        const body = {
+          company: (form.elements.namedItem('company') as HTMLInputElement).value,
+          contact: (form.elements.namedItem('contact') as HTMLInputElement).value,
+          email: (form.elements.namedItem('email') as HTMLInputElement).value,
+          phone: (form.elements.namedItem('phone') as HTMLInputElement).value,
+          project: (form.elements.namedItem('project') as HTMLInputElement).value,
+          notes: (form.elements.namedItem('notes') as HTMLInputElement).value,
+          items,
+          submission_id: idInput.value,
+          turnstile_token: tokenEl.value,
+        };
+
+        try {
+          const res = await fetch('/api/request', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+          if (res.ok) {
+            try {
+              localStorage.removeItem(STORAGE_KEY);
+            } catch {}
+            const data = await res.json().catch(() => null);
+            location.href = `/thank-you?id=${encodeURIComponent(data?.id ?? idInput.value)}`;
+            return;
+          }
+          const data = await res.json().catch(() => null);
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send request';
+          showError(data?.error ?? 'Something went wrong — please try again.');
+        } catch {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send request';
+          showError('Could not reach the server — please try again.');
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .request-page {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--section-v) var(--gutter) 80px;
+  }
+  .request-head {
+    max-width: 560px;
+    margin-bottom: 48px;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 16px;
+  }
+  .display {
+    font-family: var(--font-serif);
+    font-size: var(--fs-display-lg);
+    font-weight: 400;
+    line-height: var(--lh-display);
+    margin: 0 0 20px;
+  }
+  .request-intro {
+    color: var(--ash);
+    font-size: var(--fs-body-lg);
+    line-height: var(--lh-body);
+  }
+  .request-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px var(--gutter);
+    align-items: start;
+  }
+  section.recap {
+    width: 100%;
+    max-width: 500px;
+    justify-self: end;
+}
+  .fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 28px;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .field-wide {
+    grid-column: 1 / -1;
+  }
+  .field-label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+  }
+  .field-label .opt {
+    text-transform: none;
+    letter-spacing: 0.02em;
+    color: var(--line);
+  }
+  .field input,
+  .field textarea {
+    font-family: inherit;
+    font-size: var(--fs-body-lg);
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: var(--border);
+    border-radius: 0;
+    padding: 8px 2px;
+    outline: none;
+    transition: border-color var(--dur-fade) var(--ease-out);
+  }
+  .field textarea {
+    border-bottom: none;
+    border: var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    resize: vertical;
+    min-height: 96px;
+  }
+  .field input:focus,
+  .field textarea:focus {
+    border-color: var(--ember);
+  }
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: var(--line);
+  }
+  .recap-title {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+    margin: 0 0 16px;
+  }
+  /* Catalogue recap — the design system's hairline table language
+     (style-guide), rows like a cart table: small swatch thumbnail,
+     the mono article code stacked above its collection, right-aligned
+     qty, uppercase-underline remove. Headerless by design — the rows
+     are self-evident (thumb, code over collection, ×qty, Remove); the
+     first row's top rule frames the table. The rows are rendered by
+     the inline script at runtime, and Astro scopes a page's <style>
+     to static markup only — so every recap selector is wrapped in
+     :global() or it silently matches nothing (the table then falls
+     back to raw browser styles). */
+  :global(.recap-table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-body);
+    border-top: 1px solid var(--line);
+
+  }
+  :global(tr.recap-row ){
+    border-bottom: 1px solid var(--line);
+}
+  :global(.recap-table .rc-thumb) {
+    width: 60px;
+  }
+  :global(.recap-table .rc-qty) {
+    width: 48px;
+  }
+  :global(.recap-table .rc-remove) {
+    width: 88px;
+  }
+  :global(.recap-row td) {
+    padding: 10px 0;
+    /* border-bottom: 1px solid var(--line); */
+    vertical-align: middle;
+  }
+  :global(.recap-row:first-child td) {
+    /* border-top: 1px solid var(--line); */
+  }
+  :global(.recap-row:hover) {
+    background: var(--stone-card);
+  }
+  :global(.rc-thumb img) {
+    display: block;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  :global(.rc-thumb-none) {
+    display: block;
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--stone-card);
+  }
+  :global(.rc-text) {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  :global(.rc-code) {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--ash);
+    letter-spacing: var(--ls-mono);
+    white-space: nowrap;
+  }
+  :global(.rc-collection) {
+    font-size: var(--fs-label-lg);
+    line-height: 1.35;
+  }
+  :global(.rc-qty) {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--ash);
+    white-space: nowrap;
+    text-align: right;
+  }
+  :global(.rc-remove) {
+    text-align: right;
+  }
+  :global(.rc-remove-btn) {
+    border: none;
+    background: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  :global(.rc-remove-btn:hover) {
+    color: var(--ember);
+  }
+  .recap-empty {
+    color: var(--ash);
+    font-size: var(--fs-body);
+    margin: 0;
+  }
+  .recap-empty a {
+    color: var(--ember);
+  }
+  /* Narrow screens: each row becomes a cart-style card — thumbnail
+     leading, code over collection, qty over remove. */
+  @media (max-width: 640px) {
+    :global(.recap-table),
+    :global(.recap-table tbody) {
+      display: block;
+    }
+    :global(.recap-table tr) {
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      grid-template-areas:
+        'thumb text qty'
+        'thumb text remove';
+      column-gap: 14px;
+      row-gap: 5px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    :global(.recap-row:hover) {
+      background: none;
+    }
+    :global(.recap-row td) {
+      padding: 0;
+      border-bottom: none;
+    }
+    :global(.rc-thumb) {
+      grid-area: thumb;
+      width: 44px;
+    }
+    :global(.rc-thumb img),
+    :global(.rc-thumb-none) {
+      width: 44px;
+      height: 44px;
+    }
+    :global(.rc-text) {
+      grid-area: text;
+    }
+    :global(.rc-qty) {
+      grid-area: qty;
+      text-align: right;
+    }
+    :global(.rc-remove) {
+      grid-area: remove;
+      text-align: right;
+    }
+  }
+  /* Phones: tighten the cards further. */
+  @media (max-width: 480px) {
+    :global(.recap-table tr) {
+      grid-template-columns: 40px 1fr auto;
+      column-gap: 12px;
+    }
+    :global(.rc-thumb),
+    :global(.rc-thumb img),
+    :global(.rc-thumb-none) {
+      width: 40px;
+      height: 40px;
+    }
+  }
+  .submit-row {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+  .submit-btn {
+    border: none;
+    border-radius: var(--radius);
+    background: var(--ink);
+    color: var(--stone);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label-btn);
+    letter-spacing: var(--ls-mono-wide);
+    text-transform: uppercase;
+    padding: 14px 32px;
+    cursor: pointer;
+    transition: background var(--dur-fade) var(--ease-out);
+  }
+  .submit-btn:hover:not(:disabled) {
+    background: var(--ember);
+  }
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .back-link {
+    color: var(--ash);
+    font-size: var(--fs-body);
+  }
+  .back-link:hover {
+    color: var(--ink);
+  }
+  .form-error {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--ember);
+    font-size: var(--fs-body);
+  }
+  .cf-turnstile {
+    grid-column: 1 / -1;
+  }
+  @media (max-width: 900px) {
+    .request-form {
+      grid-template-columns: 1fr;
+    }
+    .fields {
+      grid-template-columns: 1fr;
+    }
+    .field-wide {
+      grid-column: auto;
+    }
+  }
+</style>
