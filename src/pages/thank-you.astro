@@ -2,6 +2,7 @@
 // Thank-you — success state after a request is submitted (PRD §4).
 // Reached via the API route's 303 redirect (?id=…) or the fetch path.
 // The tray is cleared on the way here (JS path); nothing interactive.
+import { getCollection } from 'astro:content';
 import '../styles/tokens.css';
 import '../styles/global.css';
 
@@ -11,6 +12,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 
 const id = Astro.url.searchParams.get('id') ?? '';
+const collections = await getCollection('collections');
 ---
 
 <!doctype html>
@@ -29,7 +31,7 @@ const id = Astro.url.searchParams.get('id') ?? '';
     <Fonts />
   </head>
   <body>
-    <Nav hideTray />
+    <Nav collections={collections} hideTray />
 
     <main class="thanks">
       <p class="eyebrow">Request received</p>

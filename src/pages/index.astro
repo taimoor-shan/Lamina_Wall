@@ -17,12 +17,13 @@ import RequestTray from '../components/RequestTray.svelte';
 import heroImage from '../assets/applications/hero-001.jpeg';
 
 // M5 perf: preload the LCP (hero) image so its request starts from the head
-// at the top of the browser's priority queue, not when the <img> parses.
-// Same widths/sizes/formats as Hero.astro so the preload and the <img>
-// resolve to the same candidate — no double download.
+// at the top of the browser's priority queue, not when the background
+// stylesheet applies. Same widths as Hero.astro's background tiers so the
+// preload and the background resolve to the same candidate — no double
+// download.
 const heroPreload = await getImage({
   src: heroImage,
-  widths: [640, 960, 1280, 1920],
+  widths: [640, 1280, 1920],
   formats: ['webp'],
 });
 
@@ -65,12 +66,11 @@ for (const arr of productsByCollection.values()) {
     <Fonts />
   </head>
   <body>
-    <Nav collections={collections} trayCount={0} />
+    <Nav collections={collections} />
 
     <main>
       <Hero
         image={heroImage}
-        alt="Wood-panelled living room with warm oak grain"
         eyebrow="Architectural Surfaces — 2026 Collection"
         lines={[
           { text: 'Surfaces with' },
@@ -79,10 +79,9 @@ for (const arr of productsByCollection.values()) {
         sub="Wood, stone, metal and textile, reproduced with the grain, depth and hand-feel of the original material. Specified by the panel, not the pallet."
         linkHref="#wood-grain"
         linkLabel="View the collections ↓"
-        callout={{ code: 'WG-01', name: 'Classic Technology Wood' }}
       />
 
-      <IndexStrip collections={collections} />
+      <!-- <IndexStrip collections={collections} /> -->
 
       {
         collections.map((c) => (

@@ -72,6 +72,18 @@
       btn.setAttribute('aria-pressed', String(active));
       btn.setAttribute('aria-label', `${active ? 'Remove' : 'Add'} ${code} ${btn.dataset.name ?? ''} ${active ? 'from' : 'to'} the request`);
     });
+    // Live count readouts: the header Request button and the homepage CTA
+    // (both carry [data-tray-count]) mirror the tray's total quantity.
+    const n = totalQty;
+    document.querySelectorAll<HTMLElement>('[data-tray-count]').forEach((el) => {
+      el.textContent = `(${n})`;
+      // The readout span is aria-hidden (decorative); give the owning button
+      // a dynamic accessible name so screen-reader users hear the count.
+      el.closest('button')?.setAttribute(
+        'aria-label',
+        `Open request tray — ${n} ${n === 1 ? 'sample' : 'samples'} selected`,
+      );
+    });
   }
 
   function toggle(code: string, name: string) {

@@ -68,6 +68,15 @@
   --container-max: 1400px;
   --section-v: 120px;      /* section top padding */
   --sec-head-gap: 52px;
+  @media (max-width:768px) {
+     --sec-head-gap: 32px;
+     --section-v: 60px; 
+       --hero-veil: linear-gradient(
+    to bottom,
+    rgba(15, 13, 9, 0.55),
+    rgba(15, 13, 9, 0.75)
+  );
+  }
   --status-bar-h: 0px;
   --nav-h: 73px;
   --hero-min-h: 640px;
@@ -96,7 +105,7 @@
   --swatch-overlay-strong: rgba(15, 13, 9, 0.78); /* overlay hover */
   --dlg-backdrop: rgba(15, 13, 9, 0.66); /* lightbox backdrop */
   --hero-h: calc(100vh - var(--nav-h)); /* full-bleed hero below sticky nav */
-  --hero-bg: none; /* fallback only — Hero.astro sets the optimized image URL inline */
+  --hero-bg: none; /* fallback only — Hero.astro injects the tiered background URLs (set:html) */
   --index-strip-top: var(--nav-h);      /* sticky offset for the index strip */
   --swatch-ratio: 4 / 2.7; /* swatch image box */
   --app-ratio: 16 / 8.4;   /* in-page application photo box */

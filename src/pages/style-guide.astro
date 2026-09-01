@@ -73,14 +73,13 @@ const tokens: { label: string; value: string; css: string }[] = [
 
       <section class="sg-block">
         <h2 class="sg-h">Nav.astro</h2>
-        <Nav collections={collections} trayCount={0} />
+        <Nav collections={collections} />
       </section>
 
       <section class="sg-block">
         <h2 class="sg-h">Hero.astro</h2>
         <Hero
           image={heroImage}
-          alt="Wood-panelled living room with warm oak grain"
           eyebrow="Architectural Surfaces — 2026 Collection"
           lines={[
             { text: 'Surfaces with' },
@@ -89,7 +88,6 @@ const tokens: { label: string; value: string; css: string }[] = [
           sub="Wood, stone, metal and textile, reproduced with the grain, depth and hand-feel of the original material. Specified by the panel, not the pallet."
           linkHref="#wood-grain"
           linkLabel="View the collections ↓"
-          callout={{ code: 'WG-01', name: 'Classic Technology Wood' }}
         />
       </section>
 

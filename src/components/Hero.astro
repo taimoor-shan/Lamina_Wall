@@ -1,12 +1,18 @@
 ---
-// Hero — full-bleed application photo under the --hero-veil scrim, with a
-// floating material callout and bottom-aligned headline (mockup lines 29-43).
-// The photo is a real <img> (astro:assets, priority, responsive srcset) with
-// the scrim layered above it — visually identical to the mockup's CSS
-// background treatment, but the browser discovers the LCP request in the
-// initial document with fetchpriority=high instead of waiting on stylesheet
-// parse for a background-image.
-import { Image } from 'astro:assets';
+// Hero — full-bleed application photo as the section's CSS background with
+// the headline in normal flow: flex-centered vertically, left-aligned,
+// subtext + link below the headline as before (mockup lines 29-43).
+//
+// No absolute positioning anywhere: the dark scrim is the --hero-veil
+// gradient layered over the photo inside the same background-image, and the
+// floating material callout is gone. The photo is one build-time WebP per
+// viewport tier (media-queried like an img srcset) — tiers match the
+// preload widths in index.astro so preload and background resolve to the
+// same candidate per viewport (no double download).
+//
+// Astro does not template expressions inside <style>; the background URLs
+// ship through <style is:inline set:html> (same pattern as Fonts.astro).
+import { getImage } from 'astro:assets';
 
 interface Line {
   text: string;
@@ -14,37 +20,41 @@ interface Line {
 }
 interface Props {
   image: ImageMetadata;
-  alt: string;
   eyebrow: string;
   lines: Line[];
   sub: string;
   linkHref: string;
   linkLabel?: string;
-  callout?: { code: string; name: string };
 }
 
-const { image, alt, eyebrow, lines, sub, linkHref, linkLabel = 'View the collections', callout } =
-  Astro.props;
+const { image, eyebrow, lines, sub, linkHref, linkLabel = 'View the collections' } = Astro.props;
+
+const [bgSmall, bgMid, bgLarge] = await Promise.all([
+  getImage({ src: image, format: 'webp', width: 640 }),
+  getImage({ src: image, format: 'webp', width: 1280 }),
+  getImage({ src: image, format: 'webp', width: 1920 }),
+]);
+
+const heroCss = `
+  .hero {
+    background-image: var(--hero-veil), url('${bgSmall.src}');
+  }
+  @media (min-width: 960px) {
+    .hero {
+      background-image: var(--hero-veil), url('${bgMid.src}');
+    }
+  }
+  @media (min-width: 1280px) {
+    .hero {
+      background-image: var(--hero-veil), url('${bgLarge.src}');
+    }
+  }
+`;
 ---
 
+<style is:inline set:html={heroCss}></style>
+
 <section class="hero">
-  <Image
-    class="hero-img"
-    src={image}
-    alt={alt}
-    widths={[640, 960, 1280, 1920]}
-    sizes="100vw"
-    priority
-  />
-  <div class="hero-veil" aria-hidden="true"></div>
-  {
-    callout && (
-      <div class="callout">
-        <span class="ring" aria-hidden="true"></span>
-        <span class="code">{callout.code}</span>&nbsp;{callout.name}
-      </div>
-    )
-  }
   <div class="hero-content">
     <div class="hero-headline">
       <div class="eyebrow">{eyebrow}</div>
@@ -60,7 +70,7 @@ const { image, alt, eyebrow, lines, sub, linkHref, linkLabel = 'View the collect
       </h1>
     </div>
     <div class="hero-sub">
-      {sub}
+      <p>{sub}</p>
       <a href={linkHref}>{linkLabel}</a>
     </div>
   </div>
@@ -68,59 +78,21 @@ const { image, alt, eyebrow, lines, sub, linkHref, linkLabel = 'View the collect
 
 <style>
   .hero {
-    position: relative;
+    /* Photo + scrim as the CSS background; content in normal flow below. */
     height: var(--hero-h);
     min-height: var(--hero-min-h);
-    overflow: hidden;
-  }
-  .hero-img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  /* Approved hero treatment: optimized application photo under the veil */
-  .hero-veil {
-    position: absolute;
-    inset: 0;
-    background: var(--hero-veil);
-    z-index: 1;
-  }
-  .callout {
-    position: absolute;
-    z-index: 3;
-    top: 38%;
-    left: 57%;
+    background-size: cover;
+    background-position: center;
     display: flex;
     align-items: center;
-    gap: 10px;
-    color: var(--paper);
-    font-family: var(--font-mono);
-    font-size: var(--fs-caption);
-    letter-spacing: 0.05em;
-  }
-  .callout .ring {
-    width: 9px;
-    height: 9px;
-    border: 1.5px solid var(--paper);
-    border-radius: 50%;
-    box-shadow: 0 0 0 5px var(--callout-ring-glow);
-  }
-  .callout .code {
-    color: var(--peach);
+    padding: 0 var(--gutter);
   }
   .hero-content {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 2;
-    padding: 0 var(--gutter) 56px;
+    max-width: 500px;
+    width:100%;
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 60px;
+    flex-direction: column;
+    gap: 1.5em;
   }
   .hero-headline .eyebrow {
     color: var(--sand-soft);
@@ -131,7 +103,6 @@ const { image, alt, eyebrow, lines, sub, linkHref, linkLabel = 'View the collect
     color: var(--paper);
   }
   .hero-sub {
-    max-width: 280px;
     color: var(--paper-soft);
     font-size: var(--fs-hero-sub);
     line-height: 1.55;
@@ -139,7 +110,7 @@ const { image, alt, eyebrow, lines, sub, linkHref, linkLabel = 'View the collect
   }
   .hero-sub a {
     display: inline-block;
-    margin-top: 16px;
+    margin-top: 2em;
     font-family: var(--font-mono);
     font-size: var(--fs-label-lg);
     letter-spacing: 0.08em;

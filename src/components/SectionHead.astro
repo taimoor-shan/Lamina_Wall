@@ -27,17 +27,18 @@ const Heading = `h${level}` as 'h1' | 'h2';
 <style>
   .sec-head {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-end;
     margin-bottom: var(--sec-head-gap);
-    gap: 40px;
+    gap: 20px;
     border-bottom: 1px solid var(--line);
     padding-bottom: 28px;
   }
   .sec-head .num {
     font-family: var(--font-mono);
     font-size: var(--fs-label-btn);
-    color: var(--ash);
+    color: var(--ember);
   }
   .sec-head h2 {
     font-size: var(--fs-display-section);

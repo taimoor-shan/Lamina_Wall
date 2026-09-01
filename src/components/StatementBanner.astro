@@ -1,6 +1,8 @@
 ---
 // StatementBanner — dark request statement block (mockup .statement).
-// The CTA is rendered for visual parity; M4 wires it to the tray.
+// The CTA opens the request tray: the island's delegated click handler
+// catches [data-tray-open], and the [data-tray-count] span mirrors the
+// tray's total like the header Request button.
 interface Props {
   eyebrow: string;
   line1: string;
@@ -9,7 +11,7 @@ interface Props {
   ctaLabel?: string;
 }
 
-const { eyebrow, line1, line2, body, ctaLabel = 'Open your request (0)' } = Astro.props;
+const { eyebrow, line1, line2, body, ctaLabel = 'Open your request' } = Astro.props;
 ---
 
 <div class="statement">
@@ -24,8 +26,8 @@ const { eyebrow, line1, line2, body, ctaLabel = 'Open your request (0)' } = Astr
     )}
   </h2>
   <p>{body}</p>
-  <button class="btn" type="button" title="Request tray arrives in M4">
-    {ctaLabel}
+  <button class="btn" type="button" data-tray-open aria-label="Open request tray">
+    {ctaLabel} <span data-tray-count aria-hidden="true">(0)</span>
   </button>
 </div>
 
@@ -33,7 +35,7 @@ const { eyebrow, line1, line2, body, ctaLabel = 'Open your request (0)' } = Astr
   .statement {
     background: var(--basalt);
     color: var(--paper);
-    padding: 150px var(--gutter);
+    padding: var(--section-v) var(--gutter);
     margin-top: 80px;
     text-align: center;
   }

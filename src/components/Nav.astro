@@ -25,6 +25,24 @@ const { collections = [], hideTray = false } = Astro.props;
     }
   </nav>
   <div class="nav-right">
+    {/*
+      Mobile menu (≤900px) — a native <details> disclosure: zero JS, keyboard
+      accessible out of the box, works with JS off. The visible label flips
+      Menu/Close via CSS on [open]; the accessible name stays "Menu".
+    */}
+    <details class="menu">
+      <summary class="menu-btn" aria-label="Menu">
+        <span class="menu-open" aria-hidden="true">Menu</span>
+        <span class="menu-close" aria-hidden="true">Close</span>
+      </summary>
+      <nav class="menu-panel" aria-label="Collections">
+        {
+          collections.map((c) => (
+            <a href={`/collections/${c.data.slug}`}>{c.data.title}</a>
+          ))
+        }
+      </nav>
+    </details>
     {!hideTray && (
       <button
         class="tray-btn"
@@ -98,5 +116,90 @@ const { collections = [], hideTray = false } = Astro.props;
     border-radius: 50%;
     background: var(--ember);
     display: inline-block;
+  }
+
+  /* --- Mobile menu (≤900px) — native disclosure, hidden on desktop --- */
+  .menu {
+    display: none;
+  }
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label-btn);
+    letter-spacing: 0.04em;
+    border: 1px solid var(--stone);
+    padding: 9px 16px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    background: transparent;
+    color: var(--stone);
+    /* Remove the native disclosure marker (Safari needs the prefix). */
+    list-style: none;
+  }
+  .menu-btn::-webkit-details-marker {
+    display: none;
+  }
+  .menu-btn .menu-close {
+    display: none;
+  }
+  .menu[open] .menu-btn .menu-open {
+    display: none;
+  }
+  .menu[open] .menu-btn .menu-close {
+    display: inline;
+  }
+  /* Dropdown panel: anchored to the sticky header, full width, matching
+     the header bar's translucency + blur over page content. */
+  .menu-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--header-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    padding: 6px var(--gutter) 10px;
+  }
+  .menu-panel a {
+    display: block;
+    padding: 14px 0;
+    font-size: var(--fs-label-lg);
+    letter-spacing: 0.01em;
+    color: var(--stone);
+    opacity: 0.75;
+    border-bottom: 1px solid var(--line);
+  }
+  .menu-panel a:last-child {
+    border-bottom: none;
+  }
+  .menu-panel a:hover {
+    opacity: 1;
+  }
+
+  @media (max-width: 900px) {
+    .links {
+      display: none;
+    }
+    .menu {
+      display: block;
+    }
+  }
+  @media (max-width: 480px) {
+    /* Tighten the header so logo + menu + Request fit at 320px. */
+    .site-header {
+      padding: 14px 20px;
+    }
+    .nav-right {
+      gap: 12px;
+    }
+    .tray-btn,
+    .menu-btn {
+      padding: 8px 12px;
+    }
+    .logo {
+      font-size: 24px;
+    }
   }
 </style>
