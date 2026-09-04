@@ -1,7 +1,10 @@
 {
   "code": "MM-133",
-  "name": "MM-133",
+  "name": "Korean Style Diatomaceous Earth Mud",
   "collection": "stone-marble",
+  "series": "mm-matte-marble",
+  "subcategory": "Korean Style Diatomaceous Earth Mud",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/stone-marble/mm-133.png",
   "alt": "Marble-effect panel swatch in a mid-grey.",
   "description": "Marble-effect panel in a mid-grey.",
@@ -9,5 +12,5 @@
     "marble"
   ],
   "featured": false,
-  "order": 5
+  "order": 66
 }

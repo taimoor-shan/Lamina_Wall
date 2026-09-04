@@ -1,7 +1,10 @@
 {
   "code": "WG-29",
-  "name": "WG-29",
+  "name": "Eucalyptus Radiata",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "Eucalyptus Radiata",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-29.png",
   "alt": "Wood-grain panel swatch in a light pink-brown with fine grain.",
   "description": "Wood-grain panel in a light pink-brown with fine grain.",

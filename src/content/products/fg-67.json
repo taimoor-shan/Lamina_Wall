@@ -1,7 +1,10 @@
 {
   "code": "FG-67",
-  "name": "FG-67",
+  "name": "England Fabric",
   "collection": "textile",
+  "series": "fg",
+  "subcategory": "England Fabric",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/textile/fg-67.png",
   "alt": "Fabric-wrapped panel swatch in a pale pink.",
   "description": "Fabric-wrapped panel in a pale pink.",
@@ -10,5 +13,5 @@
     "fabric"
   ],
   "featured": false,
-  "order": 7
+  "order": 148
 }

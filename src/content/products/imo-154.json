@@ -1,7 +1,10 @@
 {
   "code": "IMO-154",
-  "name": "IMO-154",
+  "name": "Ontario Walnut Wood",
   "collection": "wood-grain",
+  "series": "imo",
+  "subcategory": "Ontario Walnut Wood",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/imo-154.png",
   "alt": "Wood-grain panel swatch in a deep tan with fine grain.",
   "description": "Wood-grain panel in a deep tan with fine grain.",

@@ -1,7 +1,10 @@
 {
   "code": "BM-203",
-  "name": "Black Brushed Metal",
+  "name": "Champagne Wiredrawing",
   "collection": "metal",
+  "series": "bm",
+  "subcategory": "Wiredrawing",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/metal/bm-203.png",
   "alt": "Metal panel swatch in a dark grey with an even metal surface.",
   "description": "Metal panel in a dark grey with an even metal surface.",
@@ -11,5 +14,5 @@
     "black"
   ],
   "featured": false,
-  "order": 5
+  "order": 116
 }

@@ -1,7 +1,10 @@
 {
   "code": "IMO-152",
-  "name": "IMO-152",
+  "name": "Sicilian Oak",
   "collection": "wood-grain",
+  "series": "imo",
+  "subcategory": "Sicilian Oak",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/imo-152.png",
   "alt": "Wood-grain panel swatch in a mid brown with fine grain.",
   "description": "Wood-grain panel in a mid brown with fine grain.",

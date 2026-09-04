@@ -1,7 +1,10 @@
 {
   "code": "PM-264",
-  "name": "PM-264",
+  "name": "Gold Water Ripple",
   "collection": "glossy-decorative",
+  "series": "pm",
+  "subcategory": "Water Ripple",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/glossy-decorative/pm-264.png",
   "alt": "High-gloss decorative panel swatch in a mid tan with a mirror-reflective high-gloss finish.",
   "description": "High-gloss decorative panel in a mid tan with a mirror-reflective high-gloss finish.",
@@ -10,5 +13,5 @@
     "decorative"
   ],
   "featured": false,
-  "order": 6
+  "order": 234
 }

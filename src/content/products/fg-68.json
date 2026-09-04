@@ -1,7 +1,10 @@
 {
   "code": "FG-68",
-  "name": "FG-68",
+  "name": "England Fabric",
   "collection": "textile",
+  "series": "fg",
+  "subcategory": "England Fabric",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/textile/fg-68.png",
   "alt": "Fabric-wrapped panel swatch in a light grey.",
   "description": "Fabric-wrapped panel in a light grey.",
@@ -10,5 +13,5 @@
     "fabric"
   ],
   "featured": false,
-  "order": 8
+  "order": 149
 }

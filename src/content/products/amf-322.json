@@ -1,8 +1,11 @@
 {
   "code": "AMF-322",
-  "name": "Satin Aluminium",
-  "collection": "metal",
-  "swatchImage": "../../assets/products/metal/amf-322.png",
+  "name": "Triumphal Gate - Grey",
+  "collection": "glossy-decorative",
+  "series": "amf",
+  "subcategory": "Triumphal Gate",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/glossy-decorative/amf-322.png",
   "alt": "Metal panel swatch in a mid-grey with an even metal surface.",
   "description": "Metal panel in a mid-grey with an even metal surface.",
   "tags": [
@@ -11,5 +14,5 @@
     "machined"
   ],
   "featured": false,
-  "order": 2
+  "order": 240
 }

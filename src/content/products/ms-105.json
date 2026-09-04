@@ -1,7 +1,10 @@
 {
   "code": "MS-105",
-  "name": "MS-105",
+  "name": "Jade Gray",
   "collection": "solid",
+  "series": "ms",
+  "subcategory": "Jade Gray",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/solid/ms-105.png",
   "alt": "Solid-colour panel swatch in a light grey.",
   "description": "Solid-colour panel in a light grey.",
@@ -9,5 +12,5 @@
     "solid"
   ],
   "featured": false,
-  "order": 8
+  "order": 193
 }

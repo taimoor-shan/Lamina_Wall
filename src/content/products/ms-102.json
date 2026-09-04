@@ -1,7 +1,10 @@
 {
   "code": "MS-102",
-  "name": "Onyx Matte",
+  "name": "Hermes Orange",
   "collection": "solid",
+  "series": "ms",
+  "subcategory": "Hermes Orange",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/solid/ms-102.png",
   "alt": "Matte solid-colour panel swatch in a bright orange.",
   "description": "Matte solid-colour panel in a bright orange tone.",
@@ -11,5 +14,5 @@
     "graphite"
   ],
   "featured": false,
-  "order": 5
+  "order": 190
 }

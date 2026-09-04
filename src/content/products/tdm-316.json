@@ -1,7 +1,10 @@
 {
   "code": "TDM-316",
-  "name": "TDM-316",
+  "name": "Qinyuan Spring",
   "collection": "stone-marble",
+  "series": "tdm",
+  "subcategory": "Qinyuan Spring",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/stone-marble/tdm-316.png",
   "alt": "Marble-effect panel swatch in a mid-grey.",
   "description": "Marble-effect panel in a mid-grey.",
@@ -9,5 +12,5 @@
     "marble"
   ],
   "featured": false,
-  "order": 10
+  "order": 113
 }

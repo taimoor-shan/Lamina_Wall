@@ -1,7 +1,10 @@
 {
   "code": "WG-42",
-  "name": "WG-42",
+  "name": "California Walnut",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "California Walnut",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-42.png",
   "alt": "Wood-grain panel swatch in a light brown with fine grain.",
   "description": "Wood-grain panel in a light brown with fine grain.",
@@ -9,5 +12,5 @@
     "wood-grain"
   ],
   "featured": false,
-  "order": 42
+  "order": 41
 }

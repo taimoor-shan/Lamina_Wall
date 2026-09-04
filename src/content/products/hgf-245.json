@@ -1,8 +1,11 @@
 {
   "code": "HGF-245",
-  "name": "High-Gloss Pearl",
-  "collection": "glossy-decorative",
-  "swatchImage": "../../assets/products/glossy-decorative/hgf-245.png",
+  "name": "Pearl Flash Point",
+  "collection": "solid",
+  "series": "hgf",
+  "subcategory": "Flash Point",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/solid/hgf-245.png",
   "alt": "High-gloss decorative panel swatch in pearl white with a reflective lacquer finish.",
   "description": "High-gloss decorative panel in pearl white with a reflective finish.",
   "tags": [
@@ -12,5 +15,5 @@
     "feature"
   ],
   "featured": true,
-  "order": 1
+  "order": 218
 }

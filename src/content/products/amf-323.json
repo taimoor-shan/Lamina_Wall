@@ -1,8 +1,11 @@
 {
   "code": "AMF-323",
-  "name": "Linear Brushed Aluminium",
-  "collection": "metal",
-  "swatchImage": "../../assets/products/metal/amf-323.png",
+  "name": "Triumphal Gate - Bronze",
+  "collection": "glossy-decorative",
+  "series": "amf",
+  "subcategory": "Triumphal Gate",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/glossy-decorative/amf-323.png",
   "alt": "Metal panel swatch in a mid-grey with an even metal surface.",
   "description": "Metal panel in a mid-grey with an even metal surface.",
   "tags": [
@@ -11,5 +14,5 @@
     "linear"
   ],
   "featured": false,
-  "order": 3
+  "order": 242
 }

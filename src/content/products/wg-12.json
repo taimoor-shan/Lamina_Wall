@@ -1,7 +1,10 @@
 {
   "code": "WG-12",
-  "name": "WG-12",
+  "name": "Pear Wood",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "Pear Wood",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-12.png",
   "alt": "Wood-grain panel swatch in a deep brown with fine grain.",
   "description": "Wood-grain panel in a deep brown with fine grain.",

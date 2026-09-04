@@ -1,7 +1,10 @@
 {
   "code": "MS-103",
-  "name": "MS-103",
+  "name": "Gentleman Grey",
   "collection": "solid",
+  "series": "ms",
+  "subcategory": "Gentleman Grey",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/solid/ms-103.png",
   "alt": "Solid-colour panel swatch in a mid-grey.",
   "description": "Solid-colour panel in a mid-grey.",
@@ -9,5 +12,5 @@
     "solid"
   ],
   "featured": false,
-  "order": 6
+  "order": 191
 }

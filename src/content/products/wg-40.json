@@ -1,7 +1,10 @@
 {
   "code": "WG-40",
-  "name": "WG-40",
+  "name": "European Brown Oak (light)",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "European Brown Oak (light)",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-40.png",
   "alt": "Wood-grain panel swatch in a mid red-brown with fine grain.",
   "description": "Wood-grain panel in a mid red-brown with fine grain.",
@@ -9,5 +12,5 @@
     "wood-grain"
   ],
   "featured": false,
-  "order": 40
+  "order": 39
 }

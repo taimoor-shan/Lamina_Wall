@@ -1,7 +1,10 @@
 {
   "code": "FG-62",
-  "name": "FG-62",
+  "name": "Japanese Fabric",
   "collection": "textile",
+  "series": "fg",
+  "subcategory": "Japanese Fabric",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/textile/fg-62.png",
   "alt": "Fabric-wrapped panel swatch in a light brown.",
   "description": "Fabric-wrapped panel in a light brown.",
@@ -10,5 +13,5 @@
     "fabric"
   ],
   "featured": false,
-  "order": 2
+  "order": 143
 }

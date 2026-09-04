@@ -1,7 +1,10 @@
 {
   "code": "WG-41",
-  "name": "WG-41",
+  "name": "North American Black Walnut",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "North American Black Walnut",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-41.png",
   "alt": "Wood-grain panel swatch in a dark brown with fine grain.",
   "description": "Wood-grain panel in a dark brown with fine grain.",
@@ -9,5 +12,5 @@
     "wood-grain"
   ],
   "featured": false,
-  "order": 41
+  "order": 40
 }

@@ -1,7 +1,10 @@
 {
   "code": "IMO-155",
-  "name": "IMO-155",
+  "name": "Ohio Walnut",
   "collection": "wood-grain",
+  "series": "imo",
+  "subcategory": "Ohio Walnut",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/imo-155.png",
   "alt": "Wood-grain panel swatch in a very dark brown with fine grain.",
   "description": "Wood-grain panel in a very dark brown with fine grain.",

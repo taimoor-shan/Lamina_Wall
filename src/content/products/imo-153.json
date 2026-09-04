@@ -1,7 +1,10 @@
 {
   "code": "IMO-153",
-  "name": "IMO-153",
+  "name": "Grey Oak",
   "collection": "wood-grain",
+  "series": "imo",
+  "subcategory": "Grey Oak",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/imo-153.png",
   "alt": "Wood-grain panel swatch in a mid-grey with fine grain.",
   "description": "Wood-grain panel in a mid-grey with fine grain.",

@@ -1,7 +1,10 @@
 {
   "code": "HGS-240",
-  "name": "HGS-240",
+  "name": "Sky Grey",
   "collection": "solid",
+  "series": "hgs",
+  "subcategory": "Sky Grey",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/solid/hgs-240.png",
   "alt": "Solid-colour panel swatch in a mid-grey.",
   "description": "Solid-colour panel in a mid-grey.",
@@ -9,5 +12,5 @@
     "solid"
   ],
   "featured": false,
-  "order": 2
+  "order": 216
 }

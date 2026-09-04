@@ -1,8 +1,11 @@
 {
   "code": "HGF-249",
-  "name": "HGF-249",
-  "collection": "glossy-decorative",
-  "swatchImage": "../../assets/products/glossy-decorative/hgf-249.png",
+  "name": "Obsidian Flash Point",
+  "collection": "solid",
+  "series": "hgf",
+  "subcategory": "Flash Point",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/solid/hgf-249.png",
   "alt": "High-gloss decorative panel swatch in a dark grey with a high-gloss finish.",
   "description": "High-gloss decorative panel in a dark grey with a high-gloss finish.",
   "tags": [
@@ -10,5 +13,5 @@
     "decorative"
   ],
   "featured": false,
-  "order": 3
+  "order": 221
 }

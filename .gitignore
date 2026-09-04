@@ -5,6 +5,7 @@ node_modules/
 # astro build output
 dist/
 .astro/
+graphify-out/
 
 # wrangler local state
 .wrangler/
@@ -26,3 +27,7 @@ extracted/
 
 # macOS
 .DS_Store
+
+# local tool state (regenerable — never commit)
+.codegraph/
+.graphify_*.json

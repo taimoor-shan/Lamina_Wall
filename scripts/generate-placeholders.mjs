@@ -1,13 +1,19 @@
 // Placeholder image generator for M0 pipeline proof.
 // Generates flat material-toned placeholder images at the aspect ratios the
 // mockup establishes: swatches 4:2.7 (1200x810), application/hero 16:8.4
-// (1800x945). These are PROVISIONAL — M2 replaces them with the real
-// catalogue pipeline (real grain/vein photography per PRD §3.3).
+// (1800x945). These are PROVISIONAL — M2 replaced them with the real
+// catalogue pipeline. Files that already exist are SKIPPED, never
+// overwritten — real photography must survive a rerun.
 //
-// Run after `npm install`:  node scripts/generate-placeholders.mjs
+// Phase 2 (R1): also generates the shared catalogue placeholder tile
+// src/assets/products/placeholder-missing.png (PRD §3.4) — a neutral
+// paper-toned tile with a hairline border and a centred mono
+// "IMAGE MISSING" label, in the design-system tokens.
+//
+// Run:  node scripts/generate-placeholders.mjs
 
 import sharp from 'sharp';
-import { mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -20,6 +26,22 @@ function hexToRgb(hex) {
 
 function rgbToStr([r, g, b]) {
   return `rgb(${r},${g},${b})`;
+}
+
+// Shared catalogue placeholder tile (PRD §3.4): --paper background,
+// hairline --line border, centred mono "IMAGE MISSING" in --ink.
+// 1200x810 keeps the mockup's established 4:2.7 swatch ratio; grid cells
+// crop with object-fit: cover regardless.
+async function placeholderMissing({ file, width = 1200, height = 810 }) {
+  const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100%" height="100%" fill="#fbf9f4"/>
+    <rect x="1" y="1" width="${width - 2}" height="${height - 2}" fill="none" stroke="#c9c1ae" stroke-width="1.5"/>
+    <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central"
+      font-family="'Space Mono', ui-monospace, 'SF Mono', monospace"
+      font-size="56" letter-spacing="10" fill="#1b1914">IMAGE MISSING</text>
+  </svg>`;
+  await sharp(Buffer.from(svg)).png().toFile(file);
+  process.stdout.write(`  ✓ ${file}\n`);
 }
 
 async function swatch({ file, from, to, lines, width = 1200, height = 810 }) {
@@ -42,24 +64,32 @@ async function swatch({ file, from, to, lines, width = 1200, height = 810 }) {
     svg += `<rect x="0" y="${y}" width="100%" height="${h}" fill="#000000" opacity="${a}"/>`;
   }
   svg += `</svg>`;
+  if (existsSync(file)) {
+    process.stdout.write(`  skip (already exists — real asset?) ${file}\n`);
+    return;
+  }
   await sharp(Buffer.from(svg)).jpeg({ quality: 90 }).toFile(file);
   process.stdout.write(`  ✓ ${file}\n`);
 }
 
 const specs = [
-  // Product swatches
-  { file: join(root, 'src/assets/products/wg-01.jpg'), from: '#8a5a2b', to: '#5e3a18', lines: 22 },
-  { file: join(root, 'src/assets/products/wg-02.jpg'), from: '#d9c49a', to: '#b29768', lines: 18 },
-  { file: join(root, 'src/assets/products/mm-144.jpg'), from: '#2a2624', to: '#0b0a09', lines: 10 },
-  // Collection application / hero shots
-  { file: join(root, 'src/assets/applications/app-wood-grain.jpg'), from: '#a06a33', to: '#4a2e13', width: 1800, height: 945, lines: 26 },
-  { file: join(root, 'src/assets/applications/app-stone-marble.jpg'), from: '#6b6b68', to: '#232220', width: 1800, height: 945, lines: 10 },
-  { file: join(root, 'src/assets/applications/app-metal.jpg'), from: '#9aa0a6', to: '#3c4044', width: 1800, height: 945, lines: 34 },
-  { file: join(root, 'src/assets/applications/app-textile.jpg'), from: '#7d7466', to: '#3a352c', width: 1800, height: 945, lines: 40 },
+  // Legacy M0 spec paths — retired: real photography now lives in
+  // family-named subfolders (src/assets/products/<family>/), and real
+  // assets are never overwritten. `swatch()` above remains as a guarded
+  // helper for future provisional imagery.
 ];
 
 for (const spec of specs) {
   mkdirSync(dirname(spec.file), { recursive: true });
   await swatch(spec);
 }
+
+// The shared catalogue "missing photography" tile (Phase 2 R1, PRD §3.4).
+mkdirSync(join(root, 'src/assets/products'), { recursive: true });
+if (!existsSync(join(root, 'src/assets/products/placeholder-missing.png'))) {
+  await placeholderMissing({ file: join(root, 'src/assets/products/placeholder-missing.png') });
+} else {
+  process.stdout.write('  skip (exists) src/assets/products/placeholder-missing.png\n');
+}
+
 process.stdout.write('Placeholder images generated.\n');

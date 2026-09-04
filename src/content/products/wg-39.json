@@ -1,7 +1,10 @@
 {
   "code": "WG-39",
-  "name": "WG-39",
+  "name": "Stockholm Oak",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "Stockholm Oak",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-39.png",
   "alt": "Wood-grain panel swatch in a deep brown with fine grain.",
   "description": "Wood-grain panel in a deep brown with fine grain.",
@@ -9,5 +12,5 @@
     "wood-grain"
   ],
   "featured": false,
-  "order": 39
+  "order": 38
 }

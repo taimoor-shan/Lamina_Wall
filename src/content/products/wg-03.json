@@ -1,7 +1,10 @@
 {
   "code": "WG-03",
-  "name": "WG-03",
+  "name": "Classic Technology Wood",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "Classic Technology Wood",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-03.png",
   "alt": "Wood-grain panel swatch in a dark brown with fine grain.",
   "description": "Wood-grain panel in a dark brown with fine grain.",

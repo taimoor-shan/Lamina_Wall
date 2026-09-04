@@ -21,6 +21,14 @@ const product = defineCollection({
       // Validated at build time against real entries in the collections
       // collection — an unknown slug fails the build.
       collection: reference('collections'),
+      // Phase 2 (PRD §3.4): series slug (e.g. "wg", "mm-travertine") and the
+      // taxonomy subcategory label the code belongs to. Emitted by
+      // scripts/generate-catalogue.mjs — never hand-edited en masse.
+      series: z.string(),
+      subcategory: z.string(),
+      // "real" = real swatch photography; "placeholder" = shared IMAGE MISSING
+      // tile until real photography arrives (backfill = swap ref + set real).
+      imageStatus: z.enum(['real', 'placeholder']).default('real'),
       swatchImage: image(),
       description: z.string().optional(),
       // Alt text is required for every product image (PRD §3.3) — plain

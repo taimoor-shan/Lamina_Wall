@@ -1,7 +1,10 @@
 {
   "code": "PM-263",
-  "name": "Noir Gloss",
+  "name": "Silver Water Ripple",
   "collection": "glossy-decorative",
+  "series": "pm",
+  "subcategory": "Water Ripple",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/glossy-decorative/pm-263.png",
   "alt": "High-gloss decorative panel swatch in a mid teal with a mirror-reflective high-gloss finish.",
   "description": "High-gloss decorative panel in a mid teal with a mirror-reflective high-gloss finish.",
@@ -11,5 +14,5 @@
     "black"
   ],
   "featured": false,
-  "order": 5
+  "order": 233
 }

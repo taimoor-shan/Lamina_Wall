@@ -1,7 +1,10 @@
 {
   "code": "MS-104",
-  "name": "MS-104",
+  "name": "Iron Grey",
   "collection": "solid",
+  "series": "ms",
+  "subcategory": "Iron Grey",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/solid/ms-104.png",
   "alt": "Solid-colour panel swatch in a mid-grey.",
   "description": "Solid-colour panel in a mid-grey.",
@@ -9,5 +12,5 @@
     "solid"
   ],
   "featured": false,
-  "order": 7
+  "order": 192
 }

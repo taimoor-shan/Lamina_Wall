@@ -1,7 +1,10 @@
 {
   "code": "IMO-158",
-  "name": "IMO-158",
+  "name": "Smoked Oak",
   "collection": "wood-grain",
+  "series": "imo",
+  "subcategory": "Smoked Oak",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/imo-158.png",
   "alt": "Wood-grain panel swatch in a very dark brown with fine grain.",
   "description": "Wood-grain panel in a very dark brown with fine grain.",

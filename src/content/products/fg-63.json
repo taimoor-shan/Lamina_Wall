@@ -1,7 +1,10 @@
 {
   "code": "FG-63",
-  "name": "FG-63",
+  "name": "Japanese Fabric",
   "collection": "textile",
+  "series": "fg",
+  "subcategory": "Japanese Fabric",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/textile/fg-63.png",
   "alt": "Fabric-wrapped panel swatch in a mid brown.",
   "description": "Fabric-wrapped panel in a mid brown.",
@@ -10,5 +13,5 @@
     "fabric"
   ],
   "featured": false,
-  "order": 3
+  "order": 144
 }

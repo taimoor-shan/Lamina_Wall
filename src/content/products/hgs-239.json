@@ -1,7 +1,10 @@
 {
   "code": "HGS-239",
-  "name": "HGS-239",
+  "name": "Ice Pot Autumn Moon",
   "collection": "solid",
+  "series": "hgs",
+  "subcategory": "Ice Pot Autumn Moon",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/solid/hgs-239.png",
   "alt": "Solid-colour panel swatch in a pale brown.",
   "description": "Solid-colour panel in a pale brown.",
@@ -9,5 +12,5 @@
     "solid"
   ],
   "featured": false,
-  "order": 1
+  "order": 215
 }

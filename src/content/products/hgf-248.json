@@ -1,8 +1,11 @@
 {
   "code": "HGF-248",
-  "name": "HGF-248",
-  "collection": "glossy-decorative",
-  "swatchImage": "../../assets/products/glossy-decorative/hgf-248.png",
+  "name": "Blue Treasure Flash Point",
+  "collection": "solid",
+  "series": "hgf",
+  "subcategory": "Flash Point",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/solid/hgf-248.png",
   "alt": "High-gloss decorative panel swatch in a dark teal with a high-gloss finish.",
   "description": "High-gloss decorative panel in a dark teal with a high-gloss finish.",
   "tags": [
@@ -10,5 +13,5 @@
     "decorative"
   ],
   "featured": false,
-  "order": 2
+  "order": 220
 }

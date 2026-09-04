@@ -1,7 +1,10 @@
 {
   "code": "WG-15",
-  "name": "WG-15",
+  "name": "Autumn Fragrance",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "Autumn Fragrance",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-15.png",
   "alt": "Wood-grain panel swatch in a light brown with fine grain.",
   "description": "Wood-grain panel in a light brown with fine grain.",

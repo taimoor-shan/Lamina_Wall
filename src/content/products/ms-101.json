@@ -1,7 +1,10 @@
 {
   "code": "MS-101",
-  "name": "Matte Ivory",
+  "name": "Skin White",
   "collection": "solid",
+  "series": "ms",
+  "subcategory": "Skin White",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/solid/ms-101.png",
   "alt": "Matte solid-colour panel swatch in a pale blue-white.",
   "description": "Matte solid-colour panel in a pale blue-white tone.",
@@ -11,5 +14,5 @@
     "ivory"
   ],
   "featured": false,
-  "order": 4
+  "order": 189
 }

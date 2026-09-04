@@ -1,7 +1,10 @@
 {
   "code": "HGM-275",
-  "name": "HGM-275",
+  "name": "Korora Rock",
   "collection": "stone-marble",
+  "series": "hgm",
+  "subcategory": "Korora Rock",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/stone-marble/hgm-275.png",
   "alt": "Marble-effect panel swatch in a mid-grey.",
   "description": "Marble-effect panel in a mid-grey.",
@@ -9,5 +12,5 @@
     "marble"
   ],
   "featured": false,
-  "order": 2
+  "order": 87
 }

@@ -1,7 +1,10 @@
 {
   "code": "WG-22",
-  "name": "WG-22",
+  "name": "White Oak",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "White Oak",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-22.png",
   "alt": "Wood-grain panel swatch in a light brown with fine grain.",
   "description": "Wood-grain panel in a light brown with fine grain.",

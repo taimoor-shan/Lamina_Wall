@@ -1,7 +1,10 @@
 {
   "code": "PM-265",
-  "name": "PM-265",
+  "name": "Champagne Water Ripple",
   "collection": "glossy-decorative",
+  "series": "pm",
+  "subcategory": "Water Ripple",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/glossy-decorative/pm-265.png",
   "alt": "High-gloss decorative panel swatch in a mid red-brown with a mirror-reflective high-gloss finish.",
   "description": "High-gloss decorative panel in a mid red-brown with a mirror-reflective high-gloss finish.",
@@ -10,5 +13,5 @@
     "decorative"
   ],
   "featured": false,
-  "order": 7
+  "order": 235
 }

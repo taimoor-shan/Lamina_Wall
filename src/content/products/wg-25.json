@@ -1,7 +1,10 @@
 {
   "code": "WG-25",
-  "name": "WG-25",
+  "name": "Russian Oak",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "Russian Oak",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-25.png",
   "alt": "Wood-grain panel swatch in a mid brown with fine grain.",
   "description": "Wood-grain panel in a mid brown with fine grain.",

@@ -1,8 +1,11 @@
 {
   "code": "AMF-324",
-  "name": "Polar Brushed Aluminium",
-  "collection": "metal",
-  "swatchImage": "../../assets/products/metal/amf-324.png",
+  "name": "Triumphal Gate - Normanie Red",
+  "collection": "glossy-decorative",
+  "series": "amf",
+  "subcategory": "Triumphal Gate",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/glossy-decorative/amf-324.png",
   "alt": "Metal panel swatch in a mid-grey with an even metal surface.",
   "description": "Metal panel in a mid-grey with an even metal surface.",
   "tags": [
@@ -11,5 +14,5 @@
     "light"
   ],
   "featured": false,
-  "order": 4
+  "order": 241
 }

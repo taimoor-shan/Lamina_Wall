@@ -1,7 +1,10 @@
 {
   "code": "FG-65",
-  "name": "FG-65",
+  "name": "Korean Fabric",
   "collection": "textile",
+  "series": "fg",
+  "subcategory": "Korean Fabric",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/textile/fg-65.png",
   "alt": "Fabric-wrapped panel swatch in a light grey.",
   "description": "Fabric-wrapped panel in a light grey.",
@@ -10,5 +13,5 @@
     "fabric"
   ],
   "featured": false,
-  "order": 5
+  "order": 146
 }

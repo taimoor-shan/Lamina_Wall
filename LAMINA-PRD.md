@@ -1,10 +1,10 @@
 # LAMINA — Wall Panel & Architectural Surfaces Showroom
 ## Product Requirements Document (Milestone-Based)
 
-**Version:** 1.2
+**Version:** 2.0
 **Prepared for:** Development agent (Claude Code, multi-session)
 **Prepared by:** Muhammad (product owner / client)
-**Status:** Ready for build
+**Status:** Phase 2 (catalogue redesign) — ready to build
 
 ### Changelog
 **v1.0 → v1.1** (technical review pass):
@@ -22,6 +22,13 @@
 - Added a **Session Log** (§10) — every work session appends an entry there instead of relying on chat memory, which does not persist between sessions.
 - Added a companion **`CLAUDE.md`** system-prompt file (delivered alongside this PRD) with the operating rules for how an agent should work through this document across sessions.
 
+**v1.2 → v2.0** (catalogue pivot, 2026-09-05):
+- Client pivot (recorded in `CONVERSATION.txt`, claude.ai chat 2026-09-04): the site becomes a **full B2B product catalogue** — all 258 catalogue codes browsable with minimal information; detailed specifications stay in the downloadable PDF.
+- New information architecture: **6 families → 19 series → subcategories → 258 products**; one dynamic catalogue route `/products/[[...filters]]` replaces the per-collection pages (which become 301s). Source of truth for the taxonomy: `subcategory-taxonomy.md` (extracted from the manufacturer catalogue index).
+- Product schema gains `series` + `subcategory` + `imageStatus` (§3.4). **No product-count limits** — products without photography use a shared placeholder image that visibly reads as missing (client directive 2026-09-05); everything available is shown, the rest is mocked with the placeholder.
+- The M3 homepage-layout constraint is **lifted** — the client held the conversation that constraint reserved (2026-09-04). Replaced by the Phase-2 landing-page spec (R3).
+- Phase-2 milestone plan **R1–R6** added to §5; M7–M9 remain the final launch/handover milestones.
+
 ---
 
 ## 0. Status at a Glance
@@ -31,15 +38,28 @@
 | Milestone | Status | Notes |
 |---|---|---|
 | M0 — Project Setup & Foundations | ☐ Blocked — see note | All foundations + acceptance criteria done & verified locally & on a **standing live deploy** (https://lamina-wall.lamina-wall.workers.dev — §10 Session 4; replaces the temp-account preview). ✅ GitHub remote + Workers Builds connection need the client's GitHub/Cloudflare accounts — see §10 Session 1. |
-| M1 — Design System / Component Library | ☐ In progress | All 8 components + tokens + `/style-guide` built & verified (build passes, page serves 200). Catalogue now covers **every swatch in the reference folders — 92 products** (§10 Session 5). Visual acceptance vs mockup at 1440/390 still needs a human browser pass — see §10 Sessions 3–4. |
-| M2 — Content Migration | ☑ Done | 92 products / 6 collections, real alt text + descriptions, build clean, image audit at `docs/image-pipeline-audit.md`. Residual human eyeball (texture-crop cut-off on swatches; AI-upscale pass for app images) folded into the M1 visual-acceptance pass — see §10 Session 6. |
-| M3 — Core Pages | ☑ Done | 6 collection pages (`/collections/[slug]`), nav wired to them, homepage hero converted to a priority-loaded responsive `<img>` (LCP 99 simulated / 99 real-throttle, mobile), fonts CSS async, styles inlined — see §10 Session 7. Residual human eyeball (visual acceptance vs mockup at 1440/390, homepage + one collection page) folded into the same M1 pass. |
+| M1 — Design System / Component Library | ☐ In progress | All 8 components + tokens + `/style-guide` built & verified (build passes, page serves 200). Catalogue now covers **every swatch in the reference folders — 92 products** (§10 Session 5); Phase-2 R1 excludes 3 index-absent codes → 89 real in the 258-code catalogue (§10 Session 12). Visual acceptance vs mockup at 1440/390 still needs a human browser pass — see §10 Sessions 3–4. Folded into R6 (Phase 2). |
+| M2 — Content Migration | ☑ Done | 92 products / 6 collections, real alt text + descriptions, build clean, image audit at `docs/image-pipeline-audit.md` (R1 Session 12: 3 orphans excluded → 89 of the 258 catalogue codes are real). Residual human eyeball (texture-crop cut-off on swatches; AI-upscale pass for app images) folded into the M1 visual-acceptance pass — see §10 Session 6. |
+| M3 — Core Pages | ☑ Done | 6 collection pages (`/collections/[slug]`), nav wired to them, homepage hero converted to a priority-loaded responsive `<img>` (LCP 99 simulated / 99 real-throttle, mobile), fonts CSS async, styles inlined — see §10 Session 7. Residual human eyeball (visual acceptance vs mockup at 1440/390, homepage + one collection page) folded into the same M1 pass — and now into R6 (Phase 2). |
 | M4 — Request Tray & Form | ☑ Done | Svelte request tray (drawer + steppers + localStorage persistence), `/request` form (native + JS-enhanced), `/api/request` worker route (validation, Origin check, Turnstile, per-isolate duplicate guard, Resend email), `/thank-you`. API verified end-to-end locally with Cloudflare test keys; the final email hop needs the client's Resend key — see §10 Session 8. |
-| M5 — SEO, Accessibility, Performance | ☐ In progress | All checklist items done (Seo component + canonical/OG + noindex, build-time sitemap/robots, heading audit, alt audit, ARIA, focus trap runtime-verified 6/6, 40.8 MB image prune hook — which had a bug that silently killed island hydration; caught & fixed this session). **Acceptance gate (Lighthouse ≥ 90 × 4 combos) straddles the line:** desktops 100; mobiles bounce 85–98 (home) / 86–99 (col) run-to-run — simulator variance, structural fixes done, re-run on a quiet machine during M6. Full numbers in §10 Session 9. |
-| M6 — Cross-Browser & Responsive QA | ☐ In progress | Chrome + breakpoints done (24/24: no horizontal scroll at 320–1440, tray usable at every width, `docs/qa-report.md`). Client bugfix pass (live tray counts in header + CTA, CTA opens the tray, mobile menu populated on /request & /thank-you — 17/17 CDP) and the hero restructure (zero absolute elements, photo as tiered CSS background, flex layout — 17/17 CDP) both verified in §10 Session 10. Safari/Firefox/Edge/iOS/Android rows blocked on human/device access. Also re-run the M5 Lighthouse gate on a quiet machine here. |
+| M5 — SEO, Accessibility, Performance | ☐ In progress | All checklist items done (Seo component + canonical/OG + noindex, build-time sitemap/robots, heading audit, alt audit, ARIA, focus trap runtime-verified 6/6, 40.8 MB image prune hook — which had a bug that silently killed island hydration; caught & fixed this session). **Acceptance gate (Lighthouse ≥ 90 × 4 combos) straddles the line:** desktops 100; mobiles bounce 85–98 (home) / 86–99 (col) run-to-run — simulator variance, structural fixes done, re-run on a quiet machine during M6. Full numbers in §10 Session 9. Re-run folds into R6 (Phase 2). |
+| M6 — Cross-Browser & Responsive QA | ☐ In progress | Chrome + breakpoints done (24/24: no horizontal scroll at 320–1440, tray usable at every width, `docs/qa-report.md`). Client bugfix pass (live tray counts in header + CTA, CTA opens the tray, mobile menu populated on /request & /thank-you — 17/17 CDP) and the hero restructure (zero absolute elements, photo as tiered CSS background, flex layout — 17/17 CDP) both verified in §10 Session 10. Safari/Firefox/Edge/iOS/Android rows blocked on human/device access. Also re-run the M5 Lighthouse gate on a quiet machine here. Folded into R6 (Phase 2). |
 | M7 — Content Freeze & Client Review | ☐ Not started | |
 | M8 — Launch | ☐ Not started | |
 | M9 — Handover | ☐ Not started | |
+
+**Phase 2 — Catalogue Redesign (client pivot 2026-09-04, see changelog + §5):**
+
+| Milestone | Status | Notes |
+|---|---|---|
+| R1 — Catalogue Data & Taxonomy | ☑ Done | 258 products (6 families / 19 series), **89 real / 169 placeholder**: `series`/`subcategory`/`imageStatus` schema, `data/catalogue-master.ts` + `scripts/generate-catalogue.mjs` + shared placeholder tile, collection titles updated (Wood / Stone & Marble / Metal / Textile / Solid Color / Decorative & Mirror). Build + tsc verified; 3 index-absent orphans (WG-37/WG-43/HGF-252) excluded & quarantined — §10 Session 12. |
+| R2 — Catalogue Page & Filtering | ☐ Not started | `/products/[[...filters]]` — sidebar (family → series) + search, statically generated at every filter depth, tray island mounted. |
+| R3 — Landing Page | ☐ Not started | Hero (flex/background restructure + video support already on `feature/redesign`, commit a46c4fe), 6-family visual index, CTA row (PDF / samples / contact). |
+| R4 — Request Flow on the Catalogue | ☐ Not started | Recap thumbnail map + `/api/request` name resolution for all 258 codes. |
+| R5 — Redirects, SEO & Old-Page Teardown | ☐ Not started | `/collections/[slug]` → 301, sitemap for the new routes, remove retired Phase-1 components. |
+| R6 — Redesign QA & Client Review | ☐ Not started | Folds in the M1/M3/M5 residuals: human visual pass, Lighthouse ≥90 gate, browser matrix, client sign-off. |
+
+**Current focus: Phase 2, R1.** The Phase-1 table above is the historical record — M0–M6 are closed out and their residual open items fold into R6 (or are logged in §7). Work R1 → R6, then M7–M9.
 
 Status values to use: `☐ Not started` / `☐ In progress` / `☑ Done` / `☐ Blocked — see note`.
 
@@ -49,7 +69,9 @@ Status values to use: `☐ Not started` / `☐ In progress` / `☑ Done` / `☐ 
 
 ## 1. Project Summary
 
-A premium, editorial, image-led B2B marketing site for a wall panel and architectural surfaces manufacturer. The site showcases a curated selection of products (wood grain, stone/marble, metal, textile finishes) pulled from a much larger factory catalogue. It is **not an ecommerce store** — there are no prices, no checkout, no accounts. Instead, visitors (architects, designers, contractors, procurement teams) browse materials and build a **request** — a lightweight spec list of article numbers and quantities — which is submitted as a lead via a contact form, delivered by email to the sales team.
+A premium, editorial, image-led B2B product catalogue for a wall panel and architectural surfaces manufacturer. The site presents the **full catalogue — 258 articles across 6 material families and 19 series** (wood grain, stone & marble, metal, textile, solid color, decorative & mirror) — with deliberately minimal per-product information: swatch, code, name, and an add-to-request control. Detailed technical specifications live in the **downloadable PDF catalogue**, with clear CTAs for catalogue download and contact. Structure: a focused landing page (brand, 6-family visual index, CTAs) + a single All Products catalogue page with sidebar filtering (family → series → search), statically generated at every filter depth (`/products`, `/products/[family]`, `/products/[family]/[series]`).
+
+It is **not an ecommerce store** — there are no prices, no checkout, no accounts. Instead, visitors (architects, designers, contractors, procurement teams) browse materials and build a **request** — a lightweight spec list of article numbers and quantities — which is submitted as a lead via a contact form, delivered by email to the sales team.
 
 A working HTML/CSS design-direction mockup has already been approved by the client (see `/reference/lamina-design-direction.html`) and defines the visual language, layout patterns, and the core "Request tray" interaction. This PRD covers turning that mockup into a maintainable, production website.
 
@@ -64,6 +86,8 @@ A working HTML/CSS design-direction mockup has already been approved by the clie
 - No user accounts / login.
 - No admin dashboard or headless CMS in v1 (see §9 for future path).
 - No multi-language support in v1.
+- No individual **product detail pages** in v2 — the PDF catalogue carries the technical detail (a fast-follow option, see §6).
+- No third taxonomy/filter tier (finish, color-tone facets) in v2 — family → series + search covers browsing for 258 items (see R2).
 
 ---
 
@@ -159,6 +183,8 @@ functions/ (or Worker route, per current adapter convention — agent confirms e
     request.ts                 # handles the request-form POST
 ```
 
+*(Phase-2 note: `src/assets/products/` is organized in family-named subfolders (Session 5); the product-schema additions in §3.4 apply; `data/catalogue-master.ts` + `scripts/generate-catalogue.mjs` generate the 258 product JSONs — see §3.4. The `collections/` page folder is retired in R5 in favour of `pages/products/[[...filters]].astro`.)*
+
 ### 3.2 Example content schema (`src/content/config.ts`)
 
 ```ts
@@ -221,6 +247,42 @@ Images are effectively this project's product database, so this convention is no
 - **Minimum source resolution:** large enough that the largest rendered size (full-bleed hero, ~1800px wide) is never upscaled. Reject/re-source anything below that.
 - **Alt text:** required in the content schema (not optional) for every product and application image — plain description of the material/scene, not the marketing copy.
 - **No transparency** in product/application photography; flat rectangular crops only.
+
+### 3.4 Catalogue Taxonomy (Phase 2 — the 258-code catalogue)
+
+Source of truth: **`subcategory-taxonomy.md`** in the repo root — extracted directly from the manufacturer catalogue's index pages (the "Name" column repeated across contiguous codes). It defines, per family, the series and subcategory grouping of all 258 codes, with confidence labels (`[literal]` / `[inferred]` / `[singleton]`). When product data and this file disagree, **this file wins** — and the discrepancy is a logged issue for a human, never a silent guess.
+
+- **6 families** (the existing `collections` collection; slugs unchanged, display titles updated):
+
+  | Slug | Display title | Products |
+  |---|---|---|
+  | `wood-grain` | Wood | 63 |
+  | `stone-marble` | Stone & Marble | 50 |
+  | `metal` | Metal | 28 |
+  | `textile` | Textile | 47 |
+  | `solid` | Solid Color | 33 |
+  | `glossy-decorative` | Decorative & Mirror | 37 |
+
+  Total: **258**.
+
+- **19 series** — nested under families, one URL tier: `/products/[family]/[series]`. Series slugs (display titles come from the taxonomy section headers):
+
+  | Family | Series slugs |
+  |---|---|
+  | wood-grain | `wg` (43), `imo` (12), `pwv` (8) |
+  | stone-marble | `mm-matte-marble` (14), `mm-travertine` (5), `hgm` (18), `tdm` (13) |
+  | metal | `bm` (6), `msm` (6), `eb` (10), `kpm` (6) |
+  | textile | `fg` (30), `cbm` (10), `pp` (7) |
+  | solid | `ms` (24), `hgs` (5), `hgf` (4) |
+  | glossy-decorative | `pm` (17), `amf` (20) |
+
+  The MM line spans two taxonomy sections — "MM (131–144) Matte Marble" and "MM (146–150) Travertine" — hence two series sharing the MM prefix.
+
+- **Subcategories** — the grouping label within a series (e.g. Wood Grain → "Classic Technology Wood", "Russian Oak"). Deliberately **not** a third filter tier (the pivot conversation's call; a good search box covers what a third tier would). The subcategory is the card's descriptive line and the grouping the client asked for.
+- **Product-name policy (no invented copy):** `name` resolves in this order — (1) a real per-code catalogue name when one is known; (2) the singleton's printed name (a singleton's subcategory *is* its printed name); (3) explicit ordered per-code descriptors where the taxonomy lists them (e.g. BM "Wiredrawing" lists Golden/Silver/Champagne/Copper/Silver White → BM-201…205 in printed order — the Session-11 "logged as inferred" label was superseded in R1: the index confirms full descriptor-first printed names, so rule 1 applies; §10 Session 12); (4) otherwise the subcategory name. A `nameSource` field records which rule produced each name so nothing looks silently made up. This also resolves the Session-6 mismatches: MS-102 "Onyx Matte" → **"Hermes Orange"**, PM-263 "Noir Gloss" → **"Silver Water Ripple"** — the index prints names descriptor-first (cf. "Golden Wiredrawing" BM-201, "Pearl Flash Point" HGF-245), correcting the Session-11 estimate "Water Ripple Silver" (§10 Session 12).
+- **Normalization decisions** (made here so they're deliberate, not accidental): AMF-323 "Triumphal Arch - Bronze" is normalized to **"Triumphal Gate - Bronze"** (siblings 321/322/324 all read "Gate" — manufacturer typo); the "cylinder"/"Cylinder" capitalization across AMF-325–328 is normalized (cosmetic); identical printed names across series (e.g. "Pandora Slate" HGM vs TDM, "Florentine Limestone" MM vs HGM) remain **separate subcategories** — subcategory scope is always within one series.
+- **Placeholder policy** (client directive 2026-09-05): products without real photography reference the shared `src/assets/products/placeholder-missing.png` — a neutral tile generated with the design-system tokens that visibly reads as missing ("IMAGE MISSING", hairline border) — with `imageStatus: "placeholder"` and alt "Product image not yet available". **No product-count limits:** the catalogue ships with all 258 codes — **89 with real photography, 169 on placeholders** — until real images arrive. (R1 ground truth: WG-37, WG-43 and HGF-252, whose real photos exist but whose codes are absent from the manufacturer index, are excluded from the 258 and quarantined — §10 Session 12.) Backfilling a real image = replace the file ref + set `imageStatus: "real"` (one JSON field), then re-run the generator (which preserves it).
+- **Data generation:** `data/catalogue-master.ts` is the single source for all 258 codes; `scripts/generate-catalogue.mjs` writes `src/content/products/*.json`. Edit the master file, re-run the script; never hand-edit product JSONs en masse. Naming: code lowercased = JSON filename = image filename, letter suffixes included (`hgm-276a.json` ↔ `hgm-276a.png`).
 
 ---
 
@@ -305,7 +367,7 @@ Each milestone should end with a working, deployed-to-preview state. **Do not pr
 - [x] Homepage: closing statement section.
 - [x] Homepage: footer.
 - [x] Collection pages (`/collections/[slug]`) generated from Content Collections — application photo(s) + swatch filmstrip.
-- **Constraint — do not deviate without a separate conversation:** the homepage stays in the stacked, full-bleed editorial layout from the approved mockup (Wood → Stone → Metal/Textile → Statement). This was a deliberate, client-approved design decision. Restructuring into tabs/filters/a condensed "explorer" is a real option worth discussing on its own terms, but is out of scope here — do not introduce it unilaterally. *(Held: homepage layout unchanged; the only nav change is that the header links now target the collection pages — the homepage's own sticky index strip keeps the mockup's in-page anchors.)*
+- **Constraint — SUPERSEDED (2026-09-04, client decision):** the previous constraint locked the homepage to the stacked, full-bleed editorial layout from the approved mockup, pending "a separate conversation." That conversation happened (recorded in `CONVERSATION.txt`): the client pivoted to the full-catalogue structure, so this constraint is lifted and the homepage is reworked in **R3** (Phase 2 below). The per-collection pages this milestone built are retired in **R5** (301 → `/products/[family]`).
 - **Acceptance:**
   - [x] All collections have working, populated pages — **6** (the checklist's "4" predates the client's six-collection decision in Session 4); each page built from Content Collections: section head + application photography (priority-loaded primary) + the complete swatch filmstrip.
   - [x] Navigation, including the sticky index strip, works — header links to `/collections/[slug]` (verified in built HTML); index-strip anchors resolve to all 6 homepage sections.
@@ -381,6 +443,89 @@ Each milestone should end with a working, deployed-to-preview state. **Do not pr
   - [x] Short QA checklist/report written and saved to the repo (e.g. `/docs/qa-report.md`).
     - `docs/qa-report.md` — results, browser matrix, blocked rows, re-run instructions.
 
+### Phase 1 closeout (M0–M6) → Phase 2 — Catalogue Redesign
+
+Phase 1 shipped the editorial showroom (design system, 92-product content, collection pages, request flow, SEO/a11y/perf work, responsive QA). The client pivoted on 2026-09-04 (recorded in `CONVERSATION.txt`): the site becomes a **full B2B product catalogue** — all 258 catalogue codes browsable with minimal information; detailed specifications stay in the downloadable PDF. The Phase-1 residual open items (human visual passes, the Lighthouse ≥90 gate, browser matrix) are folded into **R6** below, not lost.
+
+Phase 2 works milestone-by-milestone on `feature/redesign`. Each milestone ends with a working `npm run build` + `npx tsc --noEmit` clean, and a commit. Do not start R(N+1) until every checkbox in R(N) is checked and its §0 row is `☑ Done`.
+
+#### R1 — Catalogue Data & Taxonomy
+
+**Files:** create `data/catalogue-master.ts`, `scripts/generate-catalogue.mjs`, `src/assets/products/placeholder-missing.png`; modify `src/content.config.ts`, `src/content/collections/*.json` (6); regenerate `src/content/products/*.json` (258).
+
+- [x] Extend the product schema in `src/content.config.ts`: `series: z.string()`, `subcategory: z.string()`, `imageStatus: z.enum(['real', 'placeholder']).default('real')` (per §3.4).
+- [x] Write `data/catalogue-master.ts` — the single source for all 258 codes: `{ code, family, series, subcategory, name, nameSource, order }` derived from `subcategory-taxonomy.md` (counts 63/50/28/47/33/37; 19 series with the §3.4 slugs). Apply the §3.4 normalization decisions (AMF-323 → "Triumphal Gate", cylinder capitalization) and the name-resolution policy — `nameSource` records which rule produced each name so nothing looks silently invented.
+- [x] Write `scripts/generate-catalogue.mjs`: reads the master file, emits/updates all 258 `src/content/products/*.json` (lowercased code = filename, incl. letter suffixes: `hgm-276a.json`); preserves the pre-existing real products' `swatchImage`/`alt`/`description` (89 — the 3 index-absent codes WG-37/WG-43/HGF-252 are the logged exclusions, §10 Session 12); writes `"imageStatus": "placeholder"` + the placeholder image ref for products with no real swatch; sets `order` family → series → code; exits non-zero if any emitted code's family/series/subcategory disagrees with the taxonomy (cross-check).
+- [x] Generate `src/assets/products/placeholder-missing.png` (extend the existing `scripts/generate-placeholders.mjs`): a neutral tile built from the design-system tokens that visibly reads as missing — light `--paper` background, hairline border, centred mono label "IMAGE MISSING".
+- [x] Update the 6 collection JSONs: `title` becomes the family display name (Wood / Stone & Marble / Metal / Textile / Solid Color / Decorative & Mirror); slugs, images, copy otherwise unchanged.
+- [x] Run `node scripts/generate-catalogue.mjs`, then `npm run build` + `npx tsc --noEmit`.
+- **Acceptance:**
+  - [x] Build passes with **258 products**, zero schema errors; `tsc --noEmit` clean.
+  - [x] Scripted check: per-family counts equal 63/50/28/47/33/37 and every code's family+series+subcategory matches `subcategory-taxonomy.md`.
+  - [x] The 89 pre-existing products keep their real images/alt; the other 169 render the placeholder with alt "Product image not yet available" and `imageStatus: "placeholder"`. (WG-37/WG-43/HGF-252 are excluded from the 258, not placeholder'd — logged in §10 Session 12.)
+  - [x] No invented copy anywhere: every `name`/`alt` traces to the §3.4 policy (`nameSource` field).
+
+#### R2 — Catalogue Page & Filtering
+
+**Files:** create `src/pages/products/[[...filters]].astro`, `src/components/CatalogueFilters.astro`; modify `SwatchCard.astro` if needed; mount the tray island.
+
+- [ ] `src/pages/products/[[...filters]].astro` — one template with `getStaticPaths()` generating `/products`, all 6 `/products/[family]`, and all 19 `/products/[family]/[series]` paths from the content collections.
+- [ ] Product grid: cards in the existing `SwatchCard.astro` visual language (swatch, mono code, name, add-to-request control carrying `data-code`/`data-name`), sorted family → series → code; name comes from the §3.4 policy (subcategory-derived where no per-code name exists).
+- [ ] Sidebar (`CatalogueFilters.astro`): 6 family accordions → nested series chips (19, with per-series counts); chips are plain `<a href>` links (no-JS filtering works — the URL is the state); active-state styling; search box (client-side JS enhancement, matches code/name/subcategory/series, always resettable).
+- [ ] Mobile (≤900px): sidebar collapses into a native `<details>` disclosure following the Nav pattern (zero JS, keyboard-accessible).
+- [ ] Mount `RequestTray.svelte` `client:load` on `/products*` pages only.
+- **Acceptance:**
+  - [ ] Every `/products`, `/products/[family]`, `/products/[family]/[series]` URL renders from the static build; all 258 cards reachable from `/products`.
+  - [ ] Filters and chips work with JavaScript disabled (link navigation); search filters live with JS on.
+  - [ ] No horizontal scroll at 320/390/480/768/1024/1440; tray opens from catalogue cards and the header.
+  - [ ] `dist` check: tray bundle present only on pages that carry swatches.
+
+#### R3 — Landing Page
+
+**Files:** modify `src/pages/index.astro`, `src/components/Hero.astro` (video support already committed on `feature/redesign` — a46c4fe), `src/components/StatementBanner.astro` for the CTA row.
+
+- [ ] Rework `index.astro`: hero (the Session-10 flex/background restructure + the committed video support), short brand blurb, **6-family visual index** (one strong application photo per family, each linking to `/products/[family]`), CTA row: **Download catalogue PDF** (rendered only when `public/catalogue.pdf` exists), **Request samples** (opens the tray via `data-tray-open`), **Contact**.
+- [ ] All sections keep the design-system language of `reference/lamina-design-direction.html` (tokens, typography, spacing); zero absolute/fixed positioning (client directive, Session 10).
+- **Acceptance:**
+  - [ ] All 6 family links resolve; tray CTA opens the drawer; PDF CTA behaves correctly present/absent.
+  - [ ] Visual acceptance vs the mockup language at 1440/390 — the long-standing human pass lands here (shared with R6).
+
+#### R4 — Request Flow on the Catalogue
+
+**Files:** modify `src/pages/request.astro` (recap thumbnail map), verify `src/pages/api/request.ts` (name lookup is data-driven already).
+
+- [ ] Extend the recap thumbnail map (code → 120w WebP baked at build time) to all 258 codes; placeholder thumb for `imageStatus: "placeholder"`.
+- [ ] Verify `/api/request` resolves names from the new product data (name-resolution policy); stale-code fallback behaviour unchanged (blank recap tile, unknown code in a submission → 400).
+- [ ] Verify the no-JS `/request` path end-to-end against the new data (form-encoded POST still parses `items_text`).
+- **Acceptance:**
+  - [ ] End-to-end (local, Cloudflare test keys): select 3 catalogue items → submit → exactly one email to the API boundary; duplicate id → 409; missing token → 400 (same suite as M4).
+  - [ ] Recap renders any of the 258 codes with a thumbnail; a stale localStorage code still falls back to the blank tile.
+
+#### R5 — Redirects, SEO & Old-Page Teardown
+
+**Files:** repurpose `src/pages/collections/[slug].astro` as 301 redirect stubs; modify `src/pages/sitemap.xml.ts`, `src/pages/index.astro`; delete `AppShowcase.astro`, `CollectionSpread.astro`, `CollectionDialog.astro`, `IndexStrip.astro` + their page usages once unreferenced.
+
+- [ ] `/collections/[slug]` → `/products/[family]` **301** — static redirect pages generated from the collections collection (redirects live in the asset bundle; no runtime map).
+- [ ] Sitemap regenerated for the new routes (/, `/products`, `/products/[family]`, `/products/[family]/[series]`); canonical/OG/robots updated; `/request`, `/thank-you`, `/style-guide` stay `noindex`.
+- [ ] Remove the retired Phase-1 components and styles only after `grep -r` shows zero references; keep the `prune-unreferenced-images` hook and `scripts/serve-gzip.mjs`.
+- **Acceptance:**
+  - [ ] Old collection URLs return 301 with the correct family target (verified in built output); sitemap covers every static route.
+  - [ ] Zero references to removed modules; build + `tsc` clean.
+
+#### R6 — Redesign QA & Client Review
+
+**Files:** update `docs/qa-report.md`.
+
+- [ ] Breakpoint sweep + tray usability on `/products` at 320/390/480/768/1024/1440 (headless Chrome, CDP — same harness as M6).
+- [ ] Re-run the M5 Lighthouse ≥90 gate (four combos) on the landing page + `/products`, on a quiet machine.
+- [ ] Human visual pass: landing + catalogue + tray at 1440/390 — settles the M1/M2/M3 residuals (swatch crop cut-offs, placeholder look, upscale question).
+- [ ] Client review of the catalogue (taxonomy groupings, placeholder treatment, copy); revisions applied (content-only); sign-off recorded in §10.
+- **Acceptance:**
+  - [ ] No horizontal scroll at any breakpoint; Lighthouse ≥90 × 4 combos (or the variance logged as in M5).
+  - [ ] Client sign-off recorded (even informally) in §10.
+
+M7–M9 below continue unchanged after R6 (M7's content freeze folds in with the R6 client review).
+
 ### M7 — Content Freeze & Client Review
 - [ ] Client reviews all live collection/product copy and imagery on the Cloudflare preview URL.
 - [ ] Revisions logged.
@@ -411,14 +556,15 @@ Each milestone should end with a working, deployed-to-preview state. **Do not pr
 
 ---
 
-## 6. Out of Scope for v1 (explicitly)
+## 6. Out of Scope (explicitly)
 
-- Full catalogue (300+ SKUs) — only the curated launch collections. Expanding coverage is a post-launch content task, not a rebuild, thanks to the Content Collections structure.
+- **Individual product detail pages** (`/products/[code]`) — the PDF catalogue carries the technical detail; a fast-follow option, not part of Phase 2.
+- **Trims & Profiles** — the aluminum trim/edge-profile hardware line spotted in the source catalogue is not in the 258-code taxonomy; pending a client scope check (§7).
 - CMS / non-technical editing UI (see §9 for the future path).
 - Multi-language / i18n.
 - Blog or "Projects" case-study system beyond what's in the approved mockup's nav (can be a fast-follow milestone if wanted).
 - Analytics dashboard beyond basic Cloudflare Web Analytics (free, privacy-friendly — recommend enabling it in M8, but it's not a build task).
-- Restructuring the homepage away from the approved stacked-collection layout (e.g. a tabbed/filtered "material explorer"). Not rejected as an idea — just not part of this build, and not something to introduce unilaterally mid-implementation (see M3 note).
+- **Finish/color facet filters** beyond family → series → search — deliberately deferred (see R2); a fast-follow option once the catalogue has real images.
 
 ---
 
@@ -428,6 +574,11 @@ Each milestone should end with a working, deployed-to-preview state. **Do not pr
 2. **Sales inbox:** which email address should request submissions be delivered to? Needs a Resend-verified sending domain (client's own domain, not a Gmail address, for deliverability).
 3. **Full-resolution source images:** the mockup used cropped catalogue-scan images. Confirm whether higher-resolution originals exist for production, or whether the catalogue scans are the final quality ceiling.
 4. **Brand name:** "LAMINA" was a placeholder used in the mockup — confirm final name/logo before M1 componentization, since it affects the nav/footer components.
+5. **Trims & Profiles scope:** the source catalogue contains an aluminum trim/edge-profile hardware line ("PVC Wall Panel Supporting Aluminum Alloy Line Display") — hardware, not a wall finish, and not part of the 258-code taxonomy. Own top-level family, or out of scope? Client check needed before R6.
+6. **Catalogue PDF:** which file does the "Download catalogue" CTA link to? (R3 renders the CTA only when the asset is provided in `public/`.)
+7. **Real product photography:** 169 of the 258 products currently render the placeholder swatch (89 carry real photography; the 3 index-absent codes WG-37/WG-43/HGF-252 were excluded and quarantined in R1 — §10 Session 12). When do real images arrive, and at what resolution (see the §3.3 source-resolution floor)?
+
+> **Correction (2026-09-05):** Session 8's claim that fetching `api.resend.com` needs a paid Workers plan was checked against current Cloudflare docs and appears **incorrect** — the Workers Free plan allows outbound `fetch()` (50 subrequests per invocation), and one Resend send is one subrequest. Verify with the real `RESEND_API_KEY` before considering any plan upgrade.
 
 If any of these are still unanswered when you reach the milestone that needs them, stop and ask — log the question in §10 rather than guessing.
 
@@ -693,3 +844,43 @@ Entry format:
   - The human visual-acceptance pass (M1 + M2 residuals + M3 acceptance), then proceed to **M4 — Request Tray & Form** (Svelte island, persistent drawer, quantity steppers, `/api/request` server route with validation + Turnstile + duplicate check + Resend, `/thank-you`, no-JS `/request` fallback).
 
 ---
+
+### Session 11 — 2026-09-05
+- Milestone(s) worked on: **PRD v2.0 + governance alignment** (documentation only — no code). The catalogue-pivot plan from the claude.ai conversation (2026-09-04, `CONVERSATION.txt`) is now written into the PRD as Phase 2, so the next session starts clean on R1.
+- Completed this session:
+  - Read `subcategory-taxonomy.md` (258 codes / 6 families / 19 series sections, extracted from the manufacturer catalogue index), `CONVERSATION.txt`, and the repo ground truth (`src/content.config.ts`, sample product/collection JSONs, pages/scripts layout — 92 products, no `data/` dir yet, `feature/redesign` already carries the Hero video commit).
+  - `LAMINA-PRD.md` → **v2.0**: changelog entry; §0 gains a Phase-2 status table (R1–R6) with "current focus: R1"; §1 rewritten for the B2B catalogue positioning; new **§3.4** (taxonomy, product-name policy, placeholder policy, data generation); §5 gains **Phase 2 milestones R1–R6** with checkboxes and verifiable acceptance criteria, and the M3 homepage constraint is marked superseded; §6/§7 updated.
+  - `CLAUDE.md` + `AGENTS.md`: the obsolete "stacked homepage" hard constraint replaced with the Phase-2 constraints; `subcategory-taxonomy.md` added as a source of truth; session-start points at the Phase-2 table.
+- Decisions made (and why) — the open items from the pivot conversation, now resolved:
+  - **Path-based filtering** (`/products/[family]/[series]`) over query params — statically generatable, shareable, SEO-indexable URLs (the pivot's own recommendation; client said "do it in one go").
+  - **Family slugs unchanged** (`wood-grain`, `stone-marble`, `metal`, `textile`, `solid`, `glossy-decorative`); display titles updated (Wood / Stone & Marble / Metal / Textile / Solid Color / Decorative & Mirror). Renaming slugs would churn all existing product refs for no UX gain.
+  - **Series = the 19 sections of `subcategory-taxonomy.md`**, including the MM line split into two series (`mm-matte-marble` / `mm-travertine`) — matches the taxonomy's own sectioning and the "19 series" figure from the pivot conversation.
+  - **Product-name policy (§3.4)** — never invented: real per-code name → singleton's printed name → explicit ordered descriptors → subcategory name, with a `nameSource` field so nothing looks silently made up. This resolves the Session-6 mismatches: MS-102 "Onyx Matte" → **"Hermes Orange"**, PM-263 "Noir Gloss" → **"Water Ripple Silver"**.
+  - **AMF-323 "Triumphal Arch"** normalized to "Triumphal Gate" (manufacturer typo; siblings 321/322/324 all read "Gate"); cylinder capitalization normalized. Logged in §3.4.
+  - **Placeholder policy** (client directive): products without photography use one shared generated tile that visibly reads "IMAGE MISSING" + `imageStatus: "placeholder"` + honest alt text. **No product-count limits** — the catalogue ships with all 258 codes; ~166 are on placeholders until real images arrive.
+  - **No product detail pages in v2** — the PDF catalogue carries specifications (fast-follow option, §6).
+  - **`/collections/[slug]` → `/products/[family]` 301s** — collection pages are killed per the pivot.
+  - **Corrected the Session-8 "paid Workers plan" claim**: Workers Free allows outbound fetch (50 subrequests/invocation) per current docs — one Resend call is one subrequest. Verify with the real key before any upgrade (§7 note).
+- Blocked on / open questions:
+  - Trims & Profiles line scope (not in the 258-code taxonomy) — client check (§7 Q5).
+  - Catalogue PDF asset for the download CTA (§7 Q6); real photography for the ~166 placeholder products (§7 Q7).
+  - Unchanged Phase-1 items: GitHub remote + Workers Builds (M0), production domain, brand name, real Resend/Turnstile keys.
+- Next session should start with: **R1 — Catalogue Data & Taxonomy** (schema fields → `data/catalogue-master.ts` → `scripts/generate-catalogue.mjs` → placeholder image → 258 JSONs → build + cross-check), then R2 the catalogue page.
+
+### Session 12 — 2026-09-05
+- Milestone(s) worked on: **R1 — Catalogue Data & Taxonomy** (Phase 2) — complete. Picked up from the Session-11 handoff; the user supplied the missing input — the full manufacturer catalogue index (per-code printed names across all six families) — which resolved every remaining data gap.
+- Completed this session:
+  - Transcribed the manufacturer index against `subcategory-taxonomy.md`: grouping confirmed; per-code printed names recovered for all 258. Resolved gaps: the MSM series codes are MSM-211–216 (the taxonomy table omitted numbers); "Mirror" PM-251–253/255–259, "Gradient" PM-260–262, "Water Ripple" PM-263–266/268; decorative names print **descriptor-first** ("Golden Wiredrawing" BM-201…, "Pearl Flash Point" HGF-245, "Silver Water Ripple" PM-263). Confirmed real numbering gaps (no WG-37/43–47, MM-145, PM-254/267, HGM-277/284, TDM-310/314/315, HGF-247).
+  - Extended the product schema in `src/content.config.ts` (`series`, `subcategory`, `imageStatus`); wrote `data/catalogue-master.ts` (258 codes / 19 series / 6 families, per-row `name` + `nameSource`, conventions documented in the header) and `scripts/generate-catalogue.mjs` (emits lowercased-code JSONs incl. letter suffixes `hgm-276a.json`; preserves real images/alt/description; hard-fails on any taxonomy disagreement or lost real product).
+  - Generated + pixel-verified the shared placeholder tile `src/assets/products/placeholder-missing.png` (paper `#fbf9f4`, hairline `#c9c1ae`, centred mono "IMAGE MISSING" — text bbox centre 600.5/403.5 of 1200×810).
+  - Updated the 6 collection JSONs' titles (Wood / Stone & Marble / Metal / Textile / Solid Color / Decorative & Mirror); slugs, images, copy untouched.
+  - Ran the generator + verification gate: 258 JSONs emitted, **89 `imageStatus: "real"` (all with curated alt) / 169 `"placeholder"`** (shared tile, alt "Product image not yet available"); audit: 258 unique codes, family 63/50/28/47/33/37 and all 19 series counts match the taxonomy; `npm run build` green (359 image transforms; the placeholder tile compiles to WebP) and `npx tsc --noEmit` clean.
+  - Cleaned up legacy placement: moved misfiled photos to their correct family folders (amf-321–324 → glossy-decorative; hgf-245/248/249 → solid); retired the obsolete M0 flat-path image specs in `scripts/generate-placeholders.mjs` (their first run wrote 7 junk files — deleted, nothing real lost).
+- Decisions made (and why):
+  - **Exclusions (user decision):** WG-37, WG-43, HGF-252 — the only pre-existing products whose codes are absent from the manufacturer index — are excluded from the catalogue; their real photos are quarantined under `reference/assets/`, not deleted; re-adding = new master rows. Consequence: **89 real + 169 placeholder** (the Session-11 "~166" estimate corrected throughout the PRD: §3.4, §5 R1, §0, §7 Q7).
+  - **`nameSource` vocabulary** (records which §3.4 rule produced each `name`): `'printed'` (index name, case/punctuation harmonized), `'normalized'` (deliberate documented fix), `'subcategory'` (rule-4 fallback — unused in the 258). Normalizations: AMF-323 "Arch"→"Gate" (typo), AMF-325–328 cylinder case, TDM "(Integrated)" and PP "-PP" series-wide strips, MS-107–109 "(Lichi Leather)" strip (carried by the subcategory). All documented in the master header.
+  - **Name corrections:** PM-263 prints "Silver Water Ripple", not the Session-11 estimate "Water Ripple Silver" — §3.4 fixed. The pre-existing JSONs carried invented names (ms-102 "Onyx Matte", pm-263 "Noir Gloss", amf-321 "Brushed Aluminium", bm-203 "Black Brushed Metal"); the generator overwrote them from the master per the §3.4 policy (alt/description/tags/featured preserved).
+- Blocked on / open questions:
+  - Human check of the quarantined codes against the physical catalogue (do WG-37/WG-43/HGF-252 exist under another number?).
+  - Real photography for the 169 placeholder products (§7 Q7); unchanged: trims scope (§7 Q5), catalogue PDF (§7 Q6), domain, brand, real keys, GitHub remote + Workers Builds.
+- Next session should start with: **R2 — Catalogue Page & Filtering** (`/products/[[...filters]]` + sidebar + search + tray mount) — the first page that renders all 258.

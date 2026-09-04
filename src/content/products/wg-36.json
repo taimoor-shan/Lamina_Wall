@@ -1,7 +1,10 @@
 {
   "code": "WG-36",
-  "name": "WG-36",
+  "name": "Nordic Technology Wood",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "Nordic Technology Wood",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-36.png",
   "alt": "Wood-grain panel swatch in a light brown with fine grain.",
   "description": "Wood-grain panel in a light brown with fine grain.",

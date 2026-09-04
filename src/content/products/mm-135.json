@@ -1,7 +1,10 @@
 {
   "code": "MM-135",
-  "name": "MM-135",
+  "name": "Corsican Grey",
   "collection": "stone-marble",
+  "series": "mm-matte-marble",
+  "subcategory": "Corsican Grey",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/stone-marble/mm-135.png",
   "alt": "Marble-effect panel swatch in a mid-grey.",
   "description": "Marble-effect panel in a mid-grey.",
@@ -9,5 +12,5 @@
     "marble"
   ],
   "featured": false,
-  "order": 7
+  "order": 68
 }

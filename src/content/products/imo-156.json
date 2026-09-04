@@ -1,7 +1,10 @@
 {
   "code": "IMO-156",
-  "name": "IMO-156",
+  "name": "California Black Walnut",
   "collection": "wood-grain",
+  "series": "imo",
+  "subcategory": "California Black Walnut",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/imo-156.png",
   "alt": "Wood-grain panel swatch in a very dark brown with fine grain.",
   "description": "Wood-grain panel in a very dark brown with fine grain.",

@@ -1,7 +1,10 @@
 {
   "code": "HGS-241",
-  "name": "HGS-241",
+  "name": "Magic Black",
   "collection": "solid",
+  "series": "hgs",
+  "subcategory": "Magic Black",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/solid/hgs-241.png",
   "alt": "High-gloss solid-colour panel swatch in near-black with a blue undertone.",
   "description": "High-gloss solid-colour panel in near-black with a blue undertone.",
@@ -9,5 +12,5 @@
     "solid"
   ],
   "featured": false,
-  "order": 3
+  "order": 217
 }

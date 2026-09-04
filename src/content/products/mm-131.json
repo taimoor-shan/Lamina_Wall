@@ -1,7 +1,10 @@
 {
   "code": "MM-131",
-  "name": "MM-131",
+  "name": "Fish Maw White Rock",
   "collection": "stone-marble",
+  "series": "mm-matte-marble",
+  "subcategory": "Fish Maw White Rock",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/stone-marble/mm-131.png",
   "alt": "Marble-effect panel swatch in near-white with a faint violet tint.",
   "description": "Marble-effect panel in a near-white tone with a faint violet tint.",
@@ -9,5 +12,5 @@
     "marble"
   ],
   "featured": false,
-  "order": 3
+  "order": 64
 }

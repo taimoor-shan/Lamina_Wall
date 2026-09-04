@@ -2,10 +2,17 @@
   "code": "WG-01",
   "name": "Classic Technology Wood",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "Classic Technology Wood",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-01.jpg",
   "alt": "Oak wood-grain panel swatch, warm mid-brown with cathedral grain and cross-silking.",
   "description": "The flagship technology veneer: true-to-tree cathedral grain, available in lengths no forest can supply.",
-  "tags": ["oak", "technology veneer", "flagship"],
+  "tags": [
+    "oak",
+    "technology veneer",
+    "flagship"
+  ],
   "featured": true,
   "order": 1
 }

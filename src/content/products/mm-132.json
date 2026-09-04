@@ -1,7 +1,10 @@
 {
   "code": "MM-132",
-  "name": "MM-132",
+  "name": "Lauren Platinum",
   "collection": "stone-marble",
+  "series": "mm-matte-marble",
+  "subcategory": "Lauren Platinum",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/stone-marble/mm-132.png",
   "alt": "Marble-effect panel swatch in near-white with a faint olive tint.",
   "description": "Marble-effect panel in a near-white tone with a faint olive tint.",
@@ -9,5 +12,5 @@
     "marble"
   ],
   "featured": false,
-  "order": 4
+  "order": 65
 }

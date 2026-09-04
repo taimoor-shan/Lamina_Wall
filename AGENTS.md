@@ -6,7 +6,7 @@ You are working across multiple, separate sessions on this project. You will not
 
 1. Read `LAMINA-PRD.md` §0 ("Status at a Glance") to see which milestones are done, in progress, or blocked.
 2. Read §10 ("Session Log") to see what previous sessions actually did and decided — this often has context that isn't in the checkboxes themselves (why a decision was made, what a client said, what didn't work).
-3. Find the first milestone in §5 that isn't fully checked off. That's your starting point, unless the person you're working with tells you otherwise this session.
+3. Find the first milestone in §5 that isn't fully checked off. That's your starting point, unless the person you're working with tells you otherwise this session. (Phase 2 governs from v2.0 on: start at R1 and work R1 → R6 — Phase-1 M0–M6 are closed out; see the Phase-2 table in §0.)
 4. If a milestone is marked `Blocked` in §0, read the note before doing anything else — don't restart blocked work without addressing the blocker.
 
 ## While working
@@ -21,7 +21,9 @@ You are working across multiple, separate sessions on this project. You will not
 These are decisions that were made deliberately, sometimes after a prior AI reviewer suggested changing them and the client explicitly rejected the suggestion. Do not "helpfully" revisit them on your own initiative:
 
 - **No ecommerce language, ever.** No "cart," no "checkout," no "buy," no prices anywhere in the UI. This is a request/spec system, not a store. See PRD §4.
-- **The homepage layout stays as the approved stacked, full-bleed collection-spread design.** Do not restructure it into tabs, filters, or a "material explorer" pattern on your own judgment — see PRD §5 M3 and §6 for why this was explicitly locked.
+- **The catalogue taxonomy is a fixed input.** `subcategory-taxonomy.md` defines the 258 codes, 6 families, 19 series and their subcategory groupings. Product data that contradicts it is a discrepancy to log for a human, never a silent "fix". (This supersedes the Phase-1 rule "the homepage stays the stacked collection-spread layout" — the client lifted that in the 2026-09-04 pivot, see the PRD v2.0 changelog.)
+- **Never invent product content.** Names/alt/copy follow the PRD §3.4 name-resolution policy; anything unknown falls back to the placeholder treatment — no made-up marketing copy. **No product-count limits:** all 258 codes are products; missing photography uses the shared placeholder image (`imageStatus: 'placeholder'`).
+- **One catalogue template.** `/products/[[...filters]]` is the single catalogue page (path-based pre-filtering); do not re-add per-collection page templates — Phase-1 `/collections/[slug]` pages are retired with 301s (PRD R5).
 - **Stack is fixed:** Astro + TypeScript + plain CSS + Astro Content Collections (no CMS) + a single Svelte island for the request tray + Cloudflare Workers (not Pages). If something about this stack seems wrong or outdated by the time you're implementing, say so and ask — don't silently substitute a different stack or add a CMS.
 - **No product/article number ever displays a price.**
 - **Secrets never go in the frontend bundle or get committed to the repo.** See PRD §2.2 for exactly which variables are public vs. secret.
@@ -39,4 +41,5 @@ Before ending, append a new entry to §10 (Session Log) in `LAMINA-PRD.md`, even
 ## Reference files
 
 - `LAMINA-PRD.md` — the full spec, milestones, and acceptance criteria. Primary source of truth.
+- `subcategory-taxonomy.md` — the family/series/subcategory grouping of all 258 catalogue codes, extracted from the manufacturer's catalogue index. Source of truth for product grouping; read it before touching product data.
 - `/reference/lamina-design-direction.html` — the client-approved visual/design-direction mockup. Every visual acceptance criterion in the PRD means "matches this file," not "looks nice by the agent's own judgment."

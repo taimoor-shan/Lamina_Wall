@@ -1,7 +1,10 @@
 {
   "code": "IMO-157",
-  "name": "IMO-157",
+  "name": "Flowing Oak",
   "collection": "wood-grain",
+  "series": "imo",
+  "subcategory": "Flowing Oak",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/imo-157.png",
   "alt": "Wood-grain panel swatch in a mid brown with fine grain.",
   "description": "Wood-grain panel in a mid brown with fine grain.",

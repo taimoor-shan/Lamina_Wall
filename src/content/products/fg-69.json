@@ -1,7 +1,10 @@
 {
   "code": "FG-69",
-  "name": "FG-69",
+  "name": "Golden Thread Fabric",
   "collection": "textile",
+  "series": "fg",
+  "subcategory": "Golden Thread Fabric",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/textile/fg-69.png",
   "alt": "Fabric-wrapped panel swatch in a pale pink.",
   "description": "Fabric-wrapped panel in a pale pink.",
@@ -10,5 +13,5 @@
     "fabric"
   ],
   "featured": false,
-  "order": 9
+  "order": 150
 }

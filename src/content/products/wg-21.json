@@ -1,7 +1,10 @@
 {
   "code": "WG-21",
-  "name": "WG-21",
+  "name": "Orange Osmanthus",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "Orange Osmanthus",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-21.png",
   "alt": "Wood-grain panel swatch in a mid-grey with fine grain.",
   "description": "Wood-grain panel in a mid-grey with fine grain.",

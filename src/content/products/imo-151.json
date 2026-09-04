@@ -1,7 +1,10 @@
 {
   "code": "IMO-151",
-  "name": "IMO-151",
+  "name": "Troncy Oak",
   "collection": "wood-grain",
+  "series": "imo",
+  "subcategory": "Troncy Oak",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/imo-151.png",
   "alt": "Wood-grain panel swatch in a light brown with fine grain.",
   "description": "Wood-grain panel in a light brown with fine grain.",

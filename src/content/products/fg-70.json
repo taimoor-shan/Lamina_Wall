@@ -1,7 +1,10 @@
 {
   "code": "FG-70",
-  "name": "FG-70",
+  "name": "Golden Thread Fabric",
   "collection": "textile",
+  "series": "fg",
+  "subcategory": "Golden Thread Fabric",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/textile/fg-70.png",
   "alt": "Fabric-wrapped panel swatch in a light grey.",
   "description": "Fabric-wrapped panel in a light grey.",
@@ -10,5 +13,5 @@
     "fabric"
   ],
   "featured": false,
-  "order": 10
+  "order": 151
 }

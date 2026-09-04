@@ -1,7 +1,10 @@
 {
   "code": "FG-64",
-  "name": "FG-64",
+  "name": "Korean Fabric",
   "collection": "textile",
+  "series": "fg",
+  "subcategory": "Korean Fabric",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/textile/fg-64.png",
   "alt": "Fabric-wrapped panel swatch in off-white.",
   "description": "Fabric-wrapped panel in off-white.",
@@ -10,5 +13,5 @@
     "fabric"
   ],
   "featured": false,
-  "order": 4
+  "order": 145
 }

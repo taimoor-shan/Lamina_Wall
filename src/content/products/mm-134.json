@@ -1,7 +1,10 @@
 {
   "code": "MM-134",
-  "name": "MM-134",
+  "name": "Florentine Limestone",
   "collection": "stone-marble",
+  "series": "mm-matte-marble",
+  "subcategory": "Florentine Limestone",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/stone-marble/mm-134.png",
   "alt": "Marble-effect panel swatch in a mid-grey.",
   "description": "Marble-effect panel in a mid-grey.",
@@ -9,5 +12,5 @@
     "marble"
   ],
   "featured": false,
-  "order": 6
+  "order": 67
 }

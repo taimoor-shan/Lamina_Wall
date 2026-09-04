@@ -1,7 +1,10 @@
 {
   "code": "MM-136",
-  "name": "MM-136",
+  "name": "Persian Limestone",
   "collection": "stone-marble",
+  "series": "mm-matte-marble",
+  "subcategory": "Persian Limestone",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/stone-marble/mm-136.png",
   "alt": "Marble-effect panel swatch in a dark grey.",
   "description": "Marble-effect panel in a dark grey.",
@@ -9,5 +12,5 @@
     "marble"
   ],
   "featured": false,
-  "order": 8
+  "order": 69
 }

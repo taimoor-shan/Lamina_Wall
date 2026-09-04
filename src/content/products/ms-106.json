@@ -1,7 +1,10 @@
 {
   "code": "MS-106",
-  "name": "MS-106",
+  "name": "Carmine Red",
   "collection": "solid",
+  "series": "ms",
+  "subcategory": "Carmine Red",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/solid/ms-106.png",
   "alt": "Solid-colour panel swatch in a mid rose.",
   "description": "Solid-colour panel in a mid rose.",
@@ -9,5 +12,5 @@
     "solid"
   ],
   "featured": false,
-  "order": 9
+  "order": 194
 }

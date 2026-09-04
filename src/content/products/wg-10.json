@@ -1,7 +1,10 @@
 {
   "code": "WG-10",
-  "name": "WG-10",
+  "name": "Classic Technology Wood",
   "collection": "wood-grain",
+  "series": "wg",
+  "subcategory": "Classic Technology Wood",
+  "imageStatus": "real",
   "swatchImage": "../../assets/products/wood-grain/wg-10.png",
   "alt": "Wood-grain panel swatch in a deep tan with fine grain.",
   "description": "Wood-grain panel in a deep tan with fine grain.",
