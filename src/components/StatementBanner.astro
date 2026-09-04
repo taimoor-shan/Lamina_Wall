@@ -1,17 +1,38 @@
 ---
-// StatementBanner — dark request statement block (mockup .statement).
-// The CTA opens the request tray: the island's delegated click handler
-// catches [data-tray-open], and the [data-tray-count] span mirrors the
-// tray's total like the header Request button.
+// StatementBanner — dark request statement block (mockup .statement) that
+// closes the landing page with the R3 CTA row:
+//   Download catalogue PDF (rendered only when the caller has the asset —
+//   gated on public/catalogue.pdf existing at build time, R3)
+//   Request samples      — opens the request tray: the island's delegated
+//                          click handler catches [data-tray-open], and the
+//                          [data-tray-count] span mirrors the tray's total
+//                          like the header Request button (Session 10).
+//   Contact              — plain mailto link (the mockup footer's STUDIO
+//                          email is the site's contact affordance).
 interface Props {
   eyebrow: string;
   line1: string;
   line2?: string; // italic line
   body: string;
-  ctaLabel?: string;
+  /** Set to '/catalogue.pdf' to render the download action. */
+  pdfHref?: string;
+  /** Label for the tray-opening action. */
+  trayLabel?: string;
+  /** Target for the contact action (defaults to the STUDIO email). */
+  contactHref?: string;
 }
 
-const { eyebrow, line1, line2, body, ctaLabel = 'Open your request' } = Astro.props;
+const {
+  eyebrow,
+  line1,
+  line2,
+  body,
+  pdfHref,
+  trayLabel = 'Request samples',
+  contactHref = 'mailto:hello@lamina.studio',
+} = Astro.props;
+const PDF_LABEL = 'Download catalogue PDF';
+const CONTACT_LABEL = 'Contact';
 ---
 
 <div class="statement">
@@ -26,9 +47,21 @@ const { eyebrow, line1, line2, body, ctaLabel = 'Open your request' } = Astro.pr
     )}
   </h2>
   <p>{body}</p>
-  <button class="btn" type="button" data-tray-open aria-label="Open request tray">
-    {ctaLabel} <span data-tray-count aria-hidden="true">(0)</span>
-  </button>
+
+  <div class="cta-row">
+    {pdfHref && (
+      <a class="btn" href={pdfHref} download>{PDF_LABEL}</a>
+    )}
+    <button
+      class="btn"
+      type="button"
+      data-tray-open
+      aria-label={`${trayLabel} — opens the request tray`}
+    >
+      {trayLabel} <span data-tray-count aria-hidden="true">(0)</span>
+    </button>
+    <a class="btn" href={contactHref}>{CONTACT_LABEL}</a>
+  </div>
 </div>
 
 <style>
@@ -72,5 +105,25 @@ const { eyebrow, line1, line2, body, ctaLabel = 'Open your request' } = Astro.pr
   .statement .btn:hover {
     background: var(--paper);
     color: var(--basalt);
+  }
+
+  /* R3 CTA row — three equal actions in the same outline language; the
+     group wraps on narrow widths and stacks below 480px. */
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 14px 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  @media (max-width: 480px) {
+    .cta-row {
+      flex-direction: column;
+    }
+    .cta-row .btn {
+      width: min(100%, 320px);
+    }
   }
 </style>

@@ -1,6 +1,20 @@
 ---
+// Landing page — PRD Phase-2 R3. Structure (per the client pivot plan):
+//   hero (photo mode of the Session-10 flex/background restructure; the
+//         committed video mode is available via the `video` prop) →
+//   short brand blurb over the 6-family visual index →
+//   closing statement band with the CTA row
+//     (Download catalogue PDF — rendered only when public/catalogue.pdf
+//      exists at build time / Request samples — opens the tray via
+//      data-tray-open / Contact — mailto, the site's contact affordance).
+//
+// Copy policy: every string is either approved mockup/homepage copy or
+// data derived from the content collections (family titles/taglines/alt are
+// collection data; counts come from the products collection). Nothing is
+// invented.
 import { getCollection } from 'astro:content';
-import { getImage } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
+
 import '../styles/tokens.css';
 import '../styles/global.css';
 
@@ -8,8 +22,6 @@ import Seo from '../components/Seo.astro';
 import Fonts from '../components/Fonts.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
-import IndexStrip from '../components/IndexStrip.astro';
-import CollectionSpread from '../components/CollectionSpread.astro';
 import StatementBanner from '../components/StatementBanner.astro';
 import Footer from '../components/Footer.astro';
 import RequestTray from '../components/RequestTray.svelte';
@@ -32,15 +44,27 @@ const collections = (await getCollection('collections')).sort(
 );
 const products = await getCollection('products');
 
-const productsByCollection = new Map<string, typeof products>();
+// Per-family article counts — derived from the products themselves (same
+// derivation as the catalogue page; the generator hard-fails on any
+// disagreement with the taxonomy). Keyed by collection entry id, which is
+// the family slug.
+const famCount = new Map<string, number>();
 for (const p of products) {
-  const cid = p.data.collection.id;
-  if (!productsByCollection.has(cid)) productsByCollection.set(cid, []);
-  productsByCollection.get(cid)!.push(p);
+  const fid = p.data.collection.id;
+  famCount.set(fid, (famCount.get(fid) ?? 0) + 1);
 }
-for (const arr of productsByCollection.values()) {
-  arr.sort((a, b) => a.data.order - b.data.order);
-}
+
+// R3 — the download CTA renders only when the catalogue PDF ships in
+// public/ (PRD §7 Q6). The existence check CANNOT run in page code: the
+// Cloudflare adapter prerenders static routes in a sandboxed context
+// (process.cwd() is '/bundle', env is empty) with no view of the host
+// filesystem, so any fs probe here reads false even when the file is
+// present. astro.config.mjs therefore computes the check at config load
+// (which runs at the project root) and bakes it into every module as the
+// __R3_CATALOGUE_PDF__ constant (declared in src/env.d.ts). With no file,
+// both the hero's and the CTA row's download actions are omitted rather
+// than left as dead links.
+const cataloguePdfHref = __R3_CATALOGUE_PDF__ ? '/catalogue.pdf' : undefined;
 ---
 
 <!doctype html>
@@ -77,28 +101,72 @@ for (const arr of productsByCollection.values()) {
           { text: 'provenance.', italic: true },
         ]}
         sub="Wood, stone, metal and textile, reproduced with the grain, depth and hand-feel of the original material. Specified by the panel, not the pallet."
-        linkHref="#wood-grain"
-        linkPdfHref="#"
+        linkHref="/products"
         linkLabel="View the collections"
+        linkPdfHref={cataloguePdfHref}
         linkLabel1="Download the Catalog"
       />
 
-      <!-- <IndexStrip collections={collections} /> -->
+      <!-- Brand blurb + 6-family visual index: one strong application photo
+           per family, each tile linking into /products/[family]. Heading and
+           copy: the range sentence below is the approved catalogue-page head
+           description; family titles, taglines and image alts are collection
+           data (R1), never invented. -->
+      <section class="range" aria-labelledby="range-title">
+        <header class="range-head">
+          <div>
+            <p class="eyebrow">
+              {collections.length} families — {products.length} articles
+            </p>
+            <h2 class="display range-title" id="range-title">
+              The complete LAMINA range.
+            </h2>
+          </div>
+          <p class="range-desc">
+            {products.length} wall panels and architectural surfaces across
+            wood, stone &amp; marble, metal, textile, solid color, and
+            decorative &amp; mirror families.
+          </p>
+        </header>
 
-      {
-        collections.map((c) => (
-          <CollectionSpread
-            collection={c}
-            products={productsByCollection.get(c.id) ?? []}
-          />
-        ))
-      }
+        <div class="family-grid">
+          {
+            collections.map((c) => {
+              const count = famCount.get(c.id) ?? 0;
+              return (
+                <a
+                  class="family-tile"
+                  href={`/products/${c.data.slug}`}
+                >
+                  <div class="tile-img">
+                    <Image
+                      src={c.data.heroApplicationImage}
+                      alt={c.data.heroAlt}
+                      widths={[480, 720, 960]}
+                      sizes="(max-width: 640px) calc(100vw - 40px), (max-width: 1100px) calc(50vw - 40px), calc(33.3vw - 28px)"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div class="tile-body">
+                    <div class="tile-meta">
+                      <span>{String(c.data.order).padStart(2, '0')} / {c.data.title}</span>
+                      <span>{count} {count === 1 ? 'article' : 'articles'}</span>
+                    </div>
+                    <h3 class="display tile-title">{c.data.tagline}</h3>
+                  </div>
+                </a>
+              );
+            })
+          }
+        </div>
+      </section>
 
       <StatementBanner
         eyebrow="For Architects, Designers & Trade Buyers"
         line1="No prices to guess at."
         line2="No cart to abandon."
         body="Select article numbers as you browse — they collect quietly in your Request tray. Add quantities, project details and your team's contact information, and we'll come back with lead times and a formal quote."
+        pdfHref={cataloguePdfHref}
       />
     </main>
 
@@ -106,3 +174,100 @@ for (const arr of productsByCollection.values()) {
     <RequestTray client:load />
   </body>
 </html>
+
+<style>
+  /* ---- R3 landing content (design-system tokens only; zero absolute or
+         fixed positioning — client directive, Session 10) ---- */
+
+  .range {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--section-v) var(--gutter) 0;
+  }
+
+  /* Section head in the catalogue-page language (hairline rule, mono
+     eyebrow, serif display, side description). */
+  .range-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 28px;
+    margin-bottom: var(--sec-head-gap);
+  }
+  .range-title {
+    font-size: var(--fs-display-section);
+    margin-top: 8px;
+  }
+  .range-desc {
+    max-width: 380px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--ash);
+    padding-bottom: 6px;
+  }
+
+  /* 6-family visual index — hairline grid (1px gaps over --line, the
+     mockup swatch-row technique). */
+  .family-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--line);
+  }
+  .family-tile {
+    display: flex;
+    flex-direction: column;
+    background: var(--paper);
+  }
+  .family-tile:hover {
+    background: var(--stone-card);
+  }
+  .tile-img {
+    aspect-ratio: var(--app-ratio);
+    overflow: hidden;
+    background: var(--stone-card);
+  }
+  .tile-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+  }
+  .tile-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: var(--fs-caption);
+    letter-spacing: var(--ls-mono);
+    text-transform: uppercase;
+    color: var(--ash);
+  }
+  .family-tile:hover .tile-meta {
+    color: var(--ember);
+  }
+  .tile-title {
+    font-size: var(--fs-display-tile);
+  }
+
+  @media (min-width: 641px) {
+    .family-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1101px) {
+    .family-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 480px) {
+    .range {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+</style>

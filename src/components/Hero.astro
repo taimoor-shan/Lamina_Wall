@@ -20,7 +20,10 @@ interface Props {
   lines: Line[];
   sub: string;
   linkHref: string;
-  linkPdfHref: string;
+  /** Secondary CTA (the catalogue-PDF download). Optional: the second button
+   *  renders only when the caller has a real target (R3 gates it on
+   *  public/catalogue.pdf existing at build time). */
+  linkPdfHref?: string;
   linkLabel?: string;
   linkLabel1?: string;
   /** Optional video URL/path. When set, the hero renders a <video> element
@@ -68,23 +71,52 @@ const tieredBgCss = hasVideo
       }
     }
   `;
+
+// Video-mode styles are emitted ONLY when a video is actually used (same
+// set:html pattern as tieredBgCss), so a photo-mode page ships zero
+// absolute/fixed positioning from the hero (Session-10 client directive:
+// "must not have any absolute element").
+const videoCss = hasVideo
+  ? `
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .hero-media video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .hero-veil {
+      position: absolute;
+      inset: 0;
+      background: var(--hero-veil);
+      pointer-events: none;
+    }
+  `
+  : '';
 ---
 
 <section class="hero">
   {hasVideo && (
-    <div class="hero-media">
-      <video
-        src={video}
-        poster={bgLarge.src}
-        autoplay
-        muted
-        loop
-        playsinline
-        preload="metadata"
-        aria-hidden="true"
-      />
-      <div class="hero-veil" aria-hidden="true"></div>
-    </div>
+    <>
+      <style is:inline set:html={videoCss}></style>
+      <div class="hero-media">
+        <video
+          src={video}
+          poster={bgLarge.src}
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          aria-hidden="true"
+        />
+        <div class="hero-veil" aria-hidden="true"></div>
+      </div>
+    </>
   )}
 
   {!hasVideo && (
@@ -109,9 +141,10 @@ const tieredBgCss = hasVideo
       <p>{sub}</p>
       <div class="flex mt-3">
         <a type="button" class="btn-outline white" href={linkHref}>{linkLabel}</a>
-      <a type="button" class="btn-outline" href={linkPdfHref}>{linkLabel1}</a>
+        {linkPdfHref && (
+          <a type="button" class="btn-outline" href={linkPdfHref}>{linkLabel1}</a>
+        )}
       </div>
-      
     </div>
   </div>
 </section>
@@ -131,24 +164,9 @@ const tieredBgCss = hasVideo
 
   }
 
-  /* ---- video mode ---- */
-  .hero-media {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-  }
-  .hero-media video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .hero-veil {
-    position: absolute;
-    inset: 0;
-    background: var(--hero-veil);
-    pointer-events: none;
-  }
+  /* Video-mode rules (.hero-media/.hero-veil) are injected conditionally as
+     inline CSS when the video prop is set — see videoCss above. Photo mode
+     (the default, used by the landing page) ships no absolute elements. */
 
   /* ---- shared content ---- */
   .hero-content {

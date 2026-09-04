@@ -1,10 +1,24 @@
 // @ts-check
+import { existsSync } from 'node:fs';
 import { readdir, readFile, unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import svelte from '@astrojs/svelte';
+
+// R3 landing CTA: the catalogue-PDF download action must render only when
+// the PDF actually ships in public/. Astro pages cannot check the host
+// filesystem themselves — the Cloudflare adapter prerenders static routes
+// in a sandboxed context (process.cwd() is '/bundle', env is empty) with no
+// view of the project tree, so any fs probe in page code always reads
+// false. The check therefore runs here, in the config process (which Astro
+// loads from the project root), and its result is baked into every module
+// at build time as the __R3_CATALOGUE_PDF__ constant (same static-replace
+// mechanism as import.meta.env). Changing the file requires a rebuild.
+const hasCataloguePdf = existsSync(
+  fileURLToPath(new URL('./public/catalogue.pdf', import.meta.url)),
+);
 
 // https://astro.build/config
 export default defineConfig({
@@ -21,6 +35,14 @@ export default defineConfig({
   // All CSS is tiny (a few KiB per page); inlining removes every
   // render-blocking stylesheet request — one HTML request to first paint.
   build: { inlineStylesheets: 'always' },
+  vite: {
+    // R3: bake the config-process PDF check into every module (see
+    // hasCataloguePdf above). 'true'/'false' are literal JS booleans after
+    // substitution, so page code can use the constant in an if/ternary.
+    define: {
+      __R3_CATALOGUE_PDF__: hasCataloguePdf ? 'true' : 'false',
+    },
+  },
   // M4: the request tray is the single interactive island, mounted
   // client:load only on pages that carry swatches (homepage + collection
   // pages). The /request page stays plain HTML with a small inline script.

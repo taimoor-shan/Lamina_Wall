@@ -1,3 +1,9 @@
+// R3: build-time constant injected by astro.config.mjs (vite.define) — true
+// only when public/catalogue.pdf exists when the build starts. Gates the
+// landing page's catalogue-PDF download CTA (both the hero's secondary
+// action and the closing statement's CTA row). Never a runtime value.
+declare const __R3_CATALOGUE_PDF__: boolean;
+
 // Typings for the LAMINA worker's runtime bindings (PRD §2.2).
 //
 // `cloudflare:workers` is a Cloudflare-provided virtual module; without

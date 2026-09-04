@@ -99,6 +99,7 @@
      Aliases of the scale tokens above — one source of truth for the clamps. */
   --fs-display-hero: var(--fs-display-xl);
   --fs-display-section: var(--fs-display-lg);
+  --fs-display-tile: clamp(22px, 2vw, 30px); /* landing family-index tile tagline (R3) */
   --header-bg: color-mix(in srgb, var(--stone) 86%, transparent); /* sticky header — matches mockup frosted glass */
   --callout-ring-glow: rgba(251, 249, 244, 0.15); /* --paper @ 15% */
   --swatch-overlay: rgba(15, 13, 9, 0.62); /* "+N more" tile scrim */
