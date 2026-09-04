@@ -66,3 +66,47 @@ node /tmp/hero-flex-check.mjs           # 17 assertions — hero restructure (no
 ```
 
 (If `node` isn't on PATH: `/Users/macbookpro/.nvm/versions/node/v24.19.0/bin/node`.)
+
+---
+
+# R6 Redesign QA — Phase-2 (catalogue redesign)
+
+Status: **In progress** — automated portion done 2026-09-05 (R5 build, d74c2df); the human gates (visual pass + client review) remain open and are listed at the bottom.
+
+## What was verified (automated, headless Chrome)
+
+Harness: the R2/R3 CDP suites re-run against the R5 build served through `node scripts/serve-gzip.mjs` (:4328, gzip) + the Workers-pipeline smoke from Session 16. These cover the R6 breakpoint + tray bullet for the redesigned pages:
+
+| Suite | Coverage | Result |
+|---|---|---|
+| `/tmp/r3-landing-check.mjs` | no h-scroll at 320/390/480/768/1024/1440 on the landing page; 6 family tiles → correct `/products/<family>` hrefs, all 6 serve 200; single h1, every main img alted; PDF CTA absent (no file in this build); statement "Request samples" CTA opens the tray (content present), Escape closes, header re-opens | **17/17 PASS** |
+| `/tmp/r2-catalogue-check.mjs` | `/products` (258 tiles) + `/products/wood-grain/wg` (43) at 320–1440: no h-scroll; mobile filter `<details>` disclosure; live search (filter, "N of 258" count, empty state, clear restores); tray add toggles membership only, header opens drawer with the code, Escape closes, re-open | **ALL PASS** |
+| Session-16 Workers-pipeline smoke | `/`, `/products`, `/products/wood-grain/wg`, `/request`, `/style-guide` 200 with tiles, tray `astro-island`, 258-key recap body | PASS |
+
+## M5 Lighthouse ≥90 gate — re-run on this machine (2026-09-05, Lighthouse 13.4.1, Chrome headless)
+
+| Combo | Score | Verdict |
+|---|---|---|
+| landing / desktop | 100 | ≥90 ✓ |
+| landing / mobile | 98 | ≥90 ✓ |
+| /products / desktop | 100 | ≥90 ✓ |
+| /products / mobile | 100 | ≥90 ✓ |
+
+Four-way gate **met** (previous straddle in Session 9 was simulator variance on mobiles; today's mobiles sit at the top of the historical 85–99 band — nothing structural changed since, the M5 fixes hold). Report files: `/tmp/lh-landing-{desktop,mobile}.json`, `/tmp/lh-products-{desktop,mobile}.json`. Lighthouse 13 note: `--preset=mobile` no longer exists — mobile is the default run, desktop via `--preset=desktop`.
+
+## Human gates (not automated — must not be claimed by a machine)
+
+1. **Human visual pass at 1440/390** — landing + catalogue + request tray vs `reference/lamina-design-direction.html`; settles the M1/M2/M3 residuals (swatch crop cut-offs, placeholder look, upscale question) and the Session-10 hero restructure.
+2. **Client review of the catalogue** — taxonomy groupings, placeholder treatment, copy (incl. the flagged items: range heading copy Session 14, R4 stale-code interpretation Session 15); revisions applied (content-only); sign-off recorded in PRD §10.
+
+## How to re-run
+
+```sh
+npm run build
+node scripts/serve-gzip.mjs &           # serves dist/client on :4328
+node /tmp/r3-landing-check.mjs          # landing sweep
+node /tmp/r2-catalogue-check.mjs        # catalogue sweep
+node /tmp/r4-recap-check.mjs            # request recap rows
+npx lighthouse http://localhost:4328/ --preset=desktop --only-categories=performance
+npx lighthouse http://localhost:4328/products/ --only-categories=performance  # = mobile
+```
