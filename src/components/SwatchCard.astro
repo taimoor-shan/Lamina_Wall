@@ -8,10 +8,16 @@ import type { CollectionEntry } from 'astro:content';
 
 interface Props {
   product: CollectionEntry<'products'>;
+  /** Catalogue mode (R2): also render the taxonomy subcategory as the
+      descriptive line under the name. Skipped when it duplicates the name
+      (175 of 258 singletons carry name === subcategory — repeating it adds
+      noise, not information). */
+  showSubcategory?: boolean;
 }
 
-const { product } = Astro.props;
-const { code, name, swatchImage, alt } = product.data;
+const { product, showSubcategory = false } = Astro.props;
+const { code, name, subcategory, swatchImage, alt } = product.data;
+const showSub = showSubcategory && subcategory !== name;
 ---
 
 <article class="swatch">
@@ -28,6 +34,7 @@ const { code, name, swatchImage, alt } = product.data;
     <div class="txt">
       <div class="code">{code}</div>
       <div class="name">{name}</div>
+      {showSub && <div class="sub">{subcategory}</div>}
     </div>
     <button
       class="add-btn"
@@ -73,6 +80,13 @@ const { code, name, swatchImage, alt } = product.data;
   .swatch-meta .name {
     font-size: var(--fs-label-lg);
     margin-top: 2px;
+  }
+  /* Taxonomy subcategory line (catalogue grid only, R2) */
+  .swatch-meta .sub {
+    font-size: var(--fs-caption);
+    color: var(--ash);
+    margin-top: 3px;
+    line-height: 1.4;
   }
   .add-btn {
     width: 30px;

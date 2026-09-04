@@ -1,0 +1,371 @@
+---
+// CatalogueFilters — R2 sidebar: search box + 6 family accordions, each
+// nesting its series chips with per-series counts (19 chips total).
+//
+// Filtering is plain link navigation — the URL is the state, so it works
+// with JavaScript disabled (chips/family links are <a href>s; no JS runs
+// server-rendered pages). The search box is the only client-side piece and
+// lives on the page (see the products template's inline script), driven by
+// data-search-input / the .tile data attrs — nothing in here hydrates.
+//
+// Two renderings of the same filter body, mirroring the Nav.astro pattern
+// (which duplicates its links for desktop header vs ≤900px disclosure):
+//   • .filters-desktop — always-visible aside, shown ≥901px
+//   • .filters-drawer  — native <details>/<summary> disclosure, shown
+//     ≤900px: zero JS, keyboard-accessible out of the box. The visible
+//     label flips "Filter & search" → "Close filters" via CSS on [open];
+//     the accessible name stays "Catalogue filters" (aria-label).
+// The search <input> is intentionally class-hooked, never id-hooked, so the
+// two instances never collide; only the visible instance is in the a11y
+// tree (its sibling is display:none).
+//
+// Active state is derived from the current pathname at render time
+// (/products/<family>[/<series>]) — server-rendered, no JS needed.
+// Family accordions default open when the family is the active filter or
+// when no family filter is active (/products, the browse-all view); the
+// remaining families stay collapsed so the sidebar reads as an index.
+
+export interface SeriesFilterNode {
+  slug: string;
+  title: string;
+  href: string;
+  count: number;
+}
+
+export interface FamilyFilterNode {
+  slug: string;
+  title: string;
+  href: string;
+  count: number;
+  series: SeriesFilterNode[];
+}
+
+interface Props {
+  families: FamilyFilterNode[];
+}
+
+const { families } = Astro.props;
+
+// Current filter depth from the pathname (not the params, so the sidebar
+// stays truthful even for a hypothetical unmatched deep path).
+const segments = Astro.url.pathname.split('/').filter(Boolean); // ['products', family?, series?]
+const famSlug = segments[1] && families.some((f) => f.slug === segments[1]) ? segments[1] : undefined;
+const serSlug = famSlug && segments[2] ? segments[2] : undefined;
+
+// The body below (search + 6 accordions) is intentionally written twice —
+// desktop aside and mobile disclosure share every class so one set of
+// styles covers both copies.
+---
+
+<aside class="filters-desktop" aria-label="Catalogue filters">
+  <label class="search-field">
+    <span class="search-lbl">Search products</span>
+    <input
+      class="search-input"
+      type="search"
+      data-search-input
+      placeholder="Code, name or finish"
+      autocomplete="off"
+    />
+  </label>
+  <div class="family-list">
+    {
+      families.map((f) => {
+        const famActive = f.slug === famSlug;
+        const open = !famSlug || famActive;
+        return (
+          <details class="family" open={open}>
+            <summary class="family-sum">
+              <span class="family-name">{f.title}</span>
+              <span class="family-meta">
+                <span class="family-count">{f.count}</span>
+                <span class="chev" aria-hidden="true">›</span>
+              </span>
+            </summary>
+            <div class="family-body">
+              <a
+                class="view-all"
+                href={f.href}
+                aria-current={famActive && !serSlug ? 'page' : undefined}
+              >
+                All {f.title} articles
+              </a>
+              <ul class="chip-list">
+                {f.series.map((s) => (
+                  <li>
+                    <a
+                      class:list={['chip', { on: famActive && s.slug === serSlug }]}
+                      href={s.href}
+                      aria-current={famActive && s.slug === serSlug ? 'page' : undefined}
+                    >
+                      <span class="chip-name">{s.title}</span>
+                      <span class="chip-count">{s.count}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </details>
+        );
+      })
+    }
+  </div>
+</aside>
+
+<details class="filters-drawer">
+  <summary class="drawer-sum" aria-label="Catalogue filters">
+    <span class="lbl-open" aria-hidden="true">Filter &amp; search</span>
+    <span class="lbl-close" aria-hidden="true">Close filters</span>
+  </summary>
+  <div class="filters-panel">
+    <label class="search-field">
+      <span class="search-lbl">Search products</span>
+      <input
+        class="search-input"
+        type="search"
+        data-search-input
+        placeholder="Code, name or finish"
+        autocomplete="off"
+      />
+    </label>
+    <div class="family-list">
+      {
+        families.map((f) => {
+          const famActive = f.slug === famSlug;
+          const open = !famSlug || famActive;
+          return (
+            <details class="family" open={open}>
+              <summary class="family-sum">
+                <span class="family-name">{f.title}</span>
+                <span class="family-meta">
+                  <span class="family-count">{f.count}</span>
+                  <span class="chev" aria-hidden="true">›</span>
+                </span>
+              </summary>
+              <div class="family-body">
+                <a
+                  class="view-all"
+                  href={f.href}
+                  aria-current={famActive && !serSlug ? 'page' : undefined}
+                >
+                  All {f.title} articles
+                </a>
+                <ul class="chip-list">
+                  {f.series.map((s) => (
+                    <li>
+                      <a
+                        class:list={['chip', { on: famActive && s.slug === serSlug }]}
+                        href={s.href}
+                        aria-current={famActive && s.slug === serSlug ? 'page' : undefined}
+                      >
+                        <span class="chip-name">{s.title}</span>
+                        <span class="chip-count">{s.count}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </details>
+          );
+        })
+      }
+    </div>
+  </div>
+</details>
+
+<style>
+  /* ---------- search ---------- */
+  .search-field {
+    display: block;
+  }
+  .search-lbl {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+    margin-bottom: 7px;
+  }
+  .search-input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    padding: 9px 11px;
+  }
+  .search-input::placeholder {
+    color: var(--ash);
+    opacity: 0.8;
+  }
+
+  /* ---------- desktop aside (shown ≥901px) ---------- */
+  .filters-desktop {
+    display: none;
+  }
+
+  /* ---------- family accordions (shared by both copies) ---------- */
+  .family-list {
+    margin-top: 18px;
+  }
+  .family {
+    border-top: 1px solid var(--line);
+  }
+  .family-sum {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 13px 0 12px;
+    cursor: pointer;
+    /* Remove the native disclosure marker (Safari needs the prefix). */
+    list-style: none;
+  }
+  .family-sum::-webkit-details-marker {
+    display: none;
+  }
+  .family-name {
+    font-size: var(--fs-label-lg);
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+  .family-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .family-count {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--ash);
+  }
+  .chev {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1;
+    color: var(--ash);
+    transition: transform 0.2s var(--ease-out);
+  }
+  .family[open] .chev {
+    transform: rotate(90deg);
+  }
+  .family-sum:hover .family-name {
+    color: var(--ember);
+  }
+  .family-body {
+    padding: 0 0 14px;
+  }
+  .view-all {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+    padding: 2px 0 9px;
+  }
+  .view-all:hover {
+    color: var(--ember);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .chip-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 6px 10px;
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: transparent;
+    transition: border-color var(--dur-fade) var(--ease-out);
+  }
+  .chip:hover {
+    border-color: var(--ink);
+  }
+  .chip.on {
+    border-color: var(--ember);
+    color: var(--ember);
+  }
+  .chip-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0;
+    color: var(--ash);
+  }
+  .chip.on .chip-count {
+    color: var(--ember);
+  }
+
+  /* ---------- mobile drawer (≤900px) — Nav.astro disclosure pattern ---------- */
+  .filters-drawer {
+    margin-bottom: 28px;
+  }
+  .drawer-sum {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: fit-content;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label-btn);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: 1px solid var(--ink);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--ink);
+    list-style: none;
+  }
+  .drawer-sum::-webkit-details-marker {
+    display: none;
+  }
+  .drawer-sum:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .drawer-sum .lbl-close {
+    display: none;
+  }
+  .filters-drawer[open] .drawer-sum .lbl-open {
+    display: none;
+  }
+  .filters-drawer[open] .drawer-sum .lbl-close {
+    display: inline;
+  }
+  .filters-panel {
+    margin-top: 14px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    padding: 18px var(--gutter) 20px;
+  }
+
+  /* ---------- breakpoints ---------- */
+  @media (min-width: 901px) {
+    .filters-desktop {
+      display: block;
+    }
+    .filters-drawer {
+      display: none;
+    }
+  }
+  @media (max-width: 480px) {
+    .filters-panel {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+</style>

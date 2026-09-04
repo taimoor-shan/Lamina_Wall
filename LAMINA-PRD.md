@@ -24,7 +24,7 @@
 
 **v1.2 → v2.0** (catalogue pivot, 2026-09-05):
 - Client pivot (recorded in `CONVERSATION.txt`, claude.ai chat 2026-09-04): the site becomes a **full B2B product catalogue** — all 258 catalogue codes browsable with minimal information; detailed specifications stay in the downloadable PDF.
-- New information architecture: **6 families → 19 series → subcategories → 258 products**; one dynamic catalogue route `/products/[[...filters]]` replaces the per-collection pages (which become 301s). Source of truth for the taxonomy: `subcategory-taxonomy.md` (extracted from the manufacturer catalogue index).
+- New information architecture: **6 families → 19 series → subcategories → 258 products**; one dynamic catalogue route `/products/[...filters]` (Astro 7 rest params, one template at `src/pages/products/[...filters]/index.astro`) replaces the per-collection pages (which become 301s). Source of truth for the taxonomy: `subcategory-taxonomy.md` (extracted from the manufacturer catalogue index).
 - Product schema gains `series` + `subcategory` + `imageStatus` (§3.4). **No product-count limits** — products without photography use a shared placeholder image that visibly reads as missing (client directive 2026-09-05); everything available is shown, the rest is mocked with the placeholder.
 - The M3 homepage-layout constraint is **lifted** — the client held the conversation that constraint reserved (2026-09-04). Replaced by the Phase-2 landing-page spec (R3).
 - Phase-2 milestone plan **R1–R6** added to §5; M7–M9 remain the final launch/handover milestones.
@@ -53,13 +53,13 @@
 | Milestone | Status | Notes |
 |---|---|---|
 | R1 — Catalogue Data & Taxonomy | ☑ Done | 258 products (6 families / 19 series), **89 real / 169 placeholder**: `series`/`subcategory`/`imageStatus` schema, `data/catalogue-master.ts` + `scripts/generate-catalogue.mjs` + shared placeholder tile, collection titles updated (Wood / Stone & Marble / Metal / Textile / Solid Color / Decorative & Mirror). Build + tsc verified; 3 index-absent orphans (WG-37/WG-43/HGF-252) excluded & quarantined — §10 Session 12. |
-| R2 — Catalogue Page & Filtering | ☐ Not started | `/products/[[...filters]]` — sidebar (family → series) + search, statically generated at every filter depth, tray island mounted. |
+| R2 — Catalogue Page & Filtering | ☑ Done | One catalogue template (`src/pages/products/[...filters]/index.astro` — Astro 7 rest-param form, §5 layout note) generating 27 static pages (`/products`, 6 families, 19 series) + `CatalogueFilters` sidebar (family accordions → 19 series chips w/ counts, all plain links) + no-JS `<details>` drawer ≤900px + zero-dependency live search + tray mounted. Verified: build + tsc clean, 27/27 routes 200 with exact per-depth swatch counts, single h1, no ecommerce copy, 17/17 CDP (h-scroll ×12 widths, drawer, search live/empty/clear, tray add→header→Escape) — §10 Session 13. Bug found & fixed in verification: `<script lang="ts">` ships unprocessed (Astro processes only attribute-less scripts) — CLAUDE.md gotchas. |
 | R3 — Landing Page | ☐ Not started | Hero (flex/background restructure + video support already on `feature/redesign`, commit a46c4fe), 6-family visual index, CTA row (PDF / samples / contact). |
 | R4 — Request Flow on the Catalogue | ☐ Not started | Recap thumbnail map + `/api/request` name resolution for all 258 codes. |
 | R5 — Redirects, SEO & Old-Page Teardown | ☐ Not started | `/collections/[slug]` → 301, sitemap for the new routes, remove retired Phase-1 components. |
 | R6 — Redesign QA & Client Review | ☐ Not started | Folds in the M1/M3/M5 residuals: human visual pass, Lighthouse ≥90 gate, browser matrix, client sign-off. |
 
-**Current focus: Phase 2, R1.** The Phase-1 table above is the historical record — M0–M6 are closed out and their residual open items fold into R6 (or are logged in §7). Work R1 → R6, then M7–M9.
+**Current focus: Phase 2, R3.** The Phase-1 table above is the historical record — M0–M6 are closed out and their residual open items fold into R6 (or are logged in §7). Work R1 → R6, then M7–M9.
 
 Status values to use: `☐ Not started` / `☐ In progress` / `☑ Done` / `☐ Blocked — see note`.
 
@@ -467,18 +467,18 @@ Phase 2 works milestone-by-milestone on `feature/redesign`. Each milestone ends 
 
 #### R2 — Catalogue Page & Filtering
 
-**Files:** create `src/pages/products/[[...filters]].astro`, `src/components/CatalogueFilters.astro`; modify `SwatchCard.astro` if needed; mount the tray island.
+**Files:** create `src/pages/products/[...filters]/index.astro`, `src/components/CatalogueFilters.astro`; modify `SwatchCard.astro` (optional subcategory line); mount the tray island. *(Layout note: the sketch said `[[...filters]].astro`, but this Astro emits rest params in single brackets and wants `{ params: { filters: undefined } }` for the zero-depth route, so the page lives at `[...filters]/index.astro` — the current documented form; the `[[...]]` shape would not generate. Same 27 routes, one template.)*
 
-- [ ] `src/pages/products/[[...filters]].astro` — one template with `getStaticPaths()` generating `/products`, all 6 `/products/[family]`, and all 19 `/products/[family]/[series]` paths from the content collections.
-- [ ] Product grid: cards in the existing `SwatchCard.astro` visual language (swatch, mono code, name, add-to-request control carrying `data-code`/`data-name`), sorted family → series → code; name comes from the §3.4 policy (subcategory-derived where no per-code name exists).
-- [ ] Sidebar (`CatalogueFilters.astro`): 6 family accordions → nested series chips (19, with per-series counts); chips are plain `<a href>` links (no-JS filtering works — the URL is the state); active-state styling; search box (client-side JS enhancement, matches code/name/subcategory/series, always resettable).
-- [ ] Mobile (≤900px): sidebar collapses into a native `<details>` disclosure following the Nav pattern (zero JS, keyboard-accessible).
-- [ ] Mount `RequestTray.svelte` `client:load` on `/products*` pages only.
+- [x] `src/pages/products/[...filters]/index.astro` — one template with `getStaticPaths()` generating `/products`, all 6 `/products/[family]`, and all 19 `/products/[family]/[series]` paths from the content collections.
+- [x] Product grid: cards in the existing `SwatchCard.astro` visual language (swatch, mono code, name, add-to-request control carrying `data-code`/`data-name`), sorted family → series → code (`order` 1–258); names come from the §3.4 policy (R1 data), subcategory line shown only where it differs from the name (the 175 singletons duplicate it).
+- [x] Sidebar (`CatalogueFilters.astro`): 6 family accordions → nested series chips (19, with per-series counts); chips are plain `<a href>` links (no-JS filtering works — the URL is the state); active-state styling; search box (client-side JS enhancement, matches code/name/subcategory/series, always resettable).
+- [x] Mobile (≤900px): sidebar collapses into a native `<details>` disclosure following the Nav pattern (zero JS, keyboard-accessible).
+- [x] Mount `RequestTray.svelte` `client:load` on `/products*` pages only.
 - **Acceptance:**
-  - [ ] Every `/products`, `/products/[family]`, `/products/[family]/[series]` URL renders from the static build; all 258 cards reachable from `/products`.
-  - [ ] Filters and chips work with JavaScript disabled (link navigation); search filters live with JS on.
-  - [ ] No horizontal scroll at 320/390/480/768/1024/1440; tray opens from catalogue cards and the header.
-  - [ ] `dist` check: tray bundle present only on pages that carry swatches.
+  - [x] Every `/products`, `/products/[family]`, `/products/[family]/[series]` URL renders from the static build; all 258 cards reachable from `/products`.
+  - [x] Filters and chips work with JavaScript disabled (link navigation); search filters live with JS on.
+  - [x] No horizontal scroll at 320/390/480/768/1024/1440; tray opens from catalogue cards and the header.
+  - [x] `dist` check: tray bundle present only on pages that carry swatches.
 
 #### R3 — Landing Page
 
@@ -884,3 +884,18 @@ Entry format:
   - Human check of the quarantined codes against the physical catalogue (do WG-37/WG-43/HGF-252 exist under another number?).
   - Real photography for the 169 placeholder products (§7 Q7); unchanged: trims scope (§7 Q5), catalogue PDF (§7 Q6), domain, brand, real keys, GitHub remote + Workers Builds.
 - Next session should start with: **R2 — Catalogue Page & Filtering** (`/products/[[...filters]]` + sidebar + search + tray mount) — the first page that renders all 258.
+
+### Session 13 — 2026-09-05
+- Milestone(s) worked on: **R2 — Catalogue Page & Filtering** (Phase 2) — complete. R1's Session-12 handoff ("next: R2") executed; R2 implementation was agent-written, then independently reviewed + browser-verified here before the milestone was marked done.
+- Completed this session:
+  - **One catalogue template at `src/pages/products/[...filters]/index.astro`** emitting 27 static pages: `/products` (`{ params: { filters: undefined } }`), the 6 family slugs, and the 19 `family/series` paths — rest param arrives as ONE string, split at runtime. The URL is the filter state: every chip/family link is a plain `<a href>`, so filtering works with JS disabled. Products sorted by the canonical `order` (1–258); family/series counts derived from the products themselves.
+  - **`src/components/CatalogueFilters.astro`** — one filter body rendered twice (shared classes): desktop `<aside>` (≥901px) + native `<details>`/`<summary>` disclosure (≤900px, Nav pattern — zero JS, keyboard-accessible, label flips "Filter & search" ↔ "Close filters"). 6 family accordions × 19 series chips with per-series counts; active state from `Astro.url.pathname` with `aria-current="page"`.
+  - **Search** = the only client-side piece, a zero-dependency inline enhancement on the page template (not the component — the component renders twice, so the page owns the JS and hooks in via `data-search-input` class-hooks + per-tile build-time `data-search` haystacks: code/name/subcategory/series/family, lowercased). Tokenizes the query (punctuation stripped), toggles `[hidden]` on `.tile` wrappers, syncs both input instances, live count ("N of 258 articles"), "no match" empty state + clear button. Zero runtime-created DOM → no scoped-selector trap.
+  - **`SwatchCard.astro`**: optional `showSubcategory` prop — subcategory line only when `subcategory !== name` (175 singletons duplicate their name; a doubled line would look like a bug).
+  - **Bug found & fixed during verification:** the search script shipped as a literal `<script lang="ts">` — Astro never processed it (docs: scripts are processed only when they carry no attributes other than `src`; any attribute = rendered verbatim). Raw TS annotations in a classic `<script>` = browser syntax error → whole enhancement dead, build still green. Fixed by dropping `lang="ts"` (processed scripts are TypeScript by default — `/request.astro` already relied on this with its `as` casts). Post-fix build emits a compiled inline `<script type="module">`. Logged as a CLAUDE.md gotcha.
+  - Verification before closing: `npm run build` green + `npx tsc --noEmit` clean; 27/27 catalogue URLs serve 200 with exact swatch counts at each depth (258 / 63 / 43 …); one `<h1>` per page; zero alt-less images; no ecommerce copy; no JS-only links; tray island distributed only to swatch pages. **CDP suite 17/17** (`/tmp/r2-catalogue-check.mjs`, headless Chrome over CDP on the gzip-served dist): no horizontal scroll at 320/390/480/768/1024/1440 on `/products` (258 tiles) and `/products/wood-grain/wg` (43); mobile drawer hidden-at-desktop / aside hidden-at-mobile / summary opens the disclosure; search filters live (HGM-276 → the 2 haystack matches — hgm-276a/b — count reads "2 of 258 articles"), nonsense query shows the empty state ("0 of 258"), clear restores 258 + "258 articles"; tray: card add toggles membership only (`.active` + `aria-pressed`, localStorage, header count (0)→(1), drawer stays shut), header `[data-tray-open]` opens the drawer listing the added code, Escape closes, re-open works.
+- Decisions made (and why):
+  - **`[...filters]/index.astro` over the PRD's `[[...filters]].astro` sketch** — Astro 7's rest params are single-bracket; the optional-rest `[[...]]` shape would not generate. Same 27 routes; PRD §5 R2 files line annotated (verified against current Astro docs before accepting the agent's deviation).
+  - **Search on the page, not the component** — CatalogueFilters renders its body twice (aside + drawer); a script there would be deduplicated or doubly-bound. The page owns the enhancement and talks to both instances through attributes.
+- Blocked on / open questions: unchanged — real photography for 169 placeholders (§7 Q7), catalogue PDF asset (§7 Q6), trims scope (§7 Q5), domain / brand / real keys / GitHub remote + Workers Builds.
+- Next session should start with: **R3 — Landing Page**: rework `index.astro` — Session-10 hero structure + committed video support (a46c4fe), brand blurb, 6-family visual index (one `heroApplicationImage` per family → `/products/[family]`), CTA row (catalogue PDF when `public/catalogue.pdf` exists / request samples via `data-tray-open` / contact); zero absolute/fixed positioning; human visual pass at 1440/390 folds into R6.
