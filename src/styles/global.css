@@ -73,13 +73,30 @@ button {
 
 /* Buttons */
 .btn-outline{
-  padding: 14px 24px;
-  border :1px solid #dddddd;
-  display: inline-flex;
-  margin-top:2em;
-  transition: all .3s;
+  display: inline-block;
+    padding: 14px 20px;
+    border: 1px solid var(--stone);
+    background: none;
+    color: var(--stone);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label-btn);
+    letter-spacing: var(--ls-mono-wide);
+    text-transform: uppercase;
+    cursor: pointer;
 }
 .btn-outline:hover{
 background:#ffffff;
 color: #000000;
+}
+
+/* Layout Grid */
+.flex{
+  display:flex;
+  gap:1em;
+  flex-wrap:wrap;
+}
+
+/* Utility Classes */
+.mt-3{
+margin-top:3em;
 }

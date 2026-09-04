@@ -41,7 +41,7 @@
   --fs-display-xl: clamp(48px, 7vw, 108px);  /* hero h1 */
   --fs-display-lg: clamp(36px, 4.2vw, 64px); /* section h2 */
   --fs-display-md: clamp(34px, 5.4vw, 72px); /* statement h2 */
-  --fs-logo: 28px;
+  --fs-logo: 38px;
   --fs-tray-title: 26px;
 
   /* Mono label scale */
@@ -99,12 +99,12 @@
      Aliases of the scale tokens above — one source of truth for the clamps. */
   --fs-display-hero: var(--fs-display-xl);
   --fs-display-section: var(--fs-display-lg);
-  --header-bg: var(--ink); /* sticky header — --stone @ 86% */
+  --header-bg: color-mix(in srgb, var(--stone) 86%, transparent); /* sticky header — matches mockup frosted glass */
   --callout-ring-glow: rgba(251, 249, 244, 0.15); /* --paper @ 15% */
   --swatch-overlay: rgba(15, 13, 9, 0.62); /* "+N more" tile scrim */
   --swatch-overlay-strong: rgba(15, 13, 9, 0.78); /* overlay hover */
   --dlg-backdrop: rgba(15, 13, 9, 0.66); /* lightbox backdrop */
-  --hero-h: calc(100vh - var(--nav-h)); /* full-bleed hero below sticky nav */
+  --hero-h: 100vh; /* full-bleed hero below sticky nav */
   --hero-bg: none; /* fallback only — Hero.astro injects the tiered background URLs (set:html) */
   --index-strip-top: var(--nav-h);      /* sticky offset for the index strip */
   --swatch-ratio: 4 / 2.7; /* swatch image box */

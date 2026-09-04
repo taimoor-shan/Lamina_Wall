@@ -1,17 +1,13 @@
 ---
-// Hero — full-bleed application photo as the section's CSS background with
-// the headline in normal flow: flex-centered vertically, left-aligned,
-// subtext + link below the headline as before (mockup lines 29-43).
+// Hero — full-bleed background with optional video support.
 //
-// No absolute positioning anywhere: the dark scrim is the --hero-veil
-// gradient layered over the photo inside the same background-image, and the
-// floating material callout is gone. The photo is one build-time WebP per
-// viewport tier (media-queried like an img srcset) — tiers match the
-// preload widths in index.astro so preload and background resolve to the
-// same candidate per viewport (no double download).
+// Two modes, selected by props:
+//   image only (default)  → tiered CSS background-image, scrim via --hero-veil
+//   video provided         → <video> fills the section, image becomes poster,
+//                            scrim is an explicit overlay <div>
 //
-// Astro does not template expressions inside <style>; the background URLs
-// ship through <style is:inline set:html> (same pattern as Fonts.astro).
+// The image always runs through astro:assets so the poster is an optimised
+// WebP at the largest viewport tier (no raw source ships to the client).
 import { getImage } from 'astro:assets';
 
 interface Line {
@@ -24,37 +20,77 @@ interface Props {
   lines: Line[];
   sub: string;
   linkHref: string;
+  linkPdfHref: string;
   linkLabel?: string;
+  linkLabel1?: string;
+  /** Optional video URL/path. When set, the hero renders a <video> element
+   *  with the optimised image as poster and the scrim as a separate overlay.
+   *  When absent, the existing image-background behaviour is used unchanged. */
+  video?: string;
 }
 
-const { image, eyebrow, lines, sub, linkHref, linkLabel = 'View the collections' } = Astro.props;
+const {
+  image,
+  eyebrow,
+  lines,
+  sub,
+  linkHref,
+  linkPdfHref,
+  linkLabel = 'View the collections',
+  linkLabel1 = 'Download the Catalog',
+  video,
+} = Astro.props;
 
+const hasVideo = !!video;
+
+// Always optimise the image — used as tiered background (image mode) or as
+// the largest-tier poster (video mode, no double-download on the poster).
 const [bgSmall, bgMid, bgLarge] = await Promise.all([
   getImage({ src: image, format: 'webp', width: 640 }),
   getImage({ src: image, format: 'webp', width: 1280 }),
   getImage({ src: image, format: 'webp', width: 1920 }),
 ]);
 
-const heroCss = `
-  .hero {
-    background-image: var(--hero-veil), url('${bgSmall.src}');
-  }
-  @media (min-width: 960px) {
+const tieredBgCss = hasVideo
+  ? ''
+  : `
     .hero {
-      background-image: var(--hero-veil), url('${bgMid.src}');
+      background-image: var(--hero-veil), url('${bgSmall.src}');
     }
-  }
-  @media (min-width: 1280px) {
-    .hero {
-      background-image: var(--hero-veil), url('${bgLarge.src}');
+    @media (min-width: 960px) {
+      .hero {
+        background-image: var(--hero-veil), url('${bgMid.src}');
+      }
     }
-  }
-`;
+    @media (min-width: 1280px) {
+      .hero {
+        background-image: var(--hero-veil), url('${bgLarge.src}');
+      }
+    }
+  `;
 ---
 
-<style is:inline set:html={heroCss}></style>
-
 <section class="hero">
+  {hasVideo && (
+    <div class="hero-media">
+      <video
+        src={video}
+        poster={bgLarge.src}
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-hidden="true"
+      />
+      <div class="hero-veil" aria-hidden="true"></div>
+    </div>
+  )}
+
+  {!hasVideo && (
+    <style is:inline set:html={tieredBgCss}></style>
+  )}
+
   <div class="hero-content">
     <div class="hero-headline">
       <div class="eyebrow">{eyebrow}</div>
@@ -71,28 +107,59 @@ const heroCss = `
     </div>
     <div class="hero-sub">
       <p>{sub}</p>
-      <a href={linkHref}>{linkLabel}</a>
+      <div class="flex mt-3">
+        <a type="button" class="btn-outline white" href={linkHref}>{linkLabel}</a>
+      <a type="button" class="btn-outline" href={linkPdfHref}>{linkLabel1}</a>
+      </div>
+      
     </div>
   </div>
 </section>
 
 <style>
   .hero {
-    /* Photo + scrim as the CSS background; content in normal flow below. */
+    position: relative;
     height: var(--hero-h);
     min-height: var(--hero-min-h);
-    background-size: cover;
-    background-position: center;
+    overflow: hidden;
     display: flex;
     align-items: center;
     padding: 0 var(--gutter);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+
   }
+
+  /* ---- video mode ---- */
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .hero-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .hero-veil {
+    position: absolute;
+    inset: 0;
+    background: var(--hero-veil);
+    pointer-events: none;
+  }
+
+  /* ---- shared content ---- */
   .hero-content {
+    position: relative;
+    z-index: 2;
     max-width: 500px;
-    width:100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 1.5em;
+    /* margin-top:80px; */
   }
   .hero-headline .eyebrow {
     color: var(--sand-soft);
@@ -108,15 +175,9 @@ const heroCss = `
     line-height: 1.55;
     padding-bottom: 10px;
   }
-  .hero-sub a {
+  .hero-sub a.white {
     display: inline-block;
-    margin-top: 2em;
-    font-family: var(--font-mono);
-    font-size: var(--fs-label-lg);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    border-bottom: 1px solid var(--paper-soft);
-    padding-bottom: 3px;
-    color: var(--paper-soft);
+    color: var(--ink);
+    background-color: var(--paper-soft);
   }
 </style>

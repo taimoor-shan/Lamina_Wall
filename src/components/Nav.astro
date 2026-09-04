@@ -45,7 +45,7 @@ const { collections = [], hideTray = false } = Astro.props;
     </details>
     {!hideTray && (
       <button
-        class="tray-btn"
+        class="tray-btn btn-outline"
         type="button"
         data-tray-open
         aria-label="Open request tray"
@@ -60,14 +60,16 @@ const { collections = [], hideTray = false } = Astro.props;
 <style>
   .site-header {
     position: sticky;
+    width:100%;
     top: 0;
+    left: 0;
     z-index: 50;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 20px var(--gutter);
-    background: var(--header-bg);
-    backdrop-filter: blur(10px);
+    background: var(--ink);
+    color: var(--stone);
     border-bottom: 1px solid var(--line);
   }
   .logo {
@@ -85,8 +87,11 @@ const { collections = [], hideTray = false } = Astro.props;
   .links a {
     position: relative;
     padding-bottom: 2px;
-    color: var(--stone);
+    color: #ffffff;
     opacity: 0.75;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 1.2px;
   }
   .links a:hover {
     opacity: 1;
@@ -100,15 +105,6 @@ const { collections = [], hideTray = false } = Astro.props;
     display: flex;
     align-items: center;
     gap: 9px;
-    font-family: var(--font-mono);
-    font-size: var(--fs-label-btn);
-    letter-spacing: 0.04em;
-    border: 1px solid var(--stone);
-    padding: 9px 16px;
-    border-radius: var(--radius);
-    cursor: pointer;
-    background: transparent;
-    color: var(--stone);
   }
   .tray-btn .dot {
     width: 6px;
