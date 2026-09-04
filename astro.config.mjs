@@ -71,9 +71,17 @@ export default defineConfig({
             }
           };
           await walk(htmlDir);
+          // HTML-entity-decode before matching (R4): image URLs baked into
+          // attribute values — e.g. JSON in a data-value attribute — ship
+          // with &quot; for every quote, which glued file names to their
+          // terminators and got the recap table's own thumbnails pruned as
+          // "unreferenced" (404). Decoding only ever ADDS matches, so it
+          // cannot cause a false deletion.
           const referenced = new Set(
             (await Promise.all(htmlFiles.map((f) => readFile(f, 'utf8'))))
               .join('')
+              .replaceAll('&quot;', '"')
+              .replaceAll('&#39;', "'")
               .matchAll(/\/_astro\/([^"'\s>)]+)/g)
               .map((m) => /** @type {RegExpMatchArray} */ (m)[1]),
           );

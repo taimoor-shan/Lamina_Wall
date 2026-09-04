@@ -45,10 +45,16 @@ async function collectNames(): Promise<Map<string, string>> {
   return nameMap;
 }
 
-const ITEM_CODE = /^[A-Z]{1,4}-\d{2,4}$/;
+// Article-code grammar (PRD §3.3/§3.4). The optional trailing letter admits
+// the catalogue's real letter-suffixed codes — HGM-276A/B, HGM-281A/B,
+// HGM-282A/B, HGM-283A/B, HGM-285A/B (10 of the 258; R4: the M4-era regex
+// predated them and rejected those codes with 400). Anything else — extra
+// letters, lowercase JSON-path codes, made-up numbers — stays rejected
+// ("Unknown article number"), so the boundary shape is unchanged.
+const ITEM_CODE = /^[A-Z]{1,4}-\d{2,4}[A-Z]?$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const SUB_ID = /^[A-Za-z0-9-]{8,64}$/;
-const ITEM_LINE = /^([A-Z]{1,4}-\d{2,4})(?:\s*[×x*]\s*(\d{1,2}))?$/;
+const ITEM_LINE = /^([A-Z]{1,4}-\d{2,4}[A-Z]?)(?:\s*[×x*]\s*(\d{1,2}))?$/;
 
 const MAX_ITEMS = 50;
 const MAX_QTY = 99;

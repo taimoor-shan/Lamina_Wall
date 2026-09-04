@@ -38,7 +38,13 @@ for (const c of await getCollection('collections')) {
 
 const recapData: Record<string, { img: string; collection: string }> = {};
 for (const p of await getCollection('products')) {
-  const img = await getImage({ src: p.data.swatchImage, widths: [120], format: 'webp' });
+  // A fixed `width`, not `widths` — with `widths` (and no `width`) Astro
+  // resolves the primary transform to the source's FULL size (the srcset
+  // gets the [120] candidate, but the recap's runtime <img> has no srcset,
+  // so .src is what downloads: full-size files, R4). width: 120 makes the
+  // map point at one small 120w WebP per code (placeholder products share
+  // the one compiled placeholder tile).
+  const img = await getImage({ src: p.data.swatchImage, width: 120, format: 'webp' });
   // reference('collections') resolves to { id, collection } — the entry id
   // (the slug filename) is the map key.
   const ref = p.data.collection as { id: string };
@@ -165,12 +171,20 @@ for (const p of await getCollection('products')) {
     )}
     <!-- Build-time catalogue data for the recap table (code → {thumbnail,
          collection}), embedded as JSON so the client needs no server
-         round-trips. -->
+         round-trips. The JSON rides in the BODY via set:html, not in a
+         data-value attribute: Astro never templates an is:inline script
+         body (M4 gotcha), but set:html injects it raw — and an attribute
+         value would HTML-entity-escape every quote (&quot;), which glues
+         the image file names to their terminators for the
+         prune-unreferenced-images hook in astro.config.mjs (its regex
+         scans raw HTML) — the recap's own small thumbnails then get
+         pruned as "unreferenced" and 404 (R4). Raw body text keeps each
+         /_astro/…webp visible to the hook and to the assets pipeline. -->
     <script
       is:inline
       type="application/json"
       id="recap-data"
-      data-value={JSON.stringify(recapData)}
+      set:html={JSON.stringify(recapData)}
     ></script>
     <script>
       // Request-page enhancement (runs only when JS is available):
@@ -185,7 +199,7 @@ for (const p of await getCollection('products')) {
 
       const STORAGE_KEY = 'lamina.tray';
       const recapData: Record<string, { img: string; collection: string }> = JSON.parse(
-        (document.getElementById('recap-data') as HTMLScriptElement).getAttribute('data-value') ?? '{}',
+        (document.getElementById('recap-data') as HTMLScriptElement).textContent ?? '{}',
       );
 
       // Items come from localStorage (visitor-controlled) — never inject
