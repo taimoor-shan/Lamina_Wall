@@ -10,10 +10,8 @@ import Seo from '../components/Seo.astro';
 import Fonts from '../components/Fonts.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
-import IndexStrip from '../components/IndexStrip.astro';
 import SectionHead from '../components/SectionHead.astro';
 import SwatchCard from '../components/SwatchCard.astro';
-import CollectionSpread from '../components/CollectionSpread.astro';
 import StatementBanner from '../components/StatementBanner.astro';
 import Footer from '../components/Footer.astro';
 
@@ -23,11 +21,6 @@ const collections = (await getCollection('collections')).sort(
   (a, b) => a.data.order - b.data.order,
 );
 const products = await getCollection('products');
-
-const wood = collections.find((c) => c.id === 'wood-grain')!;
-const woodProducts = products
-  .filter((p) => p.data.collection.id === wood.id)
-  .sort((a, b) => a.data.order - b.data.order);
 
 const firstProducts = products.slice(0, 4);
 
@@ -92,8 +85,16 @@ const tokens: { label: string; value: string; css: string }[] = [
       </section>
 
       <section class="sg-block">
-        <h2 class="sg-h">IndexStrip.astro</h2>
-        <IndexStrip collections={collections} />
+        <h2 class="sg-h">Retired (R5)</h2>
+        <p class="sg-retired">
+          The Phase-1 collection-showcase components — the filmstrip index,
+          the full-bleed collection spread and its dialog, and the
+          per-collection page showcase — were deleted when
+          /collections/[slug] became 301 redirects to /products/[family].
+          Their successors live on the landing page (family index grid) and
+          the catalogue page (filter sidebar), which are exercised above and
+          in the main build.
+        </p>
       </section>
 
       <section class="sg-block">
@@ -115,15 +116,6 @@ const tokens: { label: string; value: string; css: string }[] = [
             <SwatchCard product={p} />
           ))}
         </div>
-      </section>
-
-      <section class="sg-block">
-        <h2 class="sg-h">CollectionSpread.astro</h2>
-        <CollectionSpread
-          collection={wood}
-          products={woodProducts}
-          caption="Classic Technology Wood — interior fit-out, long-run seamless wall"
-        />
       </section>
 
       <section class="sg-block">
@@ -214,6 +206,14 @@ const tokens: { label: string; value: string; css: string }[] = [
       .sg-narrow {
         max-width: var(--container-max);
         margin: 0 auto;
+      }
+      .sg-retired {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding: 0 var(--gutter);
+        color: var(--ash);
+        font-size: var(--fs-body);
+        line-height: 1.6;
       }
       .sg-swatches {
         display: grid;

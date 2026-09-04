@@ -52,8 +52,9 @@ const collection = defineCollection({
       heroApplicationImage: image(),
       // Alt text for the hero application image (PRD §3.3).
       heroAlt: z.string(),
-      // Second application photo, shown beside the hero image in the
-      // collection section's 8/4 grid (AppShowcase.astro).
+      // Second application photo — schema field from the retired Phase-1
+      // /collections pages (R5); no current template renders it, so the
+      // prune hook keeps it out of the bundle.
       secondaryApplicationImage: image(),
       secondaryApplicationAlt: z.string(),
       // Controls index-strip ordering.

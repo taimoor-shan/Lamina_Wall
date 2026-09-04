@@ -31,8 +31,8 @@ import Footer from '../../../components/Footer.astro';
 import RequestTray from '../../../components/RequestTray.svelte';
 
 // getStaticPaths must fetch its own data — the Cloudflare adapter evaluates
-// it in the prerender server without module-level scope (same note as
-// /collections/[slug].astro).
+// it in the prerender server without module-level scope (a note that also
+// applied to the retired /collections/[slug] page — R5).
 //
 // Rest params are single strings in this Astro version — never arrays
 // (stringifyParams → validateGetStaticPathsParameter rejects anything that
@@ -140,7 +140,13 @@ const headDescription = isAll
   : isFamily
     ? fam!.data.description
     : `The ${seriesDef!.title} series — ${visible.length} articles in the ${fam!.data.title} family of the LAMINA wall-panel catalogue.`;
-const headPath = famHref ?? '/products';
+// R5 canonical fix: headPath must mirror the URL depth. It previously used
+// famHref at every depth, so series pages canonicals pointed at their
+// family (/products/wood-grain/wg → canonical /products/wood-grain) — a
+// series page must canonical to itself, the same way its sitemap entry does.
+const headPath = isSeries
+  ? `/products/${famSlug}/${serSlug}`
+  : famHref ?? '/products';
 const ogImage = fam ? fam.data.heroApplicationImage : undefined;
 
 const eyebrow =

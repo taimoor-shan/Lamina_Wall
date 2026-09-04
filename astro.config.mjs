@@ -1,11 +1,38 @@
 // @ts-check
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { readdir, readFile, unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import svelte from '@astrojs/svelte';
+
+// R5 redirect map: the six Phase-1 /collections/[slug] family pages (M3)
+// are retired — their URLs now 301 to the catalogue's /products/[family]
+// pages (PRD §5 R5). Astro config `redirects` is the mechanism:
+// @astrojs/cloudflare emits every `redirect` route into
+// dist/client/_redirects at astro:build:done (Netlify-style asset rules,
+// trailing-slash variants included), and Workers Static Assets serves those
+// rules at the asset layer — a real HTTP 301 shipped in the asset bundle;
+// no HTML stub, no runtime map, no on-demand function. The map is generated
+// from the collections collection JSONs (the same source the retired
+// getStaticPaths read), so a future family needs only a new JSON file.
+// This fs read happens in the config process — which loads at the project
+// root — where page code cannot fs (prerender sandbox, see the
+// __R3_CATALOGUE_PDF__ pattern below).
+const collectionsDir = fileURLToPath(
+  new URL('./src/content/collections', import.meta.url),
+);
+const collectionRedirects = Object.fromEntries(
+  readdirSync(collectionsDir)
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => {
+      const { slug } = JSON.parse(
+        readFileSync(path.join(collectionsDir, f), 'utf8'),
+      );
+      return [`/collections/${slug}`, `/products/${slug}`];
+    }),
+);
 
 // R3 landing CTA: the catalogue-PDF download action must render only when
 // the PDF actually ships in public/. Astro pages cannot check the host
@@ -34,7 +61,15 @@ export default defineConfig({
   }),
   // All CSS is tiny (a few KiB per page); inlining removes every
   // render-blocking stylesheet request — one HTML request to first paint.
-  build: { inlineStylesheets: 'always' },
+  // redirects: false (R5) stops Astro from ALSO emitting meta-refresh HTML
+  // stubs for the redirect routes above — the Cloudflare asset layer 301s
+  // before any file match, and 200-servable stubs would only mask a
+  // regression (a lost _redirects rule must 404 loudly). The adapter writes
+  // the rules from the route manifest regardless of this flag.
+  build: { inlineStylesheets: 'always', redirects: false },
+  // R5: retired Phase-1 /collections/[slug] → /products/[family] (see the
+  // collectionRedirects map at the top of this file).
+  redirects: collectionRedirects,
   vite: {
     // R3: bake the config-process PDF check into every module (see
     // hasCataloguePdf above). 'true'/'false' are literal JS booleans after

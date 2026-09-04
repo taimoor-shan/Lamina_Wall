@@ -13,6 +13,10 @@ interface Props {
 }
 
 const { collections = [], hideTray = false } = Astro.props;
+
+// Family links target the catalogue's /products/[family] routes (R5: the
+// Phase-1 /collections/[slug] pages are now 301 stubs, so chrome links go
+// to the canonical URL and the redirects exist only for legacy/inbound).
 ---
 
 <header class="site-header">
@@ -20,7 +24,7 @@ const { collections = [], hideTray = false } = Astro.props;
   <nav class="links" aria-label="Primary">
     {
       collections.map((c) => (
-        <a href={`/collections/${c.data.slug}`}>{c.data.title}</a>
+        <a href={`/products/${c.data.slug}`}>{c.data.title}</a>
       ))
     }
   </nav>
@@ -38,7 +42,7 @@ const { collections = [], hideTray = false } = Astro.props;
       <nav class="menu-panel" aria-label="Collections">
         {
           collections.map((c) => (
-            <a href={`/collections/${c.data.slug}`}>{c.data.title}</a>
+            <a href={`/products/${c.data.slug}`}>{c.data.title}</a>
           ))
         }
       </nav>
