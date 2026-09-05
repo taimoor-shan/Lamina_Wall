@@ -190,8 +190,8 @@ const crumbs =
                   <a class="crumb" href={c.href}>{c.label}</a>
                 </>
               ))}
-              <span class="crumb-sep" aria-hidden="true">/</span>
-              <span class="crumb-cur">{seriesDef!.title} — {visible.length} articles</span>
+              {/* <span class="crumb-sep" aria-hidden="true">/</span> */}
+             {/* <span class="crumb-cur">{seriesDef!.title} — {visible.length} articles</span> */}
             </p>
           )}
           <h1 class="display cat-title">
@@ -288,7 +288,7 @@ const crumbs =
   .products-page {
     max-width: var(--container-max);
     margin: 0 auto;
-    padding: var(--section-v) var(--gutter) 40px;
+    padding: var(--section-v2) var(--gutter);
   }
 
   /* --- page head: editorial header in the design-system language -------- */

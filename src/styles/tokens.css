@@ -67,6 +67,7 @@
   --gutter: 40px;          /* page edge padding (desktop) */
   --container-max: 1400px;
   --section-v: 120px;      /* section top padding */
+  --section-v2: 60px;      /* section top padding small */
   --sec-head-gap: 52px;
   @media (max-width:768px) {
      --sec-head-gap: 32px;
