@@ -79,7 +79,7 @@ Harness: the R2/R3 CDP suites re-run against the R5 build served through `node s
 
 | Suite | Coverage | Result |
 |---|---|---|
-| `/tmp/r3-landing-check.mjs` | no h-scroll at 320/390/480/768/1024/1440 on the landing page; 6 family tiles → correct `/products/<family>` hrefs, all 6 serve 200; single h1, every main img alted; PDF CTA absent (no file in this build); statement "Request samples" CTA opens the tray (content present), Escape closes, header re-opens | **17/17 PASS** |
+| `/tmp/r3-landing-check.mjs` | no h-scroll at 320/390/480/768/1024/1440 on the landing page; 6 family tiles → correct `/products/<family>` hrefs, all 6 serve 200; single h1, every main img alted; PDF CTA absent (no file in this build — later superseded, see note below); statement "Request samples" CTA opens the tray (content present), Escape closes, header re-opens | **17/17 PASS** (18/18 after the PDF note below) |
 | `/tmp/r2-catalogue-check.mjs` | `/products` (258 tiles) + `/products/wood-grain/wg` (43) at 320–1440: no h-scroll; mobile filter `<details>` disclosure; live search (filter, "N of 258" count, empty state, clear restores); tray add toggles membership only, header opens drawer with the code, Escape closes, re-open | **ALL PASS** |
 | Session-16 Workers-pipeline smoke | `/`, `/products`, `/products/wood-grain/wg`, `/request`, `/style-guide` 200 with tiles, tray `astro-island`, 258-key recap body | PASS |
 
@@ -110,3 +110,5 @@ node /tmp/r4-recap-check.mjs            # request recap rows
 npx lighthouse http://localhost:4328/ --preset=desktop --only-categories=performance
 npx lighthouse http://localhost:4328/products/ --only-categories=performance  # = mobile
 ```
+
+**Update (2026-09-05, Session 18):** the catalogue PDF now ships — the client's `lamina-wall.pdf` is wired in as `public/catalogue.pdf`. The landing build carries **both** download CTAs (hero "Download the Catalog" + statement "Download catalogue PDF"), each `href="/catalogue.pdf"` with the `download` attribute; the file serves 200 at 12,899,465 bytes. The landing harness's PDF assertion was updated to expect the 2 CTAs (and now clears the Chrome HTTP cache first — stale-profile false failure); full landing suite re-run **ALL PASS (18/18)** on this build.

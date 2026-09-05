@@ -76,6 +76,7 @@
     rgba(15, 13, 9, 0.55),
     rgba(15, 13, 9, 0.75)
   );
+   --gutter: 20px; 
   }
   --status-bar-h: 0px;
   --nav-h: 73px;
@@ -100,12 +101,15 @@
   --fs-display-hero: var(--fs-display-xl);
   --fs-display-section: var(--fs-display-lg);
   --fs-display-tile: clamp(22px, 2vw, 30px); /* landing family-index tile tagline (R3) */
-  --header-bg: color-mix(in srgb, var(--stone) 86%, transparent); /* sticky header — matches mockup frosted glass */
+  --header-bg: color-mix(in srgb, var(--ink) 86%, transparent); /* sticky header — matches mockup frosted glass */
   --callout-ring-glow: rgba(251, 249, 244, 0.15); /* --paper @ 15% */
   --swatch-overlay: rgba(15, 13, 9, 0.62); /* "+N more" tile scrim */
   --swatch-overlay-strong: rgba(15, 13, 9, 0.78); /* overlay hover */
   --dlg-backdrop: rgba(15, 13, 9, 0.66); /* lightbox backdrop */
   --hero-h: 100vh; /* full-bleed hero below sticky nav */
+  @media (max-width:768px) {
+     --hero-h: 600px;
+  }
   --hero-bg: none; /* fallback only — Hero.astro injects the tiered background URLs (set:html) */
   --index-strip-top: var(--nav-h);      /* sticky offset for the index strip */
   --swatch-ratio: 4 / 2.7; /* swatch image box */
