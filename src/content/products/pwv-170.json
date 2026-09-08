@@ -4,8 +4,8 @@
   "collection": "wood-grain",
   "series": "pwv",
   "subcategory": "Charcoal Burning Wood",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/wood-grain/pwv-170.png",
+  "alt": "Wood-grain panel swatch in Charcoal Burning Wood.",
   "order": 63
 }

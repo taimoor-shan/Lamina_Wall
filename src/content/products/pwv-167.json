@@ -4,8 +4,8 @@
   "collection": "wood-grain",
   "series": "pwv",
   "subcategory": "Smoked Brown Oak",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/wood-grain/pwv-167.png",
+  "alt": "Wood-grain panel swatch in Smoked Brown Oak.",
   "order": 60
 }

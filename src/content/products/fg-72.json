@@ -4,8 +4,8 @@
   "collection": "textile",
   "series": "fg",
   "subcategory": "Golden Thread Fabric",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/textile/fg-72.png",
+  "alt": "Fabric-wrapped panel swatch in Golden Thread Fabric.",
   "order": 153
 }

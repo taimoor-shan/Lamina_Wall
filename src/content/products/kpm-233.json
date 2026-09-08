@@ -4,8 +4,8 @@
   "collection": "metal",
   "series": "kpm",
   "subcategory": "Wiredrawing",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/metal/kpm-233.png",
+  "alt": "Metal panel swatch in Stainless Steel Wiredrawing.",
   "order": 138
 }

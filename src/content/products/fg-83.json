@@ -4,8 +4,8 @@
   "collection": "textile",
   "series": "fg",
   "subcategory": "Maca Pattern",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/textile/fg-83.png",
+  "alt": "Fabric-wrapped panel swatch in Maca Pattern.",
   "order": 164
 }

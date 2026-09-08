@@ -4,8 +4,8 @@
   "collection": "stone-marble",
   "series": "hgm",
   "subcategory": "Armani Limestone",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/stone-marble/hgm-273.png",
+  "alt": "High-gloss marble-effect panel swatch in Armani Limestone.",
   "order": 85
 }

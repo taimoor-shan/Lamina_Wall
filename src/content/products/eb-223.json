@@ -4,8 +4,8 @@
   "collection": "metal",
   "series": "eb",
   "subcategory": "Meridian Grey",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/metal/eb-223.png",
+  "alt": "Metal panel swatch in Meridian Grey.",
   "order": 128
 }

@@ -4,8 +4,8 @@
   "collection": "stone-marble",
   "series": "tdm",
   "subcategory": "Panda White",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/stone-marble/tdm-303.png",
+  "alt": "High-gloss marble-effect panel swatch in Panda White.",
   "order": 103
 }

@@ -4,8 +4,8 @@
   "collection": "textile",
   "series": "pp",
   "subcategory": "Prague",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/textile/pp-191.png",
+  "alt": "Fabric-wrapped panel swatch in Prague Warm White.",
   "order": 182
 }

@@ -4,8 +4,8 @@
   "collection": "textile",
   "series": "fg",
   "subcategory": "Floating Light Cloth",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/textile/fg-88.png",
+  "alt": "Fabric-wrapped panel swatch in Floating Light Cloth.",
   "order": 169
 }

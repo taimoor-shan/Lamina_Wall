@@ -1,11 +1,11 @@
 {
   "code": "AMF-338",
   "name": "Pit - Grey",
-  "collection": "silver",
+  "collection": "glossy-decorative",
   "series": "amf",
   "subcategory": "Pit",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/glossy-decorative/amf-338.png",
+  "alt": "Metal panel swatch in Pit - Grey.",
   "order": 256
 }

@@ -4,8 +4,8 @@
   "collection": "solid",
   "series": "ms",
   "subcategory": "Lichi Leather",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/solid/ms-108.png",
+  "alt": "Matte solid-colour panel swatch in Black Wood Khaki.",
   "order": 196
 }

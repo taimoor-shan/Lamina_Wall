@@ -4,8 +4,8 @@
   "collection": "metal",
   "series": "kpm",
   "subcategory": "Clustered Pattern",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/metal/kpm-232.png",
+  "alt": "Metal panel swatch in Gold Clustered Pattern.",
   "order": 137
 }

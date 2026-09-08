@@ -4,8 +4,8 @@
   "collection": "textile",
   "series": "fg",
   "subcategory": "Morandi",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/textile/fg-73.png",
+  "alt": "Fabric-wrapped panel swatch in Morandi Heart of Admiration.",
   "order": 154
 }

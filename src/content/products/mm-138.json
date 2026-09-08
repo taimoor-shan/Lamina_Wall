@@ -4,8 +4,8 @@
   "collection": "stone-marble",
   "series": "mm-matte-marble",
   "subcategory": "Aisi Limestone",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/stone-marble/mm-138.png",
+  "alt": "Marble-effect panel swatch in Aisi Limestone.",
   "order": 71
 }

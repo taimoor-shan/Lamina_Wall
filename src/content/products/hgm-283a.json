@@ -4,8 +4,8 @@
   "collection": "stone-marble",
   "series": "hgm",
   "subcategory": "Athena Slate",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/stone-marble/hgm-283a.png",
+  "alt": "High-gloss marble-effect panel swatch in Athena Slate.",
   "order": 97
 }

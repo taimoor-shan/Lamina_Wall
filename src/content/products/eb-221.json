@@ -4,8 +4,8 @@
   "collection": "metal",
   "series": "eb",
   "subcategory": "Moonlight White",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/metal/eb-221.png",
+  "alt": "Metal panel swatch in Moonlight White.",
   "order": 126
 }

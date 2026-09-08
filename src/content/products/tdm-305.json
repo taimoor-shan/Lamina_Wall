@@ -4,8 +4,8 @@
   "collection": "stone-marble",
   "series": "tdm",
   "subcategory": "Amazon Blue Slate",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/stone-marble/tdm-305.png",
+  "alt": "High-gloss marble-effect panel swatch in Amazon Blue Slate.",
   "order": 105
 }

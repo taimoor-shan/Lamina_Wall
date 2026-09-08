@@ -1,11 +1,11 @@
 {
   "code": "AMF-336",
   "name": "Grid Pattern - Normanie Red",
-  "collection": "silver",
+  "collection": "glossy-decorative",
   "series": "amf",
   "subcategory": "Grid Pattern",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/glossy-decorative/amf-336.png",
+  "alt": "Metal panel swatch in Grid Pattern - Normanie Red.",
   "order": 254
 }

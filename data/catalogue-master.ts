@@ -223,7 +223,11 @@ const ROWS: CatalogueProduct[][] = [
     names: ['Off-white Travertine', 'Beige Travertine', 'Light grey Travertine', 'Shanna Travertine', 'Italian red Travertine'],
   }),
 
-  // Series HGM (271–285B) — PET High Gloss Marble (18). Gaps: 277, 284.
+  // Series HGM (271–284B) — PET High Gloss Marble (18). Gaps: 277, 285.
+  // HGM-284A/B: the manufacturer's index prints this pair as 285A/B, but the
+  // client's uploaded swatch photography (and the client's decision, Session
+  // 2026-09-09) confirms the physical catalogue numbers them 284A/B — the
+  // 285A/B row is superseded here. See §10 Session 21 in LAMINA-PRD.md.
   row('hgm', 'Fish Maw White Slate', one('HGM-271')),
   row('hgm', 'Plato Slate', one('HGM-272')),
   row('hgm', 'Armani Limestone', one('HGM-273')),
@@ -236,7 +240,7 @@ const ROWS: CatalogueProduct[][] = [
   row('hgm', 'Rococo Slate', ab('HGM', 281)),
   row('hgm', 'Boloni Slate', ab('HGM', 282)),
   row('hgm', 'Athena Slate', ab('HGM', 283)),
-  row('hgm', 'Kanas Slate', ab('HGM', 285)),
+  row('hgm', 'Kanas Slate', ab('HGM', 284)),
 
   // Series TDM (301–316) — 3D PET High Gloss Marble (13 singletons;
   // "(Integrated)" stripped, normalized). Gaps: 310, 314, 315.

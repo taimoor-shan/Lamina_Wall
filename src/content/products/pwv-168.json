@@ -4,8 +4,8 @@
   "collection": "wood-grain",
   "series": "pwv",
   "subcategory": "Senna Walnut",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/wood-grain/pwv-168.png",
+  "alt": "Wood-grain panel swatch in Senna Walnut.",
   "order": 61
 }

@@ -4,8 +4,8 @@
   "collection": "stone-marble",
   "series": "mm-matte-marble",
   "subcategory": "Starry Sky Grey",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/stone-marble/mm-139.png",
+  "alt": "Marble-effect panel swatch in Starry Sky Grey.",
   "order": 72
 }

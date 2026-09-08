@@ -4,8 +4,8 @@
   "collection": "metal",
   "series": "eb",
   "subcategory": "Tungsten Copper Gold",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/metal/eb-226.png",
+  "alt": "Metal panel swatch in Tungsten Copper Gold.",
   "order": 131
 }

@@ -1,11 +1,11 @@
 {
   "code": "AMF-327",
   "name": "Small Cylinder - Bronze",
-  "collection": "silver",
+  "collection": "glossy-decorative",
   "series": "amf",
   "subcategory": "Small Cylinder",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/glossy-decorative/amf-327.png",
+  "alt": "Metal panel swatch in Small Cylinder - Bronze.",
   "order": 245
 }

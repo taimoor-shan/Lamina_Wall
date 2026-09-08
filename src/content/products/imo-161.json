@@ -4,8 +4,8 @@
   "collection": "wood-grain",
   "series": "imo",
   "subcategory": "Rock Oak",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/wood-grain/imo-161.png",
+  "alt": "Wood-grain panel swatch in Rock Oak.",
   "order": 54
 }

@@ -4,8 +4,8 @@
   "collection": "textile",
   "series": "cbm",
   "subcategory": "Marsha Fabric Membrane",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/textile/cbm-177.png",
+  "alt": "Fabric-wrapped panel swatch in Marsha Fabric Membrane.",
   "order": 178
 }

@@ -4,8 +4,8 @@
   "collection": "stone-marble",
   "series": "hgm",
   "subcategory": "Plato Slate",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/stone-marble/hgm-272.png",
+  "alt": "High-gloss marble-effect panel swatch in Plato Slate.",
   "order": 84
 }

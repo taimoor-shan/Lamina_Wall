@@ -4,8 +4,8 @@
   "collection": "glossy-decorative",
   "series": "pm",
   "subcategory": "Mirror",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/glossy-decorative/pm-251.png",
+  "alt": "High-gloss decorative panel swatch in Silver Mirror.",
   "order": 222
 }

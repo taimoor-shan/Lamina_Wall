@@ -4,8 +4,8 @@
   "collection": "solid",
   "series": "hgf",
   "subcategory": "Flash Point",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/solid/hgf-246.png",
+  "alt": "High-gloss solid-colour panel swatch in Champagne Flash Point.",
   "order": 219
 }

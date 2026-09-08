@@ -4,8 +4,8 @@
   "collection": "textile",
   "series": "fg",
   "subcategory": "Silk Fabric Pattern",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/textile/fg-80.png",
+  "alt": "Fabric-wrapped panel swatch in Silk Fabric Pattern.",
   "order": 161
 }

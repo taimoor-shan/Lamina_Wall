@@ -82,11 +82,13 @@ const realImageFor = (product) => {
 
 /* ---------- emit ---------- */
 
-// Pre-existing products whose swatchImage file existed on disk — these must
-// all survive the run as imageStatus "real" (unless a known exclusion).
+// Pre-existing products with a REAL (non-placeholder) swatchImage file on
+// disk — these must all survive the run as imageStatus "real" (unless a known
+// exclusion). The placeholder ref itself exists on disk, so it is excluded
+// here: a placeholder→placeholder product is not a "lost real image".
 const previouslyReal = new Set();
 for (const [file, prev] of existingByFile) {
-  if (prev.swatchImage && existsSync(join(productsDir, prev.swatchImage))) {
+  if (prev.swatchImage && prev.swatchImage !== PLACEHOLDER_REF && existsSync(join(productsDir, prev.swatchImage))) {
     previouslyReal.add((prev.code ?? file.replace(/\.json$/, '')).toLowerCase());
   }
 }

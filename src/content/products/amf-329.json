@@ -1,11 +1,11 @@
 {
   "code": "AMF-329",
   "name": "Natural Wood - Silver",
-  "collection": "silver",
+  "collection": "glossy-decorative",
   "series": "amf",
   "subcategory": "Natural Wood",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/glossy-decorative/amf-329.png",
+  "alt": "Metal panel swatch in Natural Wood - Silver.",
   "order": 247
 }

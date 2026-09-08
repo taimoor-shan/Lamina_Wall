@@ -4,8 +4,8 @@
   "collection": "metal",
   "series": "eb",
   "subcategory": "Elegant Silver",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/metal/eb-222.png",
+  "alt": "Metal panel swatch in Elegant Silver.",
   "order": 127
 }

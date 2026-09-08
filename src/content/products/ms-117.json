@@ -4,8 +4,8 @@
   "collection": "solid",
   "series": "ms",
   "subcategory": "Skin Sensory",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/solid/ms-117.png",
+  "alt": "Matte solid-colour panel swatch in Skin Sensory Tropical Orange.",
   "order": 205
 }

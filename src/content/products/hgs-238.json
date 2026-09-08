@@ -4,8 +4,8 @@
   "collection": "solid",
   "series": "hgs",
   "subcategory": "Jade Gray",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/solid/hgs-238.png",
+  "alt": "High-gloss solid-colour panel swatch in Jade Gray.",
   "order": 214
 }

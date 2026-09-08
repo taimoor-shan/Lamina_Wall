@@ -4,8 +4,8 @@
   "collection": "wood-grain",
   "series": "wg",
   "subcategory": "Egger Oak",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/wood-grain/wg-49.png",
+  "alt": "Wood-grain panel swatch in Egger Oak.",
   "order": 43
 }

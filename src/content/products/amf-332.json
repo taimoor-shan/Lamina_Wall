@@ -1,11 +1,11 @@
 {
   "code": "AMF-332",
   "name": "Natural Wood - Normanie Red",
-  "collection": "silver",
+  "collection": "glossy-decorative",
   "series": "amf",
   "subcategory": "Natural Wood",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/glossy-decorative/amf-332.png",
+  "alt": "Metal panel swatch in Natural Wood - Normanie Red.",
   "order": 250
 }

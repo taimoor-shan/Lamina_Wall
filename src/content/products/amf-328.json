@@ -1,11 +1,11 @@
 {
   "code": "AMF-328",
   "name": "Small Cylinder - Normanie Red",
-  "collection": "silver",
+  "collection": "glossy-decorative",
   "series": "amf",
   "subcategory": "Small Cylinder",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/glossy-decorative/amf-328.png",
+  "alt": "Metal panel swatch in Small Cylinder - Normanie Red.",
   "order": 246
 }

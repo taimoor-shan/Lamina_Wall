@@ -4,8 +4,8 @@
   "collection": "metal",
   "series": "kpm",
   "subcategory": "Bright Silver (Horizontal Drawing)",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/metal/kpm-236.png",
+  "alt": "Metal panel swatch in Bright Silver (Horizontal Drawing).",
   "order": 141
 }

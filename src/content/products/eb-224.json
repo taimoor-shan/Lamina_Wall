@@ -4,8 +4,8 @@
   "collection": "metal",
   "series": "eb",
   "subcategory": "Emerald",
-  "imageStatus": "placeholder",
-  "swatchImage": "../../assets/products/placeholder-missing.png",
-  "alt": "Product image not yet available",
+  "imageStatus": "real",
+  "swatchImage": "../../assets/products/metal/eb-224.png",
+  "alt": "Metal panel swatch in Emerald.",
   "order": 129
 }
