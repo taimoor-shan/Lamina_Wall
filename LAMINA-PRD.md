@@ -1,12 +1,18 @@
 # LAMINA — Wall Panel & Architectural Surfaces Showroom
 ## Product Requirements Document (Milestone-Based)
 
-**Version:** 2.0
+**Version:** 2.1
 **Prepared for:** Development agent (Claude Code, multi-session)
 **Prepared by:** Muhammad (product owner / client)
-**Status:** Phase 2 (catalogue redesign) — ready to build
+**Status:** Phase 3 (content & structure enrichment) — in progress (S1 done); Phase 2 R6 human gates open
 
 ### Changelog
+**v2.0 → v2.1** (content & structure enrichment, 2026-09-08):
+- Client/content-review feedback (landing page too thin; catalogue PDF's best content never reached the site) folded into a new **Phase 3 — Content & Structure Enrichment**, milestones **S1–S7** (§5), following R6 and preceding M7.
+- **Per-family pages** (client restructure request): each family gets a dedicated page — hero application image, family-scoped sidebar + search, products under the hero — while the `/products` archive page (all 6 families) is kept intact for later use. Implemented by **enriching the existing single `[...filters]` template at the family depth**, not by re-adding per-collection templates — the "one catalogue template" hard constraint (§AGENTS.md) is preserved.
+- Decisions locked with the client (2026-09-08): accessories/trim line = a landing **"Complete the system"** section (no new data model, no `/accessories` route); Features/Advantages/Applications copy = **client-provided verbatim** (the PDF is image-only, no text layer — the project never invents copy); product specs = a **family-level spec block** (no per-SKU detail pages, no per-SKU schema fields); footer = wire what already exists + clearly-marked placeholders for address/phone/socials.
+- §3.5 gains a `specs` collection field; §6/§7 updated (trims no longer out-of-scope; Q5 resolved; copy-supply prerequisite + image sources logged).
+
 **v1.0 → v1.1** (technical review pass):
 - Hosting corrected from Cloudflare Pages to **Cloudflare Workers** (Cloudflare now recommends Workers for new projects; `@astrojs/cloudflare` v13+ dropped Pages support).
 - Request-tray implementation decided up front as **Svelte**, not left open.
@@ -59,7 +65,19 @@
 | R5 — Redirects, SEO & Old-Page Teardown | ☑ Done | `/collections/[slug]` → `/products/[family]` as **real 301s in the asset bundle**: config `redirects` (map generated from the collections collection) → adapter emits `dist/client/_redirects` (12 rules: 6 families × slash/no-slash), Workers Static Assets serves them; `build.redirects: false` so no 200-servable meta-refresh stubs mask a lost rule. Sitemap regenerated to exactly the 27 indexable routes (/, /products, 6 family, 19 series — derived from the collections + SERIES table so it can't drift from the route tree). Nav chrome links → `/products/[family]`; four retired Phase-1 components + the `/collections/[slug]` page deleted (grep-proven zero references; index.astro already clean since R3). Bonus bug fixed: series-page canonicals had pointed at their family URL (depth-corrected). Verified: build + tsc clean, 12/12 redirect variants 301 with correct Location + unknown slugs 404 through `wrangler dev`, sitemap↔disk route sets identical, noindex trio intact, tray + 258-key recap intact — §10 Session 16. |
 | R6 — Redesign QA & Client Review | ☐ In progress | Automated portion done 2026-09-05 (R5 build d74c2df): breakpoint + tray sweeps ALL PASS on landing + /products at 320–1440; **Lighthouse ≥90 × 4 combos MET (100/98/100/100)**; full record in `docs/qa-report.md`. **PDF download CTAs restored** (client feedback — hero "Download the Catalog" + statement-row CTA had been gated off since R3 for lack of a file; the client's catalogue now ships as `public/catalogue.pdf`, §7 Q6 resolved, Session 18). Remaining = the human gates: **1440/390 visual pass vs the mockup + client review/sign-off** (§5 R6 + §10 Session 17). Open client questions: §7 Q5/Q7, domain/keys. |
 
-**Current focus: Phase 2, R6.** The Phase-1 table above is the historical record — M0–M6 are closed out and their residual open items fold into R6 (or are logged in §7). Work R1 → R6, then M7–M9.
+**Phase 3 — Content & Structure Enrichment (client feedback 2026-09-08, see changelog + §5):**
+
+| Milestone | Status | Notes |
+|---|---|---|
+| S1 — Per-Family Pages | ☑ Done | Reworked the `[...filters]` family depth: photo-mode `FamilyHero.astro` hero band (application image + title + lead, LCP preloaded) + **family-scoped sidebar** (only that family's series + search + back-to-archive link) + products under the hero. `/products` archive + series pages verified unchanged. Build + tsc clean; CDP: h-scroll 0 at 320–1440 on a family page, drawer opens, tray add→(1)→dialog opens; zero console errors — §10 Session 20. Single template preserved. |
+| S2 — Landing: Features/Advantages | ☐ Not started | 4 advantages + 8 features + 3 substrate types, copy verbatim from PDF page 4. **Blocked on client-supplied copy** (§7 Q8). |
+| S3 — Landing: Applications/Trust | ☐ Not started | 4-category use-case grid (residential / hospitality / institutional / commercial). Copy client-supplied; imagery source TBC (§7 Q9). |
+| S4 — Trust badges + Footer | ☐ Not started | 4-cover-icon trust-badge row; footer wired to real links + marked placeholders. |
+| S5 — Landing: "Complete the system" | ☐ Not started | Accessories/trim line as a landing section (categories + imagery + link to PDF); no new data model. |
+| S6 — Family-level spec block | ☐ Not started | `specs` collection field + 6 JSONs + render on family pages. Client-supplied spec copy (§7 Q8). |
+| S7 — Phase-3 QA & Client Review | ☐ Not started | Lighthouse ≥90 ×4, breakpoint/tray sweep, human visual pass vs the mockup, client sign-off. |
+
+**Current focus: Phase 2 R6 (human gates open), then Phase 3 S2.** The Phase-1 table above is the historical record — M0–M6 are closed out and their residual open items fold into R6 (or are logged in §7). Work R1 → R6, then S1 → S7, then M7–M9.
 
 Status values to use: `☐ Not started` / `☐ In progress` / `☑ Done` / `☐ Blocked — see note`.
 
@@ -69,7 +87,7 @@ Status values to use: `☐ Not started` / `☐ In progress` / `☑ Done` / `☐ 
 
 ## 1. Project Summary
 
-A premium, editorial, image-led B2B product catalogue for a wall panel and architectural surfaces manufacturer. The site presents the **full catalogue — 258 articles across 6 material families and 19 series** (wood grain, stone & marble, metal, textile, solid color, decorative & mirror) — with deliberately minimal per-product information: swatch, code, name, and an add-to-request control. Detailed technical specifications live in the **downloadable PDF catalogue**, with clear CTAs for catalogue download and contact. Structure: a focused landing page (brand, 6-family visual index, CTAs) + a single All Products catalogue page with sidebar filtering (family → series → search), statically generated at every filter depth (`/products`, `/products/[family]`, `/products/[family]/[series]`).
+A premium, editorial, image-led B2B product catalogue for a wall panel and architectural surfaces manufacturer. The site presents the **full catalogue — 258 articles across 6 material families and 19 series** (wood grain, stone & marble, metal, textile, solid color, decorative & mirror) — with deliberately minimal per-product information: swatch, code, name, and an add-to-request control. Detailed technical specifications live in the **downloadable PDF catalogue**, with clear CTAs for catalogue download and contact. Structure (Phase 3, S1): a focused landing page (brand, 6-family visual index, features/advantages, applications/trust, accessories, CTAs) + **per-family pages** (`/products/[family]` — hero application image, family-scoped sidebar + search, products under the hero) + the retained **All Products archive** (`/products`, full 6-family sidebar) + series pages (`/products/[family]/[series]`). Statically generated at every filter depth from a single `[...filters]` template.
 
 It is **not an ecommerce store** — there are no prices, no checkout, no accounts. Instead, visitors (architects, designers, contractors, procurement teams) browse materials and build a **request** — a lightweight spec list of article numbers and quantities — which is submitted as a lead via a contact form, delivered by email to the sales team.
 
@@ -86,7 +104,7 @@ A working HTML/CSS design-direction mockup has already been approved by the clie
 - No user accounts / login.
 - No admin dashboard or headless CMS in v1 (see §9 for future path).
 - No multi-language support in v1.
-- No individual **product detail pages** in v2 — the PDF catalogue carries the technical detail (a fast-follow option, see §6).
+- No individual **product detail pages** in v2/v3 — the PDF catalogue carries the technical detail (a fast-follow option, see §6). Phase-3 S6 adds family-level spec blocks only, not per-SKU detail.
 - No third taxonomy/filter tier (finish, color-tone facets) in v2 — family → series + search covers browsing for 258 items (see R2).
 
 ---
@@ -283,6 +301,14 @@ Source of truth: **`subcategory-taxonomy.md`** in the repo root — extracted di
 - **Normalization decisions** (made here so they're deliberate, not accidental): AMF-323 "Triumphal Arch - Bronze" is normalized to **"Triumphal Gate - Bronze"** (siblings 321/322/324 all read "Gate" — manufacturer typo); the "cylinder"/"Cylinder" capitalization across AMF-325–328 is normalized (cosmetic); identical printed names across series (e.g. "Pandora Slate" HGM vs TDM, "Florentine Limestone" MM vs HGM) remain **separate subcategories** — subcategory scope is always within one series.
 - **Placeholder policy** (client directive 2026-09-05): products without real photography reference the shared `src/assets/products/placeholder-missing.png` — a neutral tile generated with the design-system tokens that visibly reads as missing ("IMAGE MISSING", hairline border) — with `imageStatus: "placeholder"` and alt "Product image not yet available". **No product-count limits:** the catalogue ships with all 258 codes — **89 with real photography, 169 on placeholders** — until real images arrive. (R1 ground truth: WG-37, WG-43 and HGF-252, whose real photos exist but whose codes are absent from the manufacturer index, are excluded from the 258 and quarantined — §10 Session 12.) Backfilling a real image = replace the file ref + set `imageStatus: "real"` (one JSON field), then re-run the generator (which preserves it).
 - **Data generation:** `data/catalogue-master.ts` is the single source for all 258 codes; `scripts/generate-catalogue.mjs` writes `src/content/products/*.json`. Edit the master file, re-run the script; never hand-edit product JSONs en masse. Naming: code lowercased = JSON filename = image filename, letter suffixes included (`hgm-276a.json` ↔ `hgm-276a.png`).
+
+### 3.5 Family Specs (Phase 3 — S6)
+
+The physical-specification content that the catalogue PDF carries (page 4: substrate types, thickness options, density, fire/water/structural ratings) is surfaced on the site as a **family-level spec block** — one block per family, rendered on the family page hero/body. This is a deliberate scope decision (2026-09-08): the site is a catalogue, not a spec sheet, and there are no per-SKU detail pages in v2 (§6). The block is a presentation of facts the client supplies, not invented product content.
+
+- **Where the data lives:** a new `specs` field on the **collections** collection (not products). Shape: an ordered array of `{ label, value }` rows (e.g. `{ label: "Substrate", value: "Super-hard WPC panel" }`, `{ label: "Thickness", value: "5mm / 8mm" }`, `{ label: "Fire rating", value: "…" }`). Added to `src/content.config.ts` and to each of the 6 collection JSONs.
+- **Provenance:** copy verbatim from the manufacturer catalogue PDF page 4, **supplied by the client** (§7 Q8). The PDF is image-only (no text layer), so the agent must never paraphrase, guess, or fill in numbers — a row with no supplied value is left out, not invented.
+- **Rendering:** `products/[...filters]/index.astro` at the family depth renders the `specs` array as a compact spec block (hairline rows, mono labels — the design-system language). If `specs` is absent for a family, the block is omitted (never a placeholder spec).
 
 ---
 
@@ -526,7 +552,101 @@ Phase 2 works milestone-by-milestone on `feature/redesign`. Each milestone ends 
   - [x] No horizontal scroll at any breakpoint; Lighthouse ≥90 × 4 combos (or the variance logged as in M5).
   - [ ] Client sign-off recorded (even informally) in §10.
 
-M7–M9 below continue unchanged after R6 (M7's content freeze folds in with the R6 client review).
+### Phase 2 closeout (R1–R6) → Phase 3 — Content & Structure Enrichment
+
+Phase 3 (client feedback + content review, 2026-09-08, recorded in §10 Session 19) addresses the site's structural/content gaps and the per-family-page restructure. It works milestone-by-milestone on the current branch. Each milestone ends with a working `npm run build` + `npx tsc --noEmit` clean, and a commit. Do not start S(N+1) until every checkbox in S(N) is checked and its §0 row is `☑ Done`.
+
+Phase-3 hard constraints inherited from Phase 2, still binding:
+- **One catalogue template.** `/products/[...filters]` (`src/pages/products/[...filters]/index.astro`) remains the single catalogue page. S1 *enriches* it at the family depth; it does **not** re-add per-collection page templates (the Phase-1 `/collections/[slug]` pages stay retired with 301s — R5).
+- **No invented copy.** Every Features/Advantages/Substrate/Application/spec string is client-supplied verbatim from the PDF (which is image-only). A missing string means the row is omitted, never guessed. Landing/family copy outside the supplied text follows the existing name-resolution policy.
+- **No ecommerce language.** No prices, cart, checkout anywhere. No product/article number displays a price.
+
+#### S1 — Per-Family Pages (restructure)
+
+**Files:** modify `src/pages/products/[...filters]/index.astro` (family-depth hero + scoped layout), `src/components/CatalogueFilters.astro` (scoped-family mode + back-to-archive link), create `src/components/FamilyHero.astro` (photo-mode hero band). The `/products` archive page and the series depth stay as-is.
+
+The catalogue keeps ONE template but the family depth becomes a real landing page per family:
+- **Hero band (family depth only):** the family's `heroApplicationImage` rendered as the section hero (session-10 photo-mode language: tiered background or priority-loaded `<Image>`, real `heroAlt`, mono eyebrow `Family NN — N articles`), the family `title` as the `h1`, and `description` as the lead. No absolute/fixed positioning (Session-10 directive).
+- **Family-scoped sidebar:** `CatalogueFilters` receives only the **active family's** series (its own series chips + counts), plus search. A "← All families / Catalogue" link returns to `/products`. The 6-family accordion tree no longer renders on family pages.
+- **Products under the hero:** the existing product grid + tray mount, unchanged, sorted family → series → code.
+- **Series depth** (`/products/[family]/[series]`): unchanged from R2/R5 (breadcrumb head, grid). Not given a hero in S1.
+- **Archive intact:** `/products` keeps the full 6-family sidebar + all 258 tiles exactly as today — untouched by S1.
+
+- [x] Family-depth hero band renders `heroApplicationImage` + `title` + `description` (+ `heroAlt`); zero absolute/fixed in new code (only the `.sr-only` a11y utility).
+- [x] Family pages' sidebar shows only the active family's series chips with counts; the back-to-archive link is present and resolves.
+- [x] Products under the hero: all family articles render in canonical order with working add-to-request controls.
+- [x] `/products` archive unchanged (full 6-family sidebar, all 258 reachable); series pages unchanged.
+- [x] Build + `tsc --noEmit` clean; 6/6 family routes + 19 series + archive all serve 200.
+- [x] CDP breakpoint sweep 320–1440 on a family page (no horizontal scroll, drawer, tray add→header→Escape), and on `/products`.
+- **Acceptance:**
+  - [x] Each family page reads as a dedicated page (hero image, title, lead, family-scoped browsing) while the archive remains the browse-all route.
+  - [x] No ecommerce language; no prices anywhere.
+
+#### S2 — Landing: Features / Advantages section
+
+**Files:** modify `src/pages/index.astro` (+ any component created for the section, e.g. a `FeatureRow.astro`/spec table in the design-system language). Copy source: PDF page 4 (4 core advantages, 8 numbered product features, 3 substrate types with thickness/density), **client-supplied verbatim** (§7 Q8). Structure per the content review.
+
+- [ ] Section added between the 6-family grid and the closing CTA (or as the review recommends) covering: 4 core advantages; 8 numbered features; 3 substrate types with real specs.
+- [ ] Every string is client-supplied (verbatim); zero invented claims; missing rows omitted, never guessed.
+- [ ] Copy policy + sources logged in the file comments.
+- **Acceptance:**
+  - [ ] Section renders the supplied copy truthfully in the design-system language; no ecommerce language.
+  - [ ] The 4-advantages/8-features/3-substrates structure matches the client's supplied text.
+  - ⛔ **Blocked until §7 Q8 (client-supplied copy) is answered.**
+
+#### S3 — Landing: Applications / Trust section
+
+**Files:** modify `src/pages/index.astro` (+ a component if warranted). Content: 4-category use-case grid — residential/home, hospitality (star-rated hotels), institutional (hospitals/schools/government), commercial/retail — with real interior photography. Client-supplied copy (§7 Q8); imagery source logged as §7 Q9 (client provides, or extraction from the PDF is approved).
+
+- [ ] 4-category use-case grid matches the catalogue's application photography (PDF pages 5–6).
+- [ ] Each category has a real photo + caption; copy client-supplied, no invented claims.
+- [ ] Section visually matches the design-system language (hairline grid like the family index).
+- **Acceptance:**
+  - [ ] Section reads as a genuine trust/"where it's used" proof block, not a throwaway line.
+  - ⛔ **Blocked until §7 Q8 (copy) and §7 Q9 (imagery) are answered.**
+
+#### S4 — Trust badges + Footer completion
+
+**Files:** modify `src/components/Footer.astro`; add a trust-badge row (landing + optionally family pages); possibly an icon asset folder. Content: the 4 certification/feature icons from the PDF cover (likely eco/safe, waterproof/moisture, easy-install, fire-rated) rendered as a badge row; footer links wired to real destinations (catalogue PDF download, request samples, `/products`, mailto contact).
+
+- [ ] Footer's dead `#` anchors replaced with real links where a destination exists: catalogue PDF (`/catalogue.pdf` download), Request samples (tray open or `/request`), `/products`/collections, mailto contact.
+- [ ] Address/phone/socials remain clearly-marked placeholders (client decision 2026-09-08) — never fabricated.
+- [ ] 4 trust/certification badges from the PDF cover rendered as an SVG/icon row (client supplies icons or approves extraction — §7 Q9).
+- **Acceptance:**
+  - [ ] No dead links remain in the footer (placeholders are visibly placeholders, not `#` anchors); badge row present with truthful labels.
+
+#### S5 — Landing: "Complete the system" (accessories/trim line)
+
+**Files:** modify `src/pages/index.astro` (section) + any component. The aluminum trim/accessory hardware line (edge trims, I-bars, corner pieces, LED-strip channels, skirting — PDF pages 6–9+) is represented as a landing **"Complete the system"** section: accessory categories + imagery + a link to the PDF catalogue. **No new data model, no `/accessories` route, no taxonomy changes** (client decision 2026-09-08). Copy client-supplied (§7 Q8); imagery source TBC (§7 Q9).
+
+- [ ] "Complete the system" section renders the accessory categories with imagery and a link to the PDF (download or relevant page).
+- [ ] No new collection/schema/routes; no product-count or taxonomy impact.
+- **Acceptance:**
+  - [ ] The accessory line is discoverable as a spec/system-completion item without pretending to be a browsable catalogue section.
+  - ⛔ **Blocked until §7 Q8 (copy) and §7 Q9 (imagery) are answered.**
+
+#### S6 — Family-level spec block
+
+**Files:** modify `src/content.config.ts` (`specs` on the collections schema), the 6 collection JSONs, and `src/pages/products/[...filters]/index.astro` (render the block at family depth). Spec data: family-level substrate types / thickness / fire rating etc., per §3.5, client-supplied from PDF page 4 (§7 Q8).
+
+- [ ] `specs: { label, value }[]` added to the collections schema (§3.5); existing JSONs migrate cleanly (absent `specs` = omitted block, never a placeholder).
+- [ ] Spec block renders on each family page in the design-system language (hairline rows, mono labels).
+- [ ] Every spec value is client-supplied; zero invented numbers.
+- **Acceptance:**
+  - [ ] Spec data present + renders correctly; build/`tsc` clean.
+  - ⛔ **Blocked until §7 Q8 (client-supplied spec values) is answered.**
+
+#### S7 — Phase-3 QA & Client Review
+
+**Files:** update `docs/qa-report.md`.
+
+- [ ] Breakpoint sweep + tray usability on the reworked family pages + landing at 320/390/480/768/1024/1440 (headless Chrome CDP).
+- [ ] Re-run the Lighthouse ≥90 gate (four combos) on the landing page + a family page.
+- [ ] Human visual pass vs `reference/lamina-design-direction.html` at 1440/390 (new sections + family pages).
+- [ ] Client review of the new sections + family pages; revisions applied (content-only); sign-off recorded in §10.
+- **Acceptance:**
+  - [ ] No horizontal scroll anywhere; Lighthouse ≥90 × 4 combos.
+  - [ ] Client sign-off recorded in §10.
 
 ### M7 — Content Freeze & Client Review
 - [ ] Client reviews all live collection/product copy and imagery on the Cloudflare preview URL.
@@ -560,13 +680,14 @@ M7–M9 below continue unchanged after R6 (M7's content freeze folds in with the
 
 ## 6. Out of Scope (explicitly)
 
-- **Individual product detail pages** (`/products/[code]`) — the PDF catalogue carries the technical detail; a fast-follow option, not part of Phase 2.
-- **Trims & Profiles** — the aluminum trim/edge-profile hardware line spotted in the source catalogue is not in the 258-code taxonomy; pending a client scope check (§7).
+- **Individual product detail pages** (`/products/[code]`) — the PDF catalogue carries the technical detail; a fast-follow option, not part of Phase 2/3 (per-family spec blocks in S6 are family-level only).
+- **Trims & Profiles as a browsable catalogue** — resolved 2026-09-08 (client decision, Phase 3): the aluminum trim/edge-profile hardware line is represented only as a landing **"Complete the system"** section (S5); **no** new taxonomy/data model, **no** `/accessories` route. The hardware is not part of the 258-code taxonomy.
 - CMS / non-technical editing UI (see §9 for the future path).
 - Multi-language / i18n.
 - Blog or "Projects" case-study system beyond what's in the approved mockup's nav (can be a fast-follow milestone if wanted).
 - Analytics dashboard beyond basic Cloudflare Web Analytics (free, privacy-friendly — recommend enabling it in M8, but it's not a build task).
 - **Finish/color facet filters** beyond family → series → search — deliberately deferred (see R2); a fast-follow option once the catalogue has real images.
+- **Per-SKU spec fields** — family-level specs only (S6); per-SKU substrate/thickness/rating data is out of scope without a product-detail page to carry it.
 
 ---
 
@@ -576,9 +697,11 @@ M7–M9 below continue unchanged after R6 (M7's content freeze folds in with the
 2. **Sales inbox:** which email address should request submissions be delivered to? Needs a Resend-verified sending domain (client's own domain, not a Gmail address, for deliverability).
 3. **Full-resolution source images:** the mockup used cropped catalogue-scan images. Confirm whether higher-resolution originals exist for production, or whether the catalogue scans are the final quality ceiling.
 4. **Brand name:** "LAMINA" was a placeholder used in the mockup — confirm final name/logo before M1 componentization, since it affects the nav/footer components.
-5. **Trims & Profiles scope:** the source catalogue contains an aluminum trim/edge-profile hardware line ("PVC Wall Panel Supporting Aluminum Alloy Line Display") — hardware, not a wall finish, and not part of the 258-code taxonomy. Own top-level family, or out of scope? Client check needed before R6.
+5. **Trims & Profiles scope:** the source catalogue contains an aluminum trim/edge-profile hardware line ("PVC Wall Panel Supporting Aluminum Alloy Line Display") — hardware, not a wall finish, and not part of the 258-code taxonomy. — **RESOLVED 2026-09-08 (client decision):** represented as a landing "Complete the system" section only (S5); no taxonomy/data-model/routes. See §6.
 6. **Catalogue PDF:** which file does the "Download catalogue" CTA link to? (R3 renders the CTA only when the asset is provided in `public/`.) — **RESOLVED 2026-09-05:** the client's source catalogue `lamina-wall.pdf` (12.9 MB, tracked at the repo root) is wired in as `public/catalogue.pdf`; both download CTAs (hero "Download the Catalog" + statement-row "Download catalogue PDF") are live with the `download` attribute. Swapping in a different final file later = replace `public/catalogue.pdf` + rebuild, no code change (§10 Session 18).
 7. **Real product photography:** 169 of the 258 products currently render the placeholder swatch (89 carry real photography; the 3 index-absent codes WG-37/WG-43/HGF-252 were excluded and quarantined in R1 — §10 Session 12). When do real images arrive, and at what resolution (see the §3.3 source-resolution floor)?
+8. **Phase-3 copy supply (client-provided verbatim):** the catalogue PDF is image-only (no text layer), and the project never invents copy. For S2/S3/S5/S6 the client must supply the exact copy/spec text — PDF page 4 (4 advantages, 8 features, 3 substrate types + thickness/density), pages 5–6 (the 4 application categories), pages 6–9 (accessories), and the page-4 spec values. Milestones S2/S3/S5/S6 are **blocked** until this lands. (Delivery: paste in chat or add a text file, e.g. `docs/phase3-copy.md`, referencing the PDF page each passage comes from.)
+9. **Phase-3 imagery source:** the new sections need imagery the repo doesn't currently hold — the 4 application-category photos (S3, PDF pages 5–6), the accessory-line imagery (S5, PDF pages 6–9), and the 4 certification/feature icons (S4, PDF cover). Options: client supplies files, or approves extraction/rasterization from `lamina-wall.pdf`. (There are also 8 unused "secondary application" photos in `src/assets/applications/`, retired in R5, that could partially cover the S3 gallery as a fallback — agent decision at build time unless the client prefers otherwise.)
 
 > **Correction (2026-09-05):** Session 8's claim that fetching `api.resend.com` needs a paid Workers plan was checked against current Cloudflare docs and appears **incorrect** — the Workers Free plan allows outbound `fetch()` (50 subrequests per invocation), and one Resend send is one subrequest. Verify with the real `RESEND_API_KEY` before considering any plan upgrade.
 
@@ -972,3 +1095,46 @@ Entry format:
   - **The `download` attribute** — matches the statement CTA's behaviour and the "Download…" label's intent (save, not in-tab view).
 - Blocked on / open questions: the R6 human gates as in Session 17 — §7 Q5 (trims), Q7 (169 placeholders), domain/brand/real keys, GitHub remote + Workers Builds, live Resend delivery, browser-matrix rows. Q6 (catalogue PDF) **resolved**.
 - Next session should start with: **the R6 human gates** (unchanged from Session 17) — 1440/390 visual pass + client review/sign-off; the PDF CTAs are now visibly present for that pass.
+
+### Session 19 — 2026-09-08
+- Milestone(s) worked on: **PRD v2.1 + Phase-3 planning** (documentation only — no code). PRD bumped to v2.1 to fold in an independent content review + a client restructure request.
+- Completed this session:
+  - **Content review surfaced** (from a full repo + PDF-catalogue audit by the reviewer): the landing page is content-thin (no features/benefits, no trust signals, no applications, placeholder footer); three major catalogue-PDF sections never reached the site (page 4 advantages/features/substrate types; pages 5–6 application gallery; pages 6–9 accessory/trim hardware line); swatches carry no spec info. The client's own priorities: add these as content sections and restructure families off the single archive page.
+  - **Client decisions locked** (answering the reviewer's recommendations):
+    1. **Accessories/trims** → a landing **"Complete the system"** section only (S5). No new taxonomy/data model, no `/accessories` route; the line stays out of the 258-code taxonomy.
+    2. **Verbatim copy provenance** → the client **supplies the copy text** (the PDF is image-only; the project never invents content). Logged as §7 Q8; S2/S3/S5/S6 are blocked on it.
+    3. **Product specs** → a **family-level spec block** (S6, §3.5) — new `specs: {label, value}[]` field on the collections schema; no per-SKU fields.
+    4. **Footer** → wire what exists (PDF download, request, collections, mailto) + **marked placeholders** for address/phone/socials; never fabricate.
+    5. **Imagery** for the new sections (S3/S4/S5) → source still TBC — §7 Q9 (client supplies, or approves PDF extraction; 8 unused secondary-application photos exist as a partial fallback).
+  - **PRD v2.1 written**: changelog entry; §0 gains the Phase-3 table (S1–S7); §1 summary + §1.2 non-goals updated; new **§3.5 (Family Specs)**; §5 gains the Phase-3 milestone specs S1–S7; §6/§7 updated (trims resolved to S5; §7 Q5 marked resolved; Q8/Q9 added).
+  - **Per-family page restructure spec (S1)**: keep the single `[...filters]` template; at the family depth render a hero band (`heroApplicationImage` + title + description), a **family-scoped** sidebar (only that family's series + search) with a back-to-archive link, and products under the hero. `/products` (archive) and series pages unchanged. No re-added collection templates — the "one catalogue template" constraint holds.
+- Decisions made (and why):
+  - **Phase 3 milestones numbered S1–S7** (S = "showroom/section") to avoid collision with M0–M9 and R1–R6; they run after R6 and before M7–M9.
+  - **S1 (structure) first**, because the client's restructure is the foundation the family-level spec block (S6) and family-page accessories links hang off; S2–S5 are landing content additions; S7 is the QA/review gate.
+  - The blocked flags (`⛔ Blocked until §7 Q8/Q9`) are intentional — the S-milestones that need client copy/imagery must not be "completed" against placeholder or invented content.
+- Blocked on / open questions:
+  - Standing Phase-1/2 items unchanged: R6 human gates (visual pass + client sign-off), domain/brand, real Resend/Turnstile keys, GitHub remote + Workers Builds, real photography for 169 placeholders (§7 Q7), browser-matrix rows.
+  - **New §7 Q8** (Phase-3 copy supply — blocks S2/S3/S5/S6) and **§7 Q9** (Phase-3 imagery source — blocks S3/S4/S5).
+- Next session should start with:
+  - **S1 — Per-Family Pages** (does not depend on client copy): rework the family depth of `products/[...filters]/index.astro` — hero band + family-scoped sidebar + products under the hero; keep `/products` and series pages intact; build + `tsc` clean; CDP sweep. S2–S6 are blocked on §7 Q8/Q9 (client copy/imagery) and cannot be "done" without it.
+
+
+
+### Session 20 — 2026-09-08
+- Milestone(s) worked on: **S1 — Per-Family Pages** (Phase 3) — complete; §0 row now `☑ Done`.
+- Completed this session:
+  - **`src/components/FamilyHero.astro`** (new): the family-depth photo-mode hero band — tiered CSS background (640/1280/1920 webp via `getImage`, injected `set:html`), `--hero-veil` scrim, flex content, ZERO absolute/fixed in the composition (only the `.sr-only` a11y utility for the decorative background's `heroAlt`). Carries the mono eyebrow, family `h1`, and lead description.
+  - **`src/pages/products/[...filters]/index.astro`**: at the family depth, render `<FamilyHero>` (full-bleed) instead of the text `cat-head`; pass only the **active family** to `CatalogueFilters` + a back-to-archive `backHref`; products under the hero as before. Added an **LCP preload** for the family hero image (widths `[640,1280,1920]`, aligned to FamilyHero's tiers — same pattern as the landing hero, M5). Archive (`/products`) and series pages keep the full 6-family sidebar + text head, unchanged.
+  - **`src/components/CatalogueFilters.astro`**: added optional `backHref` prop — renders an "← All families" link at the top of BOTH the desktop aside and the mobile drawer when provided (family pages only).
+  - **Decision logged:** the back-to-archive link lives in the **sidebar** (as S1 specifies), not the hero — avoids a duplicate "All families" link on the same page.
+- Verification (build + tsc clean; static dist checks + headless-Chrome CDP):
+  - All 6 family routes render the hero band (1 element), the scoped sidebar (`famNames` = only the active family, in both aside + drawer copies) and 2 back-all links; correct `h1` per family (Wood / Stone & Marble / Metal / Textile / Solid Color / Decorative & Mirror).
+  - `/products` archive and the series page `/products/wood-grain/wg` show **no** hero and **no** back-all link — unchanged (full 6-family sidebar, 258 / per-series counts).
+  - CDP: **no horizontal scroll at 320/390/480/768/1024/1440** on `/products/wood-grain` (63 tiles); mobile `<details>` filter drawer opens/closes; **tray add → header count (0)→(1) → dialog opens**, zero console errors, on both the family page (63 swatches) and the archive (258). *(Note: an initial tray "dead" reading was my throwaway harness serving `.js` as `text/html` — a MIME bug in the test server, not a site issue; re-run against `scripts/serve-gzip.mjs` passes clean.)*
+  - LCP preload present on family pages only (archive has none).
+- Decisions made (and why):
+  - **Single template preserved** — S1 enriches the `[...filters]` family depth; no per-collection template re-added (the "one catalogue template" hard constraint holds).
+  - **Hero is a decorative background** (photo-mode language), so its `heroAlt` is an sr-only label / OG description rather than an `<img alt>` — consistent with the Session-10 landing hero treatment.
+  - The series depth and the `/products` archive are deliberately left untouched by S1 (per spec); only the family depth changes.
+- Blocked on / open questions: unchanged — R6 human gates (visual pass + client sign-off), §7 Q8 (Phase-3 copy — blocks **S2/S3/S5/S6**), §7 Q9 (imagery — blocks S3/S4/S5), Q7 (169 placeholders), domain/brand/real keys, GitHub remote + Workers Builds, live Resend delivery.
+- Next session should start with: **S2 — Landing: Features/Advantages section** — **blocked until the client supplies the page-4 copy** (§7 Q8). If the copy hasn't arrived, the session should either prompt the client for it or pick up any other non-blocked Phase-3 item that can proceed without it.

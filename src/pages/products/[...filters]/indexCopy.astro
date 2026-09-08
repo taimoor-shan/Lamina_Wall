@@ -1,0 +1,497 @@
+---
+// Catalogue page — ONE template for every filter depth (PRD R2):
+//   /products                      → all 258
+//   /products/[family]             → one family (63/50/28/47/33/37)
+//   /products/[family]/[series]    → one series (19)
+// The URL path is the filter state: every depth is statically generated
+// here (getStaticPaths), so chips/family links work with JS disabled —
+// the client-side search box below is a pure enhancement on top.
+//
+// Data comes from the content collections (query once, derive everything)
+// plus data/catalogue-master.ts SERIES — the single source for the 19
+// series slugs, their family membership, and their display titles (the
+// taxonomy section headers). All links in the sidebar are plain <a href>s.
+//
+// The page carries swatch cards → the request tray island is mounted
+// client:load, exactly like the homepage and collection pages.
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
+import { SERIES } from '../../../../data/catalogue-master';
+
+import '../../../styles/tokens.css';
+import '../../../styles/global.css';
+
+import Seo from '../../../components/Seo.astro';
+import Fonts from '../../../components/Fonts.astro';
+import Nav from '../../../components/Nav.astro';
+import FamilyHero from '../../../components/FamilyHero.astro';
+// import FamilySpecBlock from '../../../components/FamilySpecBlock.astro';
+import CatalogueFilters, {
+  type FamilyFilterNode,
+} from '../../../components/CatalogueFilters.astro';
+import SwatchCard from '../../../components/SwatchCard.astro';
+import Footer from '../../../components/Footer.astro';
+import RequestTray from '../../../components/RequestTray.svelte';
+
+// getStaticPaths must fetch its own data — the Cloudflare adapter evaluates
+// it in the prerender server without module-level scope (a note that also
+// applied to the retired /collections/[slug] page — R5).
+//
+// Rest params are single strings in this Astro version — never arrays
+// (stringifyParams → validateGetStaticPathsParameter rejects anything that
+// is not string | undefined, and the route generator emits the value
+// verbatim into the pathname). So deeper filter paths carry their slashes
+// INSIDE the string: 'wood-grain/wg' → /products/wood-grain/wg. The bare
+// /products page simply omits the param (undefined).
+export async function getStaticPaths() {
+  const collections = (await getCollection('collections')).sort(
+    (a, b) => a.data.order - b.data.order,
+  );
+  const paths: { params: { filters?: string } }[] = [{ params: { filters: undefined } }];
+  for (const c of collections) {
+    paths.push({ params: { filters: c.data.slug } });
+    for (const s of SERIES) {
+      if (s.family === c.data.slug) {
+        paths.push({ params: { filters: `${c.data.slug}/${s.slug}` } });
+      }
+    }
+  }
+  return paths;
+}
+
+// ---------------------------------------------------------------- data ----
+
+const allCollections = (await getCollection('collections')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const allProducts = (await getCollection('products')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+// Active filter depth. Astro.params.filters is the whole remaining path as
+// ONE string ('wood-grain' | 'wood-grain/wg'); the split recovers segments
+// (missing param → '' → no family filter).
+const [famSlug, serSlug] = (Astro.params.filters ?? '').split('/');
+const fam = famSlug ? allCollections.find((c) => c.data.slug === famSlug) : undefined;
+const famHref = famSlug ? `/products/${famSlug}` : undefined;
+const seriesDef =
+  famSlug && serSlug
+    ? SERIES.find((s) => s.family === famSlug && s.slug === serSlug)
+    : undefined;
+
+// Counts per family/series — from the products themselves (matches the
+// taxonomy counts; the generator hard-fails on any disagreement).
+const famCount = new Map<string, number>();
+const seriesCount = new Map<string, number>();
+for (const p of allProducts) {
+  const fid = p.data.collection.id;
+  famCount.set(fid, (famCount.get(fid) ?? 0) + 1);
+  const key = `${fid}|${p.data.series}`;
+  seriesCount.set(key, (seriesCount.get(key) ?? 0) + 1);
+}
+const seriesTitleBySlug = new Map(SERIES.map((s) => [s.slug, s.title]));
+
+// Sidebar tree — all 6 families × their series, in taxonomy order.
+const families: FamilyFilterNode[] = allCollections.map((c) => ({
+  slug: c.data.slug,
+  title: c.data.title,
+  href: `/products/${c.data.slug}`,
+  count: famCount.get(c.id) ?? 0,
+  series: SERIES.filter((s) => s.family === c.data.slug).map((s) => ({
+    slug: s.slug,
+    title: s.title,
+    href: `/products/${c.data.slug}/${s.slug}`,
+    count: seriesCount.get(`${c.data.slug}|${s.slug}`) ?? 0,
+  })),
+}));
+
+// Phase 3 S1 — on a family page the sidebar is SCOPED to that family only
+// (its own series chips + search) with a back-to-archive link. The /products
+// archive and series pages keep the full 6-family tree, unchanged.
+const isFamilyDepth = !!fam && !seriesDef;
+const sidebarFamilies: FamilyFilterNode[] = isFamilyDepth
+  ? families.filter((f) => f.slug === famSlug)
+  : families;
+const backHref = isFamilyDepth ? '/products' : undefined;
+
+// The visible grid for this depth, canonical order (1–258).
+const visible = allProducts.filter(
+  (p) =>
+    (!fam || p.data.collection.id === fam.data.slug) &&
+    (!seriesDef || p.data.series === seriesDef.slug),
+);
+
+// Client-side search haystack per card: code, name, subcategory, series
+// and family titles — lowercased; punctuation is stripped at runtime by
+// the search script (tokens are matched as substrings).
+const collectionTitleById = new Map(allCollections.map((c) => [c.id, c.data.title]));
+const searchHay = (p: (typeof allProducts)[number]): string =>
+  [
+    p.data.code,
+    p.data.name,
+    p.data.subcategory,
+    seriesTitleBySlug.get(p.data.series) ?? '',
+    collectionTitleById.get(p.data.collection.id) ?? '',
+  ]
+    .join(' ')
+    .toLowerCase();
+
+// ------------------------------------------------------------------ head ----
+
+const isAll = !fam && !seriesDef;
+const isFamily = !!fam && !seriesDef;
+const isSeries = !!seriesDef && !!fam;
+
+const headTitle = isAll
+  ? 'Catalogue — LAMINA'
+  : isFamily
+    ? `${fam!.data.title} — LAMINA`
+    : `${seriesDef!.title} — LAMINA`;
+const headDescription = isAll
+  ? 'The complete LAMINA range — 258 wall panels and architectural surfaces across wood, stone & marble, metal, textile, solid color, and decorative & mirror families. Filter by series or search by article code.'
+  : isFamily
+    ? fam!.data.description
+    : `The ${seriesDef!.title} series — ${visible.length} articles in the ${fam!.data.title} family of the LAMINA wall-panel catalogue.`;
+// R5 canonical fix: headPath must mirror the URL depth. It previously used
+// famHref at every depth, so series pages canonicals pointed at their
+// family (/products/wood-grain/wg → canonical /products/wood-grain) — a
+// series page must canonical to itself, the same way its sitemap entry does.
+const headPath = isSeries
+  ? `/products/${famSlug}/${serSlug}`
+  : famHref ?? '/products';
+const ogImage = fam ? fam.data.heroApplicationImage : undefined;
+
+const eyebrow =
+  isAll
+    ? 'All products — 258 articles'
+    : isFamily
+      ? `Family ${String(fam!.data.order).padStart(2, '0')} — ${visible.length} articles`
+      : undefined; // series pages render breadcrumbs instead
+
+// Phase 3 S1 — LCP preload for the family-hero application image (the LCP
+// element on family pages). Same widths as FamilyHero.astro's tiered
+// background so the preload and the background resolve to the same candidate
+// per viewport (mirrors the landing page's hero preload — M5).
+const famHeroPreload = isFamilyDepth
+  ? await getImage({
+      src: fam!.data.heroApplicationImage,
+      widths: [640, 1280, 1920],
+      formats: ['webp'],
+    })
+  : undefined;
+
+// Breadcrumbs for series pages: Catalogue / family — the URL is the state.
+const crumbs =
+  isSeries
+    ? [
+        { label: 'Catalogue', href: '/products' },
+        { label: fam!.data.title, href: famHref! },
+      ]
+    : [];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Seo title={headTitle} description={headDescription} path={headPath} ogImage={ogImage} />
+    {famHeroPreload && (
+      <link
+        rel="preload"
+        as="image"
+        href={famHeroPreload.src}
+        imagesrcset={famHeroPreload.srcSet.attribute}
+        imagesizes="100vw"
+        fetchpriority="high"
+      />
+    )}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <Fonts />
+  </head>
+  <body>
+    <Nav collections={allCollections} />
+
+    <main>
+      {isFamilyDepth && (
+        <FamilyHero
+          image={fam!.data.heroApplicationImage}
+          eyebrow={eyebrow ?? ''}
+          title={fam!.data.title}
+          description={fam!.data.description}
+          heroAlt={fam!.data.heroAlt}
+        />
+      )}
+
+      <div class="products-page">
+        {!isFamilyDepth && (
+          <div class="cat-head">
+            <div>
+              {eyebrow && <p class="eyebrow cat-eyebrow">{eyebrow}</p>}
+              {crumbs.length > 0 && (
+                <p class="eyebrow cat-eyebrow">
+                  {crumbs.map((c, i) => (
+                    <>
+                      {i > 0 && <span class="crumb-sep" aria-hidden="true">/</span>}
+                      <a class="crumb" href={c.href}>{c.label}</a>
+                    </>
+                  ))}
+                  {/* <span class="crumb-sep" aria-hidden="true">/</span> */}
+                 {/* <span class="crumb-cur">{seriesDef!.title} — {visible.length} articles</span> */}
+                </p>
+              )}
+              <h1 class="display cat-title">
+                {isAll ? 'Catalogue' : isFamily ? fam!.data.title : seriesDef!.title}
+              </h1>
+            </div>
+            {isFamily && <p class="cat-desc">{fam!.data.description}</p>}
+          </div>
+        )}
+
+        <div class="products-layout">
+          <div class="sidebar-col">
+            <CatalogueFilters families={sidebarFamilies} backHref={backHref} />
+            <!-- {fam?.data.specs && fam.data.specs.length > 0 && (
+              <FamilySpecBlock title={fam.data.title} specs={fam.data.specs} />
+            )} -->
+          </div>
+
+          <section class="products-main" aria-label="Products">
+            <p class="grid-count" id="grid-count" aria-live="polite">
+              {visible.length} articles
+            </p>
+            <p class="search-empty" id="search-empty" hidden>
+              No articles match your search.{' '}
+              <button type="button" class="search-clear" id="search-clear">
+                Clear the search
+              </button>
+            </p>
+            <div class="product-grid" id="product-grid">
+              {
+                visible.map((p) => (
+                  <div class="tile" data-search={searchHay(p)}>
+                    <SwatchCard product={p} showSubcategory />
+                  </div>
+                ))
+              }
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+    <RequestTray client:load />
+
+    <script>
+      // Client-side search enhancement (R2): filters the statically rendered
+      // grid by toggling the [hidden] attribute on .tile wrappers — no DOM is
+      // created at runtime, so no Astro-scoped selector is ever involved.
+      // Works for both sidebar search instances (desktop aside + mobile
+      // drawer); they are kept in sync and each stays resettable.
+      const inputs = Array.from(document.querySelectorAll('[data-search-input]'));
+      const grid = document.getElementById('product-grid');
+      const countEl = document.getElementById('grid-count');
+      const emptyEl = document.getElementById('search-empty');
+      const clearBtn = document.getElementById('search-clear');
+      if (inputs.length > 0 && grid && countEl && emptyEl && clearBtn) {
+        const tiles = Array.from(grid.querySelectorAll('.tile'));
+        const total = tiles.length;
+
+        const run = (qRaw: string) => {
+          const tokens = qRaw
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean);
+          let shown = 0;
+          for (const tile of tiles) {
+            const hay = (tile.dataset.search ?? '').toLowerCase();
+            const hit = tokens.every((t) => hay.includes(t));
+            tile.hidden = !hit;
+            if (hit) shown += 1;
+          }
+          const active = tokens.length > 0;
+          emptyEl.hidden = !(active && shown === 0);
+          countEl.textContent = active ? `${shown} of ${total} articles` : `${total} articles`;
+        };
+
+        const sync = (src: HTMLInputElement) => {
+          const value = src.value;
+          for (const i of inputs) if (i !== src) i.value = value;
+          run(value);
+        };
+        for (const input of inputs) {
+          input.addEventListener('input', () => sync(input));
+          // type="search" native clear buttons fire 'search', not 'input'.
+          input.addEventListener('search', () => sync(input));
+        }
+        clearBtn.addEventListener('click', () => {
+          for (const input of inputs) input.value = '';
+          run('');
+          (inputs[0] as HTMLInputElement).focus();
+        });
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .products-page {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--section-v2) var(--gutter);
+  }
+
+  /* --- page head: editorial header in the design-system language -------- */
+  .cat-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 28px;
+    margin-bottom: var(--sec-head-gap);
+  }
+  .cat-title {
+    font-size: var(--fs-display-section);
+    margin-top: 8px;
+  }
+  .cat-desc {
+    max-width: 360px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--ash);
+    padding-bottom: 6px;
+  }
+  /* Breadcrumb eyebrow (series pages): Catalogue / Family / Series · N */
+  .cat-eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 7px;
+  }
+  .cat-eyebrow a {
+    color: inherit;
+  }
+  .cat-eyebrow a:hover {
+    color: var(--ember);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .crumb-sep {
+    color: var(--ash);
+    opacity: 0.7;
+  }
+
+  /* --- layout: sidebar + main (sidebar disappears ≤900px into the
+         CatalogueFilters drawer) ------------------------------------------ */
+  .products-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    row-gap: 30px;
+  }
+  .sidebar-col {
+    min-width: 0;
+  }
+
+  /* --- toolbar + grid ----------------------------------------------------- */
+  .products-main {
+    min-width: 0;
+  }
+  .grid-count {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+  }
+  .search-empty {
+    font-size: var(--fs-body);
+    color: var(--ash);
+    border-bottom: 1px solid var(--line);
+    padding: 0 0 14px;
+    margin-bottom: 12px;
+  }
+  .search-clear {
+    border: none;
+    background: none;
+    padding: 0;
+    font: inherit;
+    font-size: var(--fs-label);
+    font-family: var(--font-mono);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ember);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .search-clear:hover {
+    color: var(--ink);
+  }
+
+  /* Hairline card grid: 1px gaps over the line colour (mockup .swatch-row
+     technique). Cards are the existing SwatchCard language; the .tile
+     wrapper carries the search haystack + [hidden] toggling. */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    /* background: var(--line); */
+  }
+  .tile {
+    display: flex;
+    background: var(--stone-card);
+  }
+  /* Stretch the card to the wrapper so every cell of a grid row is the same
+     height (cards with a subcategory line are taller than those without).
+     The child is a SwatchCard root carrying ITS OWN component cid — without
+     the :global(...) the compiled selector would demand the page cid on the
+     card too, matching nothing. */
+  .tile > :global(*) {
+    flex: 1;
+  }
+  .tile[hidden] {
+    display: none;
+  }
+
+  @media (min-width: 641px) {
+    .product-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 901px) {
+    .products-layout {
+      grid-template-columns: 248px minmax(0, 1fr);
+      column-gap: 48px;
+      row-gap: 0;
+    }
+    /* The sidebar eats horizontal space: drop back to a wider 2-up band. */
+    .product-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1100px) {
+    .product-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1280px) {
+    .product-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 480px) {
+    .products-page {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+</style>

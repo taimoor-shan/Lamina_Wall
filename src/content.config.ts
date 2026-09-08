@@ -59,6 +59,12 @@ const collection = defineCollection({
       secondaryApplicationAlt: z.string(),
       // Controls index-strip ordering.
       order: z.number(),
+      // Phase 3 S6 (PRD §3.5): family-level spec block — an ordered list of
+      // { label, value } rows (substrate types, thickness, density, fire /
+      // water / eco ratings) rendered on the family page. Client-supplied
+      // from the catalogue PDF page 4. Optional: when absent, the family
+      // page omits the spec block entirely (never a placeholder spec).
+      specs: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
     }),
 });
 

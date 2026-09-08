@@ -1,0 +1,116 @@
+---
+// FamilyHero — the family-depth hero band for the catalogue template (PRD
+// Phase 3 S1). Shows one material family as a dedicated page: a photo band
+// built in the Session-10 "photo mode" language (tiered CSS background,
+// --hero-veil scrim, flex content, ZERO absolute/fixed elements), carrying
+// the family's eyebrow, title (h1), description and a back-to-archive link.
+//
+// The image runs through astro:assets so it ships as optimised WebP tiers
+// (640/1280/1920), never the raw source. Because it is a CSS background it
+// is decorative (aria-hidden) — the visible text carries the meaning; the
+// caller passes heroAlt for the Seo/OG description.
+import { getImage } from 'astro:assets';
+
+interface Props {
+  image: ImageMetadata;
+  /** Mono eyebrow, e.g. "Family 01 — 63 articles". */
+  eyebrow: string;
+  /** Family display title — rendered as the page's single <h1>. */
+  title: string;
+  /** Family lead paragraph. */
+  description: string;
+  /** Alt for the hero application photo (used by the page's Seo/OG block). */
+  heroAlt?: string;
+}
+
+const { image, eyebrow, title, description, heroAlt } = Astro.props;
+
+const [bgSmall, bgMid, bgLarge] = await Promise.all([
+  getImage({ src: image, format: 'webp', width: 640 }),
+  getImage({ src: image, format: 'webp', width: 1280 }),
+  getImage({ src: image, format: 'webp', width: 1920 }),
+]);
+
+const tieredBgCss = `
+  .family-hero {
+    background-image: var(--hero-veil), url('${bgSmall.src}');
+  }
+  @media (min-width: 960px) {
+    .family-hero {
+      background-image: var(--hero-veil), url('${bgMid.src}');
+    }
+  }
+  @media (min-width: 1280px) {
+    .family-hero {
+      background-image: var(--hero-veil), url('${bgLarge.src}');
+    }
+  }
+`;
+---
+
+<section class="family-hero">
+  <style is:inline set:html={tieredBgCss}></style>
+  <div class="family-hero-content">
+    <div class="eyebrow">{eyebrow}</div>
+    <h1 class="display">{title}</h1>
+    <p class="family-lead">{description}</p>
+    {heroAlt && <span class="sr-only">{heroAlt}</span>}
+  </div>
+</section>
+
+<style>
+  .family-hero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 96px var(--gutter) 56px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+  .family-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 620px;
+    width: 100%;
+    color: var(--paper);
+  }
+  .family-hero .eyebrow {
+    color: var(--sand-soft);
+    margin-bottom: 14px;
+  }
+  .family-hero h1 {
+    font-size: var(--fs-display-hero);
+    color: var(--paper);
+    margin: 0;
+  }
+  .family-lead {
+    margin-top: 18px;
+    font-size: var(--fs-hero-sub);
+    line-height: 1.6;
+    color: var(--paper-soft);
+    max-width: 520px;
+  }
+
+  /* Visually-hidden helper for the decorative background's descriptive alt. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 480px) {
+    .family-hero {
+      padding-left: 20px;
+      padding-right: 20px;
+      padding-top: 72px;
+      padding-bottom: 40px;
+    }
+  }
+</style>

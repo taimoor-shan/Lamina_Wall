@@ -7,5 +7,31 @@
   "heroAlt": "Wood-panelled interior wall with warm oak grain running across a living space.",
   "order": 1,
   "secondaryApplicationImage": "../../assets/applications/wood-grain/application-wood-2.jpeg",
-  "secondaryApplicationAlt": "Wood-panelled interior wall with warm oak grain, alternate application view."
+  "secondaryApplicationAlt": "Wood-panelled interior wall with warm oak grain, alternate application view.",
+  "specs": [
+    {
+      "label": "Substrate",
+      "value": "Carbon crystal board / Super-hard WPC / SPC"
+    },
+    {
+      "label": "Thickness",
+      "value": "3 / 4 / 5 / 8 mm by substrate"
+    },
+    {
+      "label": "Density",
+      "value": "0.65 / 2.1 by substrate"
+    },
+    {
+      "label": "Environmental",
+      "value": "Zero formaldehyde / no heavy metals"
+    },
+    {
+      "label": "Moisture & moth",
+      "value": "Waterproof / moisture- and moth-resistant"
+    },
+    {
+      "label": "Fire & surface",
+      "value": "Flame retardant / burn, scratch and stain resistant"
+    }
+  ]
 }

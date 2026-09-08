@@ -42,9 +42,13 @@ export interface FamilyFilterNode {
 
 interface Props {
   families: FamilyFilterNode[];
+  /** Optional link back to the all-families archive (/products). Rendered at
+   *  the top of both filter copies when provided (Phase 3 S1 — used on the
+   *  family-scoped pages). Absent on /products and series pages. */
+  backHref?: string;
 }
 
-const { families } = Astro.props;
+const { families, backHref } = Astro.props;
 
 // Current filter depth from the pathname (not the params, so the sidebar
 // stays truthful even for a hypothetical unmatched deep path).
@@ -58,6 +62,11 @@ const serSlug = famSlug && segments[2] ? segments[2] : undefined;
 ---
 
 <aside class="filters-desktop" aria-label="Catalogue filters">
+  {backHref && (
+    <a class="back-all" href={backHref}>
+      <span aria-hidden="true">←</span> All families
+    </a>
+  )}
   <label class="search-field">
     <span class="search-lbl">Search products</span>
     <input
@@ -118,6 +127,11 @@ const serSlug = famSlug && segments[2] ? segments[2] : undefined;
     <span class="lbl-close" aria-hidden="true">Close filters</span>
   </summary>
   <div class="filters-panel">
+    {backHref && (
+      <a class="back-all" href={backHref}>
+        <span aria-hidden="true">←</span> All families
+      </a>
+    )}
     <label class="search-field">
       <span class="search-lbl">Search products</span>
       <input
@@ -175,6 +189,24 @@ const serSlug = famSlug && segments[2] ? segments[2] : undefined;
 
 <style>
   /* ---------- search ---------- */
+  .back-all {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+    margin-bottom: 16px;
+    text-decoration: none;
+  }
+  .back-all:hover {
+    color: var(--ember);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .back-all span {
+    margin-right: 6px;
+  }
   .search-field {
     display: block;
   }

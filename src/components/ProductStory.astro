@@ -1,0 +1,289 @@
+---
+// ProductStory — the landing-page product story (PRD Phase 3 S2), three
+// sections sourced from src/data/product-story.ts (catalogue PDF page 4):
+//   Advantages (4 core advantages)
+//   Features (8 numbered product features)
+//   Substrates (3 substrate types with spec rows)
+//
+// Copy is a transcription of the client-supplied page-4 content — cleaned of
+// OCR noise but never invented. Rendering follows the design-system language
+// (hairline grids, mono eyebrows/numbers, serif display heads).
+import { advantages, features, substrates } from '../data/product-story';
+---
+<section class="story" aria-label="Why LAMINA panels">
+
+  <!-- ---------- Advantages ---------- -->
+  <div class="story-sec" id="advantages">
+    <header class="story-head">
+      <div>
+        <p class="eyebrow">Why LAMINA</p>
+        <h2 class="display">Advantages of LAMINA wall panels.</h2>
+      </div>
+      <p class="story-desc">
+        The core strengths of the LAMINA panel system, as specified in the
+        catalogue — environmental performance, speed, finish variety and
+        flexible installation.
+      </p>
+    </header>
+    <div class="adv-grid">
+      {
+        advantages.map((a) => (
+          <article class="adv-card">
+            <div class="adv-n">{a.n}</div>
+            <h3 class="adv-title">{a.title}</h3>
+            <p class="adv-body">{a.body}</p>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- ---------- Features ---------- -->
+  <div class="story-sec" id="features">
+    <header class="story-head">
+      <div>
+        <p class="eyebrow">Product features</p>
+        <h2 class="display">Eight features, built in.</h2>
+      </div>
+      <p class="story-desc">
+        What every LAMINA panel carries — from clear texture and environmental
+        safety to moisture and moth resistance, compression strength and easy
+        maintenance.
+      </p>
+    </header>
+    <ol class="feat-grid">
+      {
+        features.map((f) => (
+          <li class="feat-item">
+            <span class="feat-n">{f.n}</span>
+            <h3 class="feat-title">{f.title}</h3>
+            <p class="feat-body">{f.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
+  <!-- ---------- Substrates ---------- -->
+  <div class="story-sec" id="substrates">
+    <header class="story-head">
+      <div>
+        <p class="eyebrow">Substrate types</p>
+        <h2 class="display">Three substrate options.</h2>
+      </div>
+      <p class="story-desc">
+        LAMINA panels are classified by substrate — carbon crystal board,
+        super-hard WPC panel and SPC panel — each with its own thickness and
+        density.
+      </p>
+    </header>
+    <div class="sub-grid">
+      {
+        substrates.map((s, i) => (
+          <article class="sub-card">
+            <div class="sub-meta">
+              <span>{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="sub-title">{s.title}</h3>
+            </div>
+            <p class="sub-intro">{s.intro}</p>
+            <dl class="sub-specs">
+              {s.specs.map((sp) => (
+                <>
+                  <dt>{sp.label}</dt>
+                  <dd>{sp.value}</dd>
+                </>
+              ))}
+            </dl>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+
+</section>
+
+<style>
+  .story {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--section-v) var(--gutter) 0;
+  }
+  .story-sec + .story-sec {
+    margin-top: var(--section-v);
+  }
+
+  /* Section head — the catalogue-page language (hairline rule, mono eyebrow,
+     serif display, side description). */
+  .story-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 28px;
+    margin-bottom: var(--sec-head-gap);
+  }
+  .story-head h2 {
+    font-size: var(--fs-display-section);
+    margin-top: 8px;
+  }
+  .story-desc {
+    max-width: 380px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--ash);
+    padding-bottom: 6px;
+  }
+
+  /* ---- Advantages: 4 cards, 2x2 on desktop ---- */
+  .adv-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .adv-card {
+    background: var(--paper);
+    padding: 24px;
+  }
+  .adv-n {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    color: var(--ember);
+  }
+  .adv-title {
+    font-size: var(--fs-label-lg);
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+    margin: 14px 0 8px;
+  }
+  .adv-body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--ash);
+    margin: 0;
+  }
+
+  /* ---- Features: numbered list ---- */
+  .feat-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .feat-item {
+    background: var(--paper);
+    padding: 20px 24px;
+  }
+  .feat-n {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    color: var(--ash);
+  }
+  .feat-title {
+    font-size: var(--fs-label-lg);
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+    margin: 10px 0 6px;
+  }
+  .feat-body {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--ash);
+    margin: 0;
+  }
+
+  /* ---- Substrates: 3 cards ---- */
+  .sub-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .sub-card {
+    background: var(--paper);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .sub-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+  .sub-meta > span {
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    color: var(--ember);
+  }
+  .sub-title {
+    font-size: var(--fs-display-tile);
+    margin: 0;
+  }
+  .sub-intro {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--ash);
+    margin: 16px 0 0;
+    flex: 1;
+  }
+  .sub-specs {
+    margin: 18px 0 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  .sub-specs dt,
+  .sub-specs dd {
+    display: inline-block;
+    margin: 0;
+    padding: 10px 0;
+  }
+  .sub-specs dt {
+    font-family: var(--font-mono);
+    font-size: var(--fs-caption);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+    width: 38%;
+  }
+  .sub-specs dd {
+    font-size: var(--fs-body);
+    width: 60%;
+  }
+
+  /* ---- breakpoints ---- */
+  @media (min-width: 641px) {
+    .adv-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .feat-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .sub-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1101px) {
+    .sub-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 480px) {
+    .story {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+</style>

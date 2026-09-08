@@ -1,0 +1,100 @@
+---
+// FamilySpecBlock — the family-level spec block rendered in the catalogue
+// sidebar, BELOW the filters, on each family page (PRD Phase 3 S6, §3.5).
+// A compact definition list of { label, value } rows (substrate types,
+// thickness, density, fire / water / eco ratings) sourced from the
+// collection's `specs` field (client-supplied from the catalogue PDF page 4).
+// When `specs` is absent the block is omitted entirely — never a placeholder
+// spec.
+//
+// Visual treatment (client direction 2026-09-08): the block is STATIC DATA,
+// not a filter, so it deliberately reads differently from the filter column
+// above it — a tinted card with a filled head and stacked label/value rows,
+// instead of the filter's hairline-rule + open-accordion language. Its own
+// heading separates it from the "Filter & search" control.
+
+interface SpecRow {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  title: string;
+  specs: SpecRow[];
+}
+
+const { title, specs } = Astro.props;
+if (specs.length === 0) return null;
+---
+
+<section class="family-specs" aria-labelledby="spec-title">
+  <header class="spec-head">
+    <p class="spec-kicker" id="spec-title">Specifications</p>
+    <h2 class="spec-title">{title}</h2>
+  </header>
+  <dl class="spec-list">
+    {
+      specs.map((s) => (
+        <>
+          <dt>{s.label}</dt>
+          <dd>{s.value}</dd>
+        </>
+      ))
+    }
+  </dl>
+</section>
+
+<style>
+  /* Static-data card — tinted surface, hairline border, filled head. Reads
+     as "facts about the range", not another control to click. */
+  .family-specs {
+    background: var(--stone-card);
+    border: 1px solid var(--line);
+    margin-top: 24px;
+  }
+  .spec-head {
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 16px 12px;
+  }
+  .spec-kicker {
+    margin: 0 0 4px;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ember);
+  }
+  .spec-title {
+    margin: 0;
+    font-size: var(--fs-label-lg);
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+  .spec-list {
+    margin: 0;
+    padding: 6px 16px 14px;
+  }
+  .spec-list dt,
+  .spec-list dd {
+    margin: 0;
+    padding: 0;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+  }
+  .spec-list dt {
+    font-family: var(--font-mono);
+    font-size: var(--fs-caption);
+    letter-spacing: var(--ls-eyebrow);
+    text-transform: uppercase;
+    color: var(--ash);
+    padding: 12px 0 2px;
+  }
+  .spec-list dt:first-child {
+    padding-top: 10px;
+  }
+  .spec-list dd {
+    color: var(--ink);
+  }
+</style>
